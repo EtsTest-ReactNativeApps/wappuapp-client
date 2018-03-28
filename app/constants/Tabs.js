@@ -2,8 +2,8 @@ export default {
   CALENDAR: 'CALENDAR',
   PHOTO: 'PHOTO',
   MAP: 'MAP',
-  FEELING: 'FEELING',
+  MOOD: 'MOOD',
   ACTION: 'ACTION',
   FEED: 'FEED',
-  SETTINGS: 'SETTINGS'
+  SETTINGS: 'SETTINGS',
 };
