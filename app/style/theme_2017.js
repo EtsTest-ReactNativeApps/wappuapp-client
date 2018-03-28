@@ -1,27 +1,22 @@
 /*
-* Theme colors for Whappu App 2018
+* Theme colors for Wappu App
 */
 
 const theme = {
-  // primary: '#1eedce',
-  // primary: '#09d893',
-  // primary: '#4B61F7',
-  primary: '#452abf',
+  primary: '#00d7d2',
   primaryDarker: '#10bdb9', // This is used for Android Status bar (needs darker version of primary color) (also used for currently active iOS tab item)
   primaryDark: '#075755',
-  primaryLight: '#6967fc',
-  secondary: '#FB1095',
-  secondaryLight: '#ed49a3',
+  primaryLight: '#09eae3',
+  secondary: '#ec449c',
+  secondaryLight: '#dd4997',
   secondaryDark: '#ce3686',
-  secondaryTint: '#E249E7',
-  secondaryLayer: 'rgba(251, 16, 149, .45)',
+  secondaryLayer: 'rgba(221, 73, 151, .5)',
   accent: '#FFFB38',
-  accentLight: '#f9f990',
+  accentLight: '#FEFF77',
   danger: '#FF5240',
   stable: '#f6f6f6',
-  inactive: '#a8adb5',
   light: '#fff',
-  dark: '#474f54',
+  dark: '#414e51',
   midgrey: '#777',
   subtlegrey: '#999',
   lightgrey: '#f2f2f2',
@@ -33,7 +28,6 @@ const theme = {
   simaDark: '#e29816',
   simaLight: 'rgba(229, 167, 75, .8)',
   transparent: 'transparent',
-  transparentLight: 'rgba(255,255,255, .9)',
 };
 
 module.exports = theme;
