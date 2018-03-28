@@ -41,17 +41,17 @@ class Button extends Component {
         onPressOut: this.props.onPressOut,
       };
       return (
-        <View style={[styles.button, this.props.style]}>
-          <TouchableNativeFeedback
-            {...touchableProps}
-            delayPressIn={0}
-            background={TouchableNativeFeedback.SelectableBackground()}
-          >
+        <TouchableNativeFeedback
+          {...touchableProps}
+          delayPressIn={0}
+          background={TouchableNativeFeedback.SelectableBackground()}
+        >
+          <View style={[styles.button, this.props.style]}>
             <View style={{ flex: 1, justifyContent: 'center', height: 40 }}>
               {this._renderInnerText()}
             </View>
-          </TouchableNativeFeedback>
-        </View>
+          </View>
+        </TouchableNativeFeedback>
       );
     }
   }
