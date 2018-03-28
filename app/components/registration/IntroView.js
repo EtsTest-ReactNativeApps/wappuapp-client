@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     height: 190,
     borderRadius: 95,
     bottom: 0,
-    opacity: 0.3,
+    opacity: 1,
   },
   content: {
     margin: 20,

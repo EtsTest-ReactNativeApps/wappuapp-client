@@ -325,9 +325,6 @@ class RegistrationView extends Component {
         isOpen={this.props.isRegistrationViewOpen}
         swipeToClose={false}
         backdropPressToClose={false}
-        // visible={this.props.isRegistrationViewOpen}
-        // animationType={'none'}
-        // onRequestClose={() => console.log('AppIntro cannot be closed by back button!')}
       >
         <AppIntro
           skipBtnLabel={<Text style={{ fontWeight: '500', fontSize: 18 }}>SKIP</Text>}
@@ -563,7 +560,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: theme.white,
     marginTop: 15,
-    // marginLeft: IOS ? 25 : 15,
     fontSize: 28,
   },
   logo: {
@@ -601,11 +597,8 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: theme.secondary,
     minHeight: height / 2.5,
-    // alignItems: 'center',
-    // justifyContent: 'flex-start',
   },
   iconWrap: {
-    // overflow: 'hidden',
     position: 'absolute',
     width: 190,
     height: 190,
@@ -617,17 +610,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   icon: {
-    // width: 200,
-    // left: width / 2 - 100,
-    // top: 50,
-    // position: 'absolute',
     textAlign: 'center',
     opacity: 1,
     backgroundColor: theme.transparent,
     fontSize: 150,
     width: 150,
     height: 150,
-    // tintColor: theme.white,
     color: theme.white,
   },
   subIconWrap: {
@@ -650,7 +638,7 @@ const styles = StyleSheet.create({
     borderRadius: 95,
     overflow: 'hidden',
     bottom: 0,
-    opacity: 0.3,
+    opacity: 1,
   },
 });
 
