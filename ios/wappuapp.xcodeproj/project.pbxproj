@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -566,6 +567,24 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		68AC27F02065383F00E4445C /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				0FEBD9958D894A0A95A2D87C /* libRNLocation.a */,
+				9E8C58669DD644C78A7A4208 /* libReactNativeAudioStreaming.a */,
+				4306BA3B75824B0491DCE2CF /* libAirMaps.a */,
+				E953F4AB528D40B982FAF630 /* libRNBlur.a */,
+				C5A3A1302E9848C7A98C9F5D /* libRNShare.a */,
+				2AC7ECB192D648F5B3356F26 /* libBVLinearGradient.a */,
+				4767D567F5654E628F644C7C /* libRNImagePicker.a */,
+				7C456D1924594DFE920584E5 /* libRNDeviceInfo.a */,
+				BA197C9992E04D5EA9E3A765 /* libRNVectorIcons.a */,
+				BF72C72383A24C1FA6B8E2F1 /* libCodePush.a */,
+				04F7DA3BA1B94512B8CD8ABE /* libRNSVG.a */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
 		68BD99091E47BDA0002FEC72 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -709,6 +728,7 @@
 				C8EB2B2656D543D9918AE908 /* Frameworks */,
 				8D67AC512C12426295550A7E /* Resources */,
 				5784F62B0F788FC0C8DF9BB0 /* Pods */,
+				68AC27F02065383F00E4445C /* Recovered References */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
