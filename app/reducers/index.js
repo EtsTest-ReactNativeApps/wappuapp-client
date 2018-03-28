@@ -1,7 +1,7 @@
 import navigation from './navigation';
 import event from './event';
 import feed from './feed';
-import registration from './registration';
+import registration from '../concepts/registration';
 import team from './team';
 import location from './location';
 import competition from './competition';
@@ -14,6 +14,7 @@ import city from '../concepts/city';
 import mood from '../concepts/mood';
 import sortType from '../concepts/sortType';
 import user from '../concepts/user';
+import comments from '../concepts/comments';
 
 export {
   errors,
@@ -31,5 +32,6 @@ export {
   city,
   mood,
   sortType,
-  user
+  user,
+  comments,
 };

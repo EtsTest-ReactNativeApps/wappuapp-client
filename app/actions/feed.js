@@ -1,17 +1,17 @@
 import api from '../services/api';
-import {createRequestActionTypes} from '.';
+import { createRequestActionTypes } from '.';
 import { getCityId } from '../concepts/city';
 import { getFeedSortType } from '../concepts/sortType';
+import { SET_COMMENTS as _SET_COMMENTS } from '../concepts/comments';
 import { getAllPostsInStore } from '../reducers/feed';
 
 const SET_FEED = 'SET_FEED';
 const APPEND_FEED = 'APPEND_FEED';
+export const SET_COMMENTS = _SET_COMMENTS;
 
-const {
-  GET_FEED_REQUEST,
-  GET_FEED_SUCCESS,
-  GET_FEED_FAILURE
-} = createRequestActionTypes('GET_FEED');
+const { GET_FEED_REQUEST, GET_FEED_SUCCESS, GET_FEED_FAILURE } = createRequestActionTypes(
+  'GET_FEED'
+);
 const {
   REFRESH_FEED_REQUEST,
   REFRESH_FEED_SUCCESS,
@@ -20,11 +20,9 @@ const {
 } = createRequestActionTypes('REFRESH_FEED');
 const DELETE_FEED_ITEM = 'DELETE_FEED_ITEM';
 
-const {
-  VOTE_FEED_ITEM_REQUEST,
-  VOTE_FEED_ITEM_SUCCESS,
-} = createRequestActionTypes('VOTE_FEED_ITEM');
-
+const { VOTE_FEED_ITEM_REQUEST, VOTE_FEED_ITEM_SUCCESS } = createRequestActionTypes(
+  'VOTE_FEED_ITEM'
+);
 
 const fetchFeed = () => (dispatch, getState) => {
   const cityId = getCityId(getState());
@@ -35,16 +33,17 @@ const fetchFeed = () => (dispatch, getState) => {
   }
 
   dispatch({ type: GET_FEED_REQUEST });
-  return api.fetchModels('feed', { cityId, sort })
-  .then(items => {
-    dispatch({
-      type: SET_FEED,
-      feed: items
-    });
+  return api
+    .fetchModels('feed', { cityId, sort })
+    .then(items => {
+      dispatch({
+        type: SET_FEED,
+        feed: items,
+      });
 
-    dispatch({ type: GET_FEED_SUCCESS });
-  })
-  .catch(error => dispatch({ type: GET_FEED_FAILURE, error: true, payload: error }));
+      dispatch({ type: GET_FEED_SUCCESS });
+    })
+    .catch(error => dispatch({ type: GET_FEED_FAILURE, error: true, payload: error }));
 };
 
 const refreshFeed = () => (dispatch, getState) => {
@@ -52,42 +51,47 @@ const refreshFeed = () => (dispatch, getState) => {
 
   const cityId = getCityId(getState());
   const sort = getFeedSortType(getState());
-  return api.fetchModels('feed', { cityId, sort })
-  .then(items => {
-    dispatch({
-      type: SET_FEED,
-      feed: items
-    });
-    dispatch({ type: REFRESH_FEED_SUCCESS });
-    dispatch({ type: GET_FEED_SUCCESS });
-  })
-  .catch(error => dispatch({ type: REFRESH_FEED_SUCCESS, error: true, payload: error }));
+  return api
+    .fetchModels('feed', { cityId, sort })
+    .then(items => {
+      dispatch({
+        type: SET_FEED,
+        feed: items,
+      });
+      dispatch({ type: REFRESH_FEED_SUCCESS });
+      dispatch({ type: GET_FEED_SUCCESS });
+    })
+    .catch(error => dispatch({ type: REFRESH_FEED_SUCCESS, error: true, payload: error }));
 };
 
-const loadMoreItems = (lastID) => (dispatch, getState) => {
+const loadMoreItems = lastID => (dispatch, getState) => {
   dispatch({ type: REFRESH_FEED_REQUEST });
 
   const cityId = getCityId(getState());
   const sort = getFeedSortType(getState());
-  return api.fetchMoreFeed(lastID, { cityId, sort })
-  .then(items => {
-    dispatch({
-      type: APPEND_FEED,
-      feed: items
-    });
-    dispatch({ type: REFRESH_FEED_SUCCESS });
-    dispatch({ type: GET_FEED_SUCCESS });
-  })
-  .catch(error => dispatch({ type: REFRESH_FEED_SUCCESS }));
+  return api
+    .fetchMoreFeed(lastID, { cityId, sort })
+    .then(items => {
+      dispatch({
+        type: APPEND_FEED,
+        feed: items,
+      });
+      dispatch({ type: REFRESH_FEED_SUCCESS });
+      dispatch({ type: GET_FEED_SUCCESS });
+    })
+    .catch(error => dispatch({ type: REFRESH_FEED_SUCCESS }));
 };
 
-const removeFeedItem = (item) => {
+const removeFeedItem = item => {
   return dispatch => {
-    api.deleteFeedItem(item)
-      .then(() => dispatch({
-        type: DELETE_FEED_ITEM,
-        item
-      }))
+    api
+      .deleteFeedItem(item)
+      .then(() =>
+        dispatch({
+          type: DELETE_FEED_ITEM,
+          item,
+        })
+      )
       .catch(error => console.log('Error when trying to delete feed item', error));
   };
 };
@@ -95,12 +99,11 @@ const removeFeedItem = (item) => {
 const voteFeedItem = (feedItemId, value) => (dispatch, getState) => {
   const state = getState();
   const list = getAllPostsInStore(state);
-  const voteItem = list.find((item) => item.get('id') === feedItemId);
+  const voteItem = list.find(item => item.get('id') === feedItemId);
 
   if (!voteItem) {
     return;
   }
-
 
   //  userVote needs to be updated
   //  votevalue for item need to be calculated
@@ -112,7 +115,7 @@ const voteFeedItem = (feedItemId, value) => (dispatch, getState) => {
   const wasAlreadyVotedByMe = userVote !== 0;
   const voteWasChanged = userVote !== value;
   const multiplier = wasAlreadyVotedByMe ? 2 : 1;
-  const difference = voteWasChanged ? (value * multiplier) : 0;
+  const difference = voteWasChanged ? value * multiplier : 0;
 
   const newVotes = parseInt(votes) + difference;
 
@@ -121,25 +124,27 @@ const voteFeedItem = (feedItemId, value) => (dispatch, getState) => {
     type: VOTE_FEED_ITEM_REQUEST,
     value,
     feedItemId,
-    votes: newVotes
+    votes: newVotes,
   });
-
 
   // Do actual API call for vote
   const vote = { value, feedItemId };
-  api.voteFeedItem(vote)
-  .then(() => dispatch({
-    type: VOTE_FEED_ITEM_SUCCESS,
-    difference,
-    feedItemId
-  }))
-  .catch(error => console.log('Error when trying to vote feed item', error));
-}
+  api
+    .voteFeedItem(vote)
+    .then(() =>
+      dispatch({
+        type: VOTE_FEED_ITEM_SUCCESS,
+        difference,
+        feedItemId,
+      })
+    )
+    .catch(error => console.log('Error when trying to vote feed item', error));
+};
 
 // Open image in Lightbox
 const OPEN_LIGHTBOX = 'OPEN_LIGHTBOX';
 const CLOSE_LIGHTBOX = 'CLOSE_LIGHTBOX';
-const openLightBox = (itemId) => ({ type: OPEN_LIGHTBOX, payload: itemId })
+const openLightBox = itemId => ({ type: OPEN_LIGHTBOX, payload: itemId });
 
 const closeLightBox = () => {
   return { type: CLOSE_LIGHTBOX };
@@ -158,12 +163,11 @@ export {
   DELETE_FEED_ITEM,
   OPEN_LIGHTBOX,
   CLOSE_LIGHTBOX,
-
   fetchFeed,
   refreshFeed,
   loadMoreItems,
   removeFeedItem,
   voteFeedItem,
   openLightBox,
-  closeLightBox
+  closeLightBox,
 };

@@ -1,13 +1,13 @@
 'use strict';
 
 import Immutable from 'immutable';
-import {
-  CHANGE_TAB
-} from '../actions/navigation';
+import { CHANGE_TAB } from '../actions/navigation';
 import Tabs from '../constants/Tabs';
 
+export const getCurrentTab = state => state.navigation.get('currentTab');
+
 const initialState = Immutable.fromJS({
-  currentTab: Tabs.FEED
+  currentTab: Tabs.FEED,
 });
 
 export default function navigation(state = initialState, action) {

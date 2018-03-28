@@ -14,7 +14,8 @@ import {
   DELETE_FEED_ITEM,
   OPEN_LIGHTBOX,
   VOTE_FEED_ITEM_REQUEST,
-  CLOSE_LIGHTBOX
+  CLOSE_LIGHTBOX,
+  SET_COMMENTS,
 } from '../actions/feed';
 import { getUserImages } from '../concepts/user';
 import { getEventImages } from './event';
@@ -25,22 +26,23 @@ export const getFeed = state => state.feed.get('list') || Immutable.List([]);
 export const getLightBoxItemId = state => state.feed.get('lightBoxItemId', null);
 
 export const getAllPostsInStore = createSelector(
-  getFeed, getUserImages, getEventImages,
+  getFeed,
+  getUserImages,
+  getEventImages,
   (feedList, userImages, eventImages) => feedList.concat(userImages, eventImages)
 );
 
 export const getLightboxItem = createSelector(
-  getLightBoxItemId, getAllPostsInStore,
+  getLightBoxItemId,
+  getAllPostsInStore,
   (id, posts) => {
-
     if (isNil(id)) {
       return Immutable.Map();
     }
 
-    return posts.find((item) => item.get('id') === id);
+    return posts.find(item => item.get('id') === id);
   }
 );
-
 
 // # Reducer
 const initialState = Immutable.fromJS({
@@ -49,7 +51,7 @@ const initialState = Immutable.fromJS({
   isRefreshing: false,
   lightBoxItem: {},
   lightBoxItemId: {},
-  isLightBoxOpen: false
+  isLightBoxOpen: false,
 });
 
 export default function feed(state = initialState, action) {
@@ -57,10 +59,12 @@ export default function feed(state = initialState, action) {
     case SET_FEED:
       return state.set('list', Immutable.fromJS(action.feed));
     case APPEND_FEED:
-      return (action.feed && action.feed.length) ?
-        state.set('list', Immutable.fromJS(state.get('list')
-          .concat(Immutable.fromJS(action.feed)))) :
-        state;
+      return action.feed && action.feed.length
+        ? state.set(
+            'list',
+            Immutable.fromJS(state.get('list').concat(Immutable.fromJS(action.feed)))
+          )
+        : state;
     case GET_FEED_REQUEST:
       return state.set('listState', LoadingStates.LOADING);
     case GET_FEED_SUCCESS:
@@ -73,7 +77,7 @@ export default function feed(state = initialState, action) {
       return state.set('isRefreshing', false);
     case DELETE_FEED_ITEM:
       const originalList = state.get('list');
-      const itemIndex = originalList.findIndex((item) => item.get('id') === action.item.id);
+      const itemIndex = originalList.findIndex(item => item.get('id') === action.item.id);
 
       if (itemIndex < 0) {
         console.log('Tried to delete item, but it was not found from state:', itemIndex);
@@ -84,14 +88,14 @@ export default function feed(state = initialState, action) {
 
     case VOTE_FEED_ITEM_REQUEST: {
       const list = state.get('list');
-      const voteItemIndex = list.findIndex((item) => item.get('id') === action.feedItemId);
+      const voteItemIndex = list.findIndex(item => item.get('id') === action.feedItemId);
       if (voteItemIndex < 0) {
         console.log('Tried to vote item, but it was not found from state:', voteItemIndex);
         return state;
       } else {
         return state.mergeIn(['list', voteItemIndex], {
-          'userVote': action.value,
-          'votes': action.votes
+          userVote: action.value,
+          votes: action.votes,
         });
       }
     }
@@ -99,14 +103,33 @@ export default function feed(state = initialState, action) {
     case OPEN_LIGHTBOX:
       return state.merge({
         isLightBoxOpen: true,
-        lightBoxItemId: action.payload
+        lightBoxItemId: action.payload,
       });
 
     case CLOSE_LIGHTBOX:
       return state.merge({
         isLightBoxOpen: false,
         lightBoxItemId: null,
-      })
+      });
+
+    case SET_COMMENTS: {
+      const list = state.get('list');
+      const itemIndex = list.findIndex(item => item.get('id') === action.payload.postId);
+
+      if (itemIndex < 0) {
+        console.log(
+          'Tried to update comment count for feed post, but it was not found from state:',
+          itemIndex
+        );
+        return state;
+      } else {
+        console.log('updating comment count for feed post');
+        return state.setIn(
+          ['list', itemIndex, 'commentCount'],
+          action.payload.comments.length || 0
+        );
+      }
+    }
 
     default:
       return state;
