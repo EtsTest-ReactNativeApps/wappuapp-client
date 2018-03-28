@@ -253,16 +253,12 @@ class LightBox extends Component {
                     style={styles.toolbar__icon}
                     name={this.itemIsCreatedByMe(lightBoxItem) ? 'delete' : 'flag'}
                   />
-                  <Text style={styles.toolbar__button__text}>
-                    {this.itemIsCreatedByMe(lightBoxItem) ? 'Remove' : 'Report'}
-                  </Text>
                 </View>
               </PlatformTouchable>
             )}
             <PlatformTouchable onPress={this.onShare.bind(this, itemImage)}>
               <View style={styles.toolbar__button}>
                 <Icon style={styles.toolbar__icon} name="share" />
-                <Text style={styles.toolbar__button__text}>Share</Text>
               </View>
             </PlatformTouchable>
           </View>
