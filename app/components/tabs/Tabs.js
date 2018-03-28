@@ -71,7 +71,7 @@ const DefaultTabBar = React.createClass({
       width: containerWidth / numberOfTabs,
       height: 2,
       backgroundColor: theme.transparent,
-      bottom: 0,
+      bottom: IOS ? 0 : -1,
     };
 
     const left = scrollValue.interpolate({
