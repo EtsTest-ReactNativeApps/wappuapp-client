@@ -6,22 +6,13 @@ import { ReactNativeAudioStreaming } from 'react-native-audio-streaming';
 
 import api from '../services/api';
 import { getCityId } from './city';
-import {
-  PLAYING,
-  STREAMING,
-  PAUSED,
-  STOPPED,
-  ERROR,
-  BUFFERING,
-} from '../constants/RadioStates';
+import { PLAYING, STREAMING, PAUSED, STOPPED, ERROR, BUFFERING } from '../constants/RadioStates';
 
-
-import { APP_STORAGE_KEY } from '../../env';
-const radioKey = `${APP_STORAGE_KEY}:radio`;
+import config from '../config';
+const radioKey = `${config.APP_STORAGE_KEY}:radio`;
 const IOS = Platform.OS === 'ios';
 
 import { createRequestActionTypes } from '../actions/';
-
 
 // # Selectors
 export const getRadioStatus = state => state.radio.get('status');
@@ -32,22 +23,22 @@ export const getRadioStations = state => state.radio.get('stations') || List([])
 
 export const isRadioPlaying = createSelector(
   getRadioStatus,
-  (status) => status === PLAYING || status === STREAMING
+  status => status === PLAYING || status === STREAMING
 );
 
 export const getActiveStation = createSelector(
-  getActiveStationId, getRadioStations,
+  getActiveStationId,
+  getRadioStations,
   (activeId, stations) => stations.find(item => item.get('id') === activeId) || Map()
 );
 
 export const getNowPlaying = createSelector(
   getActiveStation,
-  (station) => station.get('nowPlaying') || Map()
+  station => station.get('nowPlaying') || Map()
 );
 
-export const getNowPlayingLeft = createSelector(
-  getActiveStation,
-  (station) => station.getIn(['nowPlaying', 'left'], null)
+export const getNowPlayingLeft = createSelector(getActiveStation, station =>
+  station.getIn(['nowPlaying', 'left'], null)
 );
 
 // # Action creators
@@ -58,11 +49,14 @@ const play = () => (dispatch, getState) => {
   const state = getState();
   const url = getActiveStation(state).get('stream');
   if (url) {
-    ReactNativeAudioStreaming.play(url, { showIniOSMediaCenter: true, showInAndroidNotifications: true });
+    ReactNativeAudioStreaming.play(url, {
+      showIniOSMediaCenter: true,
+      showInAndroidNotifications: true,
+    });
   } else {
     stop();
   }
-}
+};
 
 export const onRadioPress = () => (dispatch, getState) => {
   const state = getState();
@@ -84,20 +78,20 @@ export const onRadioPress = () => (dispatch, getState) => {
       stop();
       break;
   }
-}
+};
 
 const SET_RADIO_SONG = 'radio/SET_RADIO_SONG';
-export const setRadioSong = (song) => ({ type: SET_RADIO_SONG, payload: song });
+export const setRadioSong = song => ({ type: SET_RADIO_SONG, payload: song });
 
 const SET_RADIO_STATUS = 'radio/SET_RADIO_STATUS';
-export const setRadioStatus = (status) => ({ type: SET_RADIO_STATUS, payload: status });
+export const setRadioStatus = status => ({ type: SET_RADIO_STATUS, payload: status });
 
 const SET_RADIO_STATIONS = 'radio/SET_RADIO_STATIONS';
-export const setRadioStations = (stations) => ({ type: SET_RADIO_STATIONS, payload: stations });
+export const setRadioStations = stations => ({ type: SET_RADIO_STATIONS, payload: stations });
 
 const SET_RADIO_STATION_ACTIVE = 'radio/SET_RADIO_STATION_ACTIVE';
-export const setRadioStationActive = (stationId) => (dispatch, getState) => {
-  dispatch({ type: SET_RADIO_STATION_ACTIVE, payload: stationId })
+export const setRadioStationActive = stationId => (dispatch, getState) => {
+  dispatch({ type: SET_RADIO_STATION_ACTIVE, payload: stationId });
 
   // Radio needs to be stopped in Android
   //  when station is changed or app crashes
@@ -116,42 +110,41 @@ export const setRadioStationActive = (stationId) => (dispatch, getState) => {
       dispatch(play());
     }, 100);
   }
-
-}
+};
 
 const TOGGLE_RADIO_BAR = 'radio/TOGGLE_RADIO_BAR';
 export const toggleRadioBar = expanded => dispatch => {
   dispatch(fetchRadioStations());
-  dispatch(({ type: TOGGLE_RADIO_BAR, payload: expanded }));
-}
-export const closeRadio = () => (dispatch) => {
-  dispatch(setRadioStatus(STOPPED))
-  dispatch(setRadioSong(''))
-}
+  dispatch({ type: TOGGLE_RADIO_BAR, payload: expanded });
+};
+export const closeRadio = () => dispatch => {
+  dispatch(setRadioStatus(STOPPED));
+  dispatch(setRadioSong(''));
+};
 
 const {
   GET_RADIO_STATIONS_REQUEST,
   GET_RADIO_STATIONS_SUCCESS,
-  GET_RADIO_STATIONS_FAILURE
+  GET_RADIO_STATIONS_FAILURE,
 } = createRequestActionTypes('GET_RADIO_STATIONS');
-
 
 export const fetchRadioStations = () => dispatch => {
   dispatch({ type: GET_RADIO_STATIONS_REQUEST });
-  return api.fetchModels('radio')
-  .then(stations => {
-    dispatch({
-      type: SET_RADIO_STATIONS,
-      payload: stations
-    });
-    dispatch({ type: GET_RADIO_STATIONS_SUCCESS });
-  })
-  .then(() => dispatch(setDefaultRadioByCity()))
-  .then(() => dispatch(setSongUpdater()))
-  .catch(error => dispatch({ type: GET_RADIO_STATIONS_FAILURE, error: true, payload: error }));
+  return api
+    .fetchModels('radio')
+    .then(stations => {
+      dispatch({
+        type: SET_RADIO_STATIONS,
+        payload: stations,
+      });
+      dispatch({ type: GET_RADIO_STATIONS_SUCCESS });
+    })
+    .then(() => dispatch(setDefaultRadioByCity()))
+    .then(() => dispatch(setSongUpdater()))
+    .catch(error => dispatch({ type: GET_RADIO_STATIONS_FAILURE, error: true, payload: error }));
 };
 
-export const setDefaultRadioByCity = (city) => (dispatch, getState) => {
+export const setDefaultRadioByCity = city => (dispatch, getState) => {
   const state = getState();
   const activeStation = getActiveStationId(state);
 
@@ -169,7 +162,7 @@ export const setDefaultRadioByCity = (city) => (dispatch, getState) => {
   const stationId = nextStation.get('id');
 
   return dispatch(setRadioStationActive(stationId));
-}
+};
 
 // Song/Program updater
 let songUpdater = null;
@@ -185,24 +178,23 @@ const setSongUpdater = () => (dispatch, getState) => {
   const randomOffset = random(0, RANDOM_SECONDS_ADDED) * 1000;
 
   console.log('Next update in (s)', (refreshTime + randomOffset) / 1000);
-  songUpdater = setTimeout(() =>
-    dispatch(fetchRadioStations()), refreshTime + randomOffset);
-}
+  songUpdater = setTimeout(() => dispatch(fetchRadioStations()), refreshTime + randomOffset);
+};
 
 export const initializeUsersRadio = () => (dispatch, getState) =>
   AsyncStorage.getItem(radioKey)
-  .then(station => {
-    const activeStation = station ? JSON.parse(station) : null;
+    .then(station => {
+      const activeStation = station ? JSON.parse(station) : null;
 
-    if (!isNil(activeStation)) {
-      return dispatch(setRadioStationActive(activeStation));
-    } else {
-      return dispatch(setDefaultRadioByCity());
-    }
-  })
-  .catch(error => { console.log('error setting radio') });
-
-
+      if (!isNil(activeStation)) {
+        return dispatch(setRadioStationActive(activeStation));
+      } else {
+        return dispatch(setDefaultRadioByCity());
+      }
+    })
+    .catch(error => {
+      console.log('error setting radio');
+    });
 
 // # Reducer
 const initialState = fromJS({

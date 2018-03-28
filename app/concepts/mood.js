@@ -1,164 +1,151 @@
 import { createSelector } from 'reselect';
 import { fromJS, List, Map } from 'immutable';
 import moment from 'moment';
-import { isNil } from 'lodash';
+import { isNil, times } from 'lodash';
 
+import config from '../config';
 import api from '../services/api';
 import { createRequestActionTypes } from '../actions/';
 import { getCityId } from './city';
-import { getUserTeamId, getUserId } from '../reducers/registration';
+import { getUserTeamId, getUserId } from './registration';
 import { getTeams } from '../reducers/team';
 import { SHOW_NOTIFICATION, HIDE_NOTIFICATION } from '../actions/competition';
-
 
 import * as NotificationMessages from '../utils/notificationMessage';
 import ActionTypes from '../constants/ActionTypes';
 
-// const placeHolderMoodData = times(27).map((item, index) => ({
-//   date: moment('2017-05-02').subtract(index, 'd').format('YYYY-MM-DD'),
-//   value: index > 8 ? (70 - index * 2) + Math.floor(Math.random() * 5) : null
-// })).reverse();
+const placeHolderMoodData = times(40)
+  .map((item, index) => ({
+    date: moment(`${config.WHAPPU_YEAR}-04-29`)
+      .subtract(index, 'days')
+      .format('YYYY-MM-DD'),
+    ratingPersonal: index > 6 ? (70 - index * Math.floor(Math.random() * 2)) / 10 : null,
+    ratingTeam: index > 6 ? (70 - index * Math.floor(Math.random() * 2)) / 10 : null,
+    ratingCity: index > 6 ? (70 - index * Math.floor(Math.random() * 2)) / 10 : null,
+  }))
+  .reverse();
 
 // # Selectors
-export const getMoodData = state => state.mood.get('data', List()) || List();
+// export const getMoodData = state => state.mood.get('data', List()) || List();
+export const getMoodData = () => fromJS(placeHolderMoodData);
 export const getLimitLine = state => state.mood.get('limitLine');
 export const isMoodSending = state => state.mood.get('moodSending');
 export const isMoodLoading = state => state.mood.get('isLoading');
 
-const showAfter = '2017-03-23';
+const showAfter = `${config.WHAPPU_YEAR}-03-25`;
 const showAfterISO = moment(showAfter).toISOString();
-const getValidMoodData = createSelector(
-  getMoodData, (data) => {
-    if (!data || data.isEmpty()) {
-      return List();
-    }
-    return data.filter(datum => datum.get('date') >= showAfterISO)
+const getValidMoodData = createSelector(getMoodData, data => {
+  if (!data || data.isEmpty()) {
+    return List();
   }
-);
-
+  return data.filter(datum => datum.get('date') >= showAfterISO);
+});
 
 // Values come in range of [0, 10]
 // Presentation of data is in percentage scale [0, 100]
 const formatValue = value => {
-  return !isNil(value) ? parseInt(value * 10) : null
-}
-const processMoodData = (data, type) => (data || [])
-.map(datum => ({
-  date: moment(datum.get('date')).format('YYYY-MM-DD'),
-  value: formatValue(datum.get(type))
+  return !isNil(value) ? parseInt(value * 10) : null;
+};
+const processMoodData = (data, type) =>
+  (data || []).map(datum => ({
+    date: moment(datum.get('date')).format('YYYY-MM-DD'),
+    value: formatValue(datum.get(type)),
+  }));
 
-}));
-
-export const getMoodDataForChart = (type = 'ratingPersonal') => createSelector(
-  getValidMoodData,
-  (data) => fromJS(processMoodData(data, type)) || List()
-);
+export const getMoodDataForChart = (type = 'ratingPersonal') =>
+  createSelector(getValidMoodData, data => fromJS(processMoodData(data, type)) || List());
 
 export const getOwnMoodData = getMoodDataForChart('ratingPersonal');
 export const getTeamMoodData = getMoodDataForChart('ratingTeam');
 export const getCityMoodData = getMoodDataForChart('ratingCity');
-// export const getCityMoodData = state => fromJS(placeHolderMoodData);
 
-export const getLimitLineData = createSelector(
-  getLimitLine, getValidMoodData,
-  (limit, data) => data.map(item => ({
+export const getLimitLineData = createSelector(getLimitLine, getValidMoodData, (limit, data) =>
+  data.map(item => ({
     date: moment(item.get('date')).format('YYYY-MM-DD'),
-    value: limit
+    value: limit,
   }))
 );
 
+export const getKpiValues = createSelector(getMoodData, data => {
+  const today = moment();
+  const todayData = data.find(datum => moment(datum.get('date')).isSame(today, 'day')) || Map();
 
-export const getKpiValues = createSelector(
-  getMoodData,
-  (data) => {
-    const today = moment();
-    const todayData = data.find(datum => moment(datum.get('date')).isSame(today, 'day')) || Map();
-
-    return fromJS({
-      ratingPersonal: formatValue(todayData.get('ratingPersonal')),
-      ratingTeam: formatValue(todayData.get('ratingTeam')),
-      ratingCity: formatValue(todayData.get('ratingCity')),
-    });
+  return fromJS({
+    ratingPersonal: formatValue(todayData.get('ratingPersonal')),
+    ratingTeam: formatValue(todayData.get('ratingTeam')),
+    ratingCity: formatValue(todayData.get('ratingCity')),
   });
+});
 
-
-export const getCurrentTeamName = createSelector(
-  getTeams, getUserTeamId,
-  (teams, teamId) => (teams.find(t => t.get('id') === teamId) || List()).get('name')
-)
+export const getCurrentTeamName = createSelector(getTeams, getUserTeamId, (teams, teamId) =>
+  (teams.find(t => t.get('id') === teamId) || List()).get('name')
+);
 
 // # Action creators
 export const TOGGLE_MOOD_SLIDER = 'mood/TOGGLE_MOOD_SLIDER';
 export const SET_MOOD_DATA = 'mood/SET_MOOD_DATA';
 
-export const setMoodData = (moodData) => ({ type: SET_MOOD_DATA, payload: moodData });
+export const setMoodData = moodData => ({ type: SET_MOOD_DATA, payload: moodData });
 
 const {
   GET_MOOD_DATA_REQUEST,
   GET_MOOD_DATA_SUCCESS,
-  GET_MOOD_DATA_FAILURE
+  GET_MOOD_DATA_FAILURE,
 } = createRequestActionTypes('GET_MOOD_DATA');
 export const fetchMoodData = () => (dispatch, getState) => {
-
   const state = getState();
   const cityId = getCityId(state);
   const teamId = getUserTeamId(state);
   const userId = getUserId(state);
 
-
   const moodParams = Object.assign(
     cityId ? { cityId } : {},
     teamId ? { teamId } : {},
-    userId ? { userId } : {});
-
+    userId ? { userId } : {}
+  );
 
   dispatch({ type: GET_MOOD_DATA_REQUEST });
 
-  return api.fetchModels('mood', moodParams)
-  .then(data => {
-    dispatch({
-      type: SET_MOOD_DATA,
-      payload: data
-    });
-    dispatch({ type: GET_MOOD_DATA_SUCCESS });
-  })
-  .catch(error => dispatch({ type: GET_MOOD_DATA_FAILURE, error: true, payload: error }));
+  return api
+    .fetchModels('mood', moodParams)
+    .then(data => {
+      dispatch({
+        type: SET_MOOD_DATA,
+        payload: data,
+      });
+      dispatch({ type: GET_MOOD_DATA_SUCCESS });
+    })
+    .catch(error => dispatch({ type: GET_MOOD_DATA_FAILURE, error: true, payload: error }));
 };
 
+const { PUT_MOOD_REQUEST, PUT_MOOD_SUCCESS, PUT_MOOD_FAILURE } = createRequestActionTypes(
+  'PUT_MOOD'
+);
 
-const {
-  PUT_MOOD_REQUEST,
-  PUT_MOOD_SUCCESS,
-  PUT_MOOD_FAILURE
-} = createRequestActionTypes('PUT_MOOD');
-
-
-
-export const submitMood = (payload) => (dispatch, getState) => {
+export const submitMood = payload => (dispatch, getState) => {
   dispatch({ type: PUT_MOOD_REQUEST });
 
-  return api.putMood(payload)
-  .then(response => {
+  return api
+    .putMood(payload)
+    .then(response => {
+      dispatch({ type: PUT_MOOD_SUCCESS, payload: response });
+      dispatch(fetchMoodData());
 
+      setTimeout(() => {
+        dispatch({
+          type: SHOW_NOTIFICATION,
+          payload: NotificationMessages.getMessage({ type: ActionTypes.MOOD }),
+        });
+      }, 1000);
 
-    dispatch({ type: PUT_MOOD_SUCCESS, payload: response });
-    dispatch(fetchMoodData());
-
-    setTimeout(() => {
-      dispatch({ type: SHOW_NOTIFICATION,
-        payload: NotificationMessages.getMessage({ type: ActionTypes.MOOD }) });
-    }, 1000);
-
-    setTimeout(() => {
-      dispatch({ type: HIDE_NOTIFICATION });
-    }, 5000);
-
-  })
-  .catch(e => {
-    dispatch({ type: PUT_MOOD_FAILURE, error: e });
-  });
+      setTimeout(() => {
+        dispatch({ type: HIDE_NOTIFICATION });
+      }, 5000);
+    })
+    .catch(e => {
+      dispatch({ type: PUT_MOOD_FAILURE, error: e });
+    });
 };
-
 
 // # Reducer
 const initialState = fromJS({
@@ -181,7 +168,6 @@ export default function mood(state = initialState, action) {
     case GET_MOOD_DATA_FAILURE: {
       return state.set('isLoading', false);
     }
-
 
     case TOGGLE_MOOD_SLIDER: {
       return state.set('showMoodSlider', action.payload);
