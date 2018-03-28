@@ -1,15 +1,9 @@
 'use strict';
 
 import React, { Component } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Platform,
-  Dimensions,
-  ActivityIndicator
-} from 'react-native';
+import { View, Text, StyleSheet, Platform, Dimensions, ActivityIndicator } from 'react-native';
 import { connect } from 'react-redux';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 import {
   getOwnMoodData,
@@ -19,7 +13,7 @@ import {
   getCurrentTeamName,
   getKpiValues,
   isMoodLoading,
-  fetchMoodData
+  fetchMoodData,
 } from '../concepts/mood';
 
 import Notification from '../components/common/Notification';
@@ -29,17 +23,15 @@ import MoodSlider from '../components/mood/MoodSlider';
 import Fab from '../components/common/Fab';
 import theme from '../style/theme';
 import autobind from 'autobind-decorator';
-import { openRegistrationView } from '../actions/registration';
+import { openRegistrationView } from '../concepts/registration';
 import { getCurrentCityName } from '../concepts/city';
-import Icon from 'react-native-vector-icons/Ionicons';
 
 const IOS = Platform.OS === 'ios';
 const { width, height } = Dimensions.get('window');
 
 class MoodView extends Component {
-
   componentDidMount() {
-    this.props.fetchMoodData()
+    this.props.fetchMoodData();
   }
 
   @autobind
@@ -51,21 +43,39 @@ class MoodView extends Component {
         showName: true,
         component: MoodSlider,
         name: 'Whappu Vibe today',
-        hideNavButton: true
+        hideNavButton: true,
       });
     }
   }
 
   render() {
-    const { cityMoodData, ownMoodData, teamMoodData, limitLineData, moodKpiValues,
-      isNotificationVisible, notificationText, cityName, teamName, isLoading } = this.props;
-
+    const {
+      cityMoodData,
+      ownMoodData,
+      teamMoodData,
+      limitLineData,
+      moodKpiValues,
+      isNotificationVisible,
+      notificationText,
+      cityName,
+      teamName,
+      isLoading,
+    } = this.props;
 
     return (
-      <View style={styles.container} >
-
-        <ActivityIndicator style={styles.loader} animating={isLoading} size={'large'} color={theme.accentLight} />
-        <MoodChart cityData={cityMoodData} ownData={ownMoodData} teamData={teamMoodData} limitLineData={limitLineData} />
+      <View style={styles.container}>
+        <ActivityIndicator
+          style={styles.loader}
+          animating={isLoading}
+          size={'large'}
+          color={theme.accentLight}
+        />
+        <MoodChart
+          cityData={cityMoodData}
+          ownData={ownMoodData}
+          teamData={teamMoodData}
+          limitLineData={limitLineData}
+        />
 
         <Fab
           onPress={this.navigateToMoodSlider}
@@ -73,9 +83,7 @@ class MoodView extends Component {
           disabled={false}
           underlayColor={theme.white}
         >
-          <Text style={styles.buttonText}>
-            ADD VIBE
-          </Text>
+          <Text style={styles.buttonText}>ADD VIBE</Text>
         </Fab>
 
         <Fab
@@ -85,7 +93,7 @@ class MoodView extends Component {
           underlayColor={theme.white}
         >
           <Text style={styles.smallButtonText}>
-            <Icon name={IOS ? 'ios-refresh' : 'md-refresh'} size={IOS ? 24 : 22} />
+            <Icon name={'md-refresh'} size={21} />
           </Text>
         </Fab>
 
@@ -118,9 +126,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     position: 'absolute',
-    top: IOS ? (height / 2.5) - 20 : (height / 2.75) - 40,
+    top: IOS ? height / 2.5 - 20 : height / 2.75 - 40,
     zIndex: 2,
-    left: (width / 2) - 40,
+    left: width / 2 - 40,
     backgroundColor: theme.white,
     width: 80,
     height: 80,
@@ -131,7 +139,7 @@ const styles = StyleSheet.create({
     shadowRadius: 1,
     shadowOffset: {
       height: 2,
-      width: 0
+      width: 0,
     },
   },
   buttonSmall: {
@@ -142,8 +150,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 25,
     zIndex: 2,
-    top: IOS ? (height / 2.5) - 0 : (height / 2.75) - 20,
-    backgroundColor: theme.stable,
+    top: IOS ? height / 2.5 - 0 : height / 2.75 - 20,
+    backgroundColor: theme.white,
     width: 40,
     height: 40,
     borderRadius: 20,
@@ -153,11 +161,11 @@ const styles = StyleSheet.create({
     shadowRadius: 1,
     shadowOffset: {
       height: 2,
-      width: 0
+      width: 0,
     },
   },
   smallButtonText: {
-    color: theme.midgrey,
+    color: theme.inactive,
     backgroundColor: 'transparent',
     textAlign: 'center',
     padding: 9,
@@ -168,14 +176,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     padding: 10,
     fontSize: 16,
-  }
+  },
 });
 
 const mapDispatchToProps = { fetchMoodData, openRegistrationView };
 
 const mapStateToProps = state => {
-  const isRegistrationInfoValid = state.registration.get('name') !== '' &&
-    state.registration.get('selectedTeam') > 0;
+  const isRegistrationInfoValid =
+    state.registration.get('name') !== '' && state.registration.get('selectedTeam') > 0;
   return {
     cityMoodData: getCityMoodData(state),
     ownMoodData: getOwnMoodData(state),
@@ -187,9 +195,8 @@ const mapStateToProps = state => {
     isLoading: isMoodLoading(state),
     isNotificationVisible: state.competition.get('isNotificationVisible'),
     notificationText: state.competition.get('notificationText'),
-    isRegistrationInfoValid
-  }
+    isRegistrationInfoValid,
+  };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(MoodView);
-

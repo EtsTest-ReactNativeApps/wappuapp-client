@@ -11,7 +11,7 @@ import * as reducers from '../reducers';
 import MainView from './MainView';
 import * as CompetitionActions from '../actions/competition';
 import * as LocationActions from '../actions/location';
-import * as RegistrationActions from '../actions/registration';
+import { getUser } from '../concepts/registration';
 import { initializeUsersCity, fetchCities } from '../concepts/city';
 import { initializeUsersRadio, fetchRadioStations } from '../concepts/radio';
 import permissions from '../services/android-permissions';
@@ -19,13 +19,13 @@ import permissions from '../services/android-permissions';
 const IOS = Platform.OS === 'ios';
 // var HockeyApp = require('react-native-hockeyapp');
 
-
 const middlewares = [thunk];
 if (__DEV__) {
   // Disabling logging might help performance as XCode prints the whole objects
   // without respecing the collapsed parameter
-  const logger = createLoggerMiddleware(loggerConfig)
+  const logger = createLoggerMiddleware(loggerConfig);
   middlewares.push(logger);
+  console.disableYellowBox = true;
 }
 
 const createStoreWithMiddleware = applyMiddleware.apply(this, middlewares)(createStore);
@@ -34,18 +34,19 @@ const store = createStoreWithMiddleware(reducer);
 
 // Fetch actions, check user existance
 store.dispatch(CompetitionActions.fetchActionTypes());
-store.dispatch(RegistrationActions.getUser());
+store.dispatch(getUser());
 
 // Fetch all cities
-store.dispatch(fetchCities())
-// load selectd city from local storage
-.then(() => store.dispatch(initializeUsersCity()))
+store
+  .dispatch(fetchCities())
+  // load selectd city from local storage
+  .then(() => store.dispatch(initializeUsersCity()));
 
 // load radio settings from local storage
-store.dispatch(initializeUsersRadio())
-// fetch radio stations
-.then(() => store.dispatch(fetchRadioStations()))
-
+store
+  .dispatch(initializeUsersRadio())
+  // fetch radio stations
+  .then(() => store.dispatch(fetchRadioStations()));
 
 class RootView extends Component {
   constructor(props) {
@@ -55,7 +56,6 @@ class RootView extends Component {
   }
 
   componentDidMount() {
-
     // Location watcher
     if (IOS) {
       this.startLocationWatcher();
@@ -65,8 +65,8 @@ class RootView extends Component {
 
     // Statusbar style
     if (IOS) {
-      StatusBar.setHidden(false)
-      StatusBar.setBarStyle('light-content')
+      StatusBar.setHidden(false);
+      StatusBar.setBarStyle('light-content');
     }
   }
 
@@ -78,7 +78,7 @@ class RootView extends Component {
     const locationOpts = {
       enableHighAccuracy: false,
       timeout: 20000,
-      maximumAge: 1000 * 60 * 5
+      maximumAge: 1000 * 60 * 5,
     };
 
     navigator.geolocation.getCurrentPosition(
@@ -94,10 +94,12 @@ class RootView extends Component {
   }
 
   updateLocation(position) {
-    store.dispatch(LocationActions.updateLocation({
-      latitude: position.coords.latitude,
-      longitude: position.coords.longitude
-    }));
+    store.dispatch(
+      LocationActions.updateLocation({
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+      })
+    );
   }
 
   render() {

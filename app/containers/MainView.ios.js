@@ -9,14 +9,13 @@ import sceneConfig from '../utils/sceneConfig';
 import NavRouteMapper from '../components/common/navbarRouteMapper';
 import errorAlert from '../utils/error-alert';
 
-
 import { getCityPanelShowState } from '../concepts/city';
 import IOSTabNavigation from './Navigation';
 import RegistrationView from '../components/registration/RegistrationView';
 import CheckInActionView from '../components/actions/CheckInActionView';
 import TextActionView from '../components/actions/TextActionView';
-import LightBox from '../components/lightbox/Lightbox';
 import CitySelector from '../components/header/CitySelector';
+import { isIphoneX } from '../services/device-info';
 
 const theme = require('../style/theme');
 
@@ -37,23 +36,23 @@ class MainView extends Component {
     }
 
     return (
-      <View style={{ flex:1 }}>
+      <View style={{ flex: 1 }}>
         <Navigator
           style={styles.navigator}
           navigationBar={
             <Navigator.NavigationBar
               style={styles.navbar}
-              routeMapper={NavRouteMapper(this.props)} />
+              routeMapper={NavRouteMapper(this.props)}
+            />
           }
           initialRoute={{
             component: IOSTabNavigation,
-            name: 'Whappu'
+            name: 'Whappu',
           }}
           renderScene={this.renderScene}
           configureScene={() => sceneConfig}
         />
         {showCitySelection && <CitySelector />}
-        <LightBox />
         <RegistrationView />
         <CheckInActionView />
         <TextActionView />
@@ -64,24 +63,25 @@ class MainView extends Component {
 
 const styles = StyleSheet.create({
   navigator: {
-    paddingTop: 42,
-    paddingBottom:0,
+    paddingTop: isIphoneX ? 57 : 42,
+    paddingBottom: 0,
   },
   navbar: {
-    backgroundColor: theme.secondary,
+    backgroundColor: theme.dark,
     height: 62,
+    top: isIphoneX ? 15 : 0,
     paddingBottom: 5,
     flexDirection: 'row',
     alignItems: 'center',
-  }
+  },
 });
 
 const select = state => {
   return {
     showCitySelection: getCityPanelShowState(state),
     errors: state.errors,
-    currentTab: state.navigation.get('currentTab')
-  }
+    currentTab: state.navigation.get('currentTab'),
+  };
 };
 
 export default connect(select)(MainView);

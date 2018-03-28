@@ -1,12 +1,7 @@
-'use strict'
+'use strict';
 
 import React, { Component } from 'react';
-import {
-  View,
-  Navigator,
-  StatusBar,
-  BackAndroid,
-} from 'react-native'
+import { View, Navigator, StatusBar, BackAndroid } from 'react-native';
 
 import _ from 'lodash';
 import { connect } from 'react-redux';
@@ -16,7 +11,6 @@ import RegistrationView from '../components/registration/RegistrationView';
 import TextActionView from '../components/actions/TextActionView';
 import CheckInActionView from '../components/actions/CheckInActionView';
 import errorAlert from '../utils/error-alert';
-import LightBox from '../components/lightbox/Lightbox';
 
 const theme = require('../style/theme');
 
@@ -34,7 +28,7 @@ class MainView extends Component {
     _navigator = navigator;
     if (route.component) {
       const RouteComponent = route.component;
-      return <RouteComponent navigator={_navigator} route={route} {...this.props} />
+      return <RouteComponent navigator={_navigator} route={route} {...this.props} />;
     }
   }
 
@@ -46,32 +40,31 @@ class MainView extends Component {
     }
 
     return (
-      <View style={{ flex:1 }}>
+      <View style={{ flex: 1 }}>
         <StatusBar backgroundColor={theme.secondaryDark} />
 
         <Navigator
           initialRoute={{
             component: AndroidTabNavigation,
-            name: 'Whappu'
+            name: 'Whappu',
           }}
           renderScene={this.renderScene}
           configureScene={() => ({
-            ...Navigator.SceneConfigs.FloatFromBottomAndroid
+            ...Navigator.SceneConfigs.FloatFromBottomAndroid,
           })}
         />
         <RegistrationView />
-        <LightBox />
         <CheckInActionView />
         <TextActionView />
       </View>
-    )
+    );
   }
 }
 
 const select = store => {
   return {
-    errors: store.errors
-  }
+    errors: store.errors,
+  };
 };
 
 export default connect(select)(MainView);

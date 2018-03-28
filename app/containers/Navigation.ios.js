@@ -1,9 +1,8 @@
-'use strict';
-
 import React, { Component } from 'react';
-import { TabBarIOS } from 'react-native';
+import { View } from 'react-native';
 import { connect } from 'react-redux';
 import autobind from 'autobind-decorator';
+import ScrollableTabs from 'react-native-scrollable-tab-view';
 
 import CalendarView from './CalendarView';
 import MoodView from './MoodView';
@@ -12,58 +11,67 @@ import FeedView from './FeedView';
 import SettingsView from './ProfileView';
 import Tabs from '../constants/Tabs';
 import { changeTab } from '../actions/navigation';
+import LightBox from '../components/lightbox/Lightbox';
+
 import MDIcon from 'react-native-vector-icons/MaterialIcons';
+import IconTabBar from '../components/common/MdIconTabBar';
 
 const theme = require('../style/theme');
 
+const initialTabIndex = 0;
+const initialTab = Tabs.FEED;
+
 // # Tab navigation
 class Navigation extends Component {
+  componentDidMount() {
+    this.props.changeTab(initialTab);
+  }
+
   @autobind
-  onChangeTab(tab) {
-    this.props.changeTab(tab);
+  onChangeTab({ ref }) {
+    this.props.changeTab(ref.props.id);
   }
 
   render() {
     const { navigator, currentTab } = this.props;
     return (
-      <TabBarIOS tintColor={theme.secondary} translucent={true}>
-        <MDIcon.TabBarItemIOS
-          iconName={'whatshot'}
-          title=''
-          selected={currentTab === Tabs.FEED}
-          onPress={() => { this.onChangeTab(Tabs.FEED); }}>
-          <FeedView navigator={navigator} />
-        </MDIcon.TabBarItemIOS>
-        <MDIcon.TabBarItemIOS
-          iconName='access-time'
-          title=''
-          selected={currentTab === Tabs.CALENDAR}
-          onPress={() => { this.onChangeTab(Tabs.CALENDAR); }}>
-          <CalendarView navigator={navigator} />
-        </MDIcon.TabBarItemIOS>
-        <MDIcon.TabBarItemIOS
-          iconName='trending-up'
-          title=''
-          selected={currentTab === Tabs.FEELING}
-          onPress={() => { this.onChangeTab(Tabs.FEELING); }}>
-          <MoodView navigator={navigator} />
-        </MDIcon.TabBarItemIOS>
-        <MDIcon.TabBarItemIOS
-          iconName='equalizer'
-          title=''
-          selected={currentTab === Tabs.ACTION}
-          onPress={() => { this.onChangeTab(Tabs.ACTION); }}>
-          <CompetitionView navigator={navigator} />
-        </MDIcon.TabBarItemIOS>
-        <MDIcon.TabBarItemIOS
-          iconName='account-circle'
-          title=''
-          selected={currentTab === Tabs.SETTINGS}
-          onPress={() => { this.onChangeTab(Tabs.SETTINGS); }}>
-          <SettingsView navigator={navigator} />
-        </MDIcon.TabBarItemIOS>
-      </TabBarIOS>
-    )
+      <View style={{ flex: 1 }}>
+        <ScrollableTabs
+          onChangeTab={this.onChangeTab}
+          initialPage={initialTabIndex}
+          tabBarPosition={'bottom'}
+          tabBarBackgroundColor={theme.white}
+          tabBarActiveTextColor={theme.secondary}
+          tabBarInactiveTextColor={theme.inactive}
+          locked={true}
+          scrollWithoutAnimation={true}
+          prerenderingSiblingsNumber={0}
+          renderTabBar={() => <IconTabBar />}
+        >
+          <FeedView
+            navigator={navigator}
+            id={Tabs.FEED}
+            tabLabel={{ title: 'Buzz', icon: 'whatshot' }}
+          />
+          <CalendarView
+            id={Tabs.CALENDAR}
+            navigator={navigator}
+            tabLabel={{ title: 'Events', icon: 'event' }}
+          />
+          <MoodView
+            navigator={navigator}
+            id={Tabs.MOOD}
+            tabLabel={{ title: 'Vibes', icon: 'trending-up' }}
+          />
+          <SettingsView
+            navigator={navigator}
+            id={Tabs.SETTINGS}
+            tabLabel={{ title: 'Profile', icon: 'account-circle' }}
+          />
+        </ScrollableTabs>
+        <LightBox navigator={navigator} />
+      </View>
+    );
   }
 }
 
@@ -71,8 +79,8 @@ const mapDispatchToProps = { changeTab };
 
 const select = state => {
   return {
-    currentTab: state.navigation.get('currentTab')
-  }
+    currentTab: state.navigation.get('currentTab'),
+  };
 };
 
 export default connect(select, mapDispatchToProps)(Navigation);

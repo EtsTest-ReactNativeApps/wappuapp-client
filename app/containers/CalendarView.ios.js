@@ -12,17 +12,16 @@ const theme = require('../style/theme');
 const styles = StyleSheet.create({
   navigator: {
     paddingTop: 20,
-    paddingBottom:30,
+    paddingBottom: 0,
   },
   navbar: {
     backgroundColor: theme.secondary,
     height: 62,
     paddingBottom: 5,
     flexDirection: 'row',
-    alignItems: 'center'
-  }
+    alignItems: 'center',
+  },
 });
-
 
 class TimelineListWrapper extends Component {
   @autobind
@@ -39,7 +38,7 @@ class TimelineListWrapper extends Component {
         style={styles.navigator}
         initialRoute={{
           component: EventsView,
-          name: 'Events'
+          name: 'Events',
         }}
         renderScene={this.renderScene}
         configureScene={() => sceneConfig}
