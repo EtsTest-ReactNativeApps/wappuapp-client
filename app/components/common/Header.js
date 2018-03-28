@@ -1,10 +1,7 @@
 'use strict';
 
 import React, { PropTypes } from 'react';
-import {
-  ToolbarAndroid,
-  StyleSheet
-} from 'react-native';
+import { ToolbarAndroid, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import theme from '../../style/theme';
 
@@ -17,19 +14,19 @@ const styles = StyleSheet.create({
   toolbar: {
     backgroundColor: theme.primary,
     position: 'relative',
-    left:0,
-    top:0,
-    right:0,
+    left: 0,
+    top: 0,
+    right: 0,
     elevation: 2,
     height: 56,
     justifyContent: 'flex-start',
-  }
+  },
 });
 
 var EventDetailToolbar = React.createClass({
   propTypes: {
     title: PropTypes.string.isRequired,
-    navigator: PropTypes.object.isRequired
+    navigator: PropTypes.object.isRequired,
   },
 
   _goBack() {
@@ -44,7 +41,7 @@ var EventDetailToolbar = React.createClass({
     const toolbarStyles = [styles.toolbar];
 
     if (this.props.backgroundColor) {
-      toolbarStyles.push({backgroundColor: this.props.backgroundColor})
+      toolbarStyles.push({ backgroundColor: this.props.backgroundColor });
     }
 
     return (
@@ -61,7 +58,7 @@ var EventDetailToolbar = React.createClass({
         title={this.props.title}
       />
     );
-  }
+  },
 });
 
 module.exports = EventDetailToolbar;

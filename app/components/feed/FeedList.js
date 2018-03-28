@@ -10,28 +10,32 @@ import {
   RefreshControl,
   View,
   ScrollView,
-  Platform
+  Platform,
 } from 'react-native';
 import { connect } from 'react-redux';
 import { ImagePickerManager } from 'NativeModules';
 import autobind from 'autobind-decorator';
 
 import theme from '../../style/theme';
-import { fetchFeed,
+import {
+  fetchFeed,
   refreshFeed,
   loadMoreItems,
   removeFeedItem,
   voteFeedItem,
-  openLightBox
+  openLightBox,
 } from '../../actions/feed';
+import { openComments } from '../../concepts/comments';
+import { openUserView } from '../../concepts/user';
 
-import { getUserTeam } from '../../reducers/registration';
+import { getUserTeam } from '../../concepts/registration';
 import permissions from '../../services/android-permissions';
 
 import ImageEditor from './ImageEditor';
 import FeedListItem from './FeedListItem';
 import Notification from '../common/Notification';
 import UserView from '../user/UserView';
+import CommentsView from '../comment/CommentsView';
 import Loading from './Loading';
 import ActionButtons from './ActionButtons';
 import LoadingStates from '../../constants/LoadingStates';
@@ -54,7 +58,7 @@ const IOS = Platform.OS === 'ios';
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: theme.lightgrey
+    backgroundColor: theme.lightgrey,
   },
   feedContainer: {
     flexDirection: 'column',
@@ -63,14 +67,13 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   listView: {
-    flex: 1
+    flex: 1,
   },
   actionButtons: {
     position: 'absolute',
-    bottom: IOS ? 30 : 0,
-    right: 0
+    bottom: 0,
+    right: 0,
   },
-
 });
 
 class FeedList extends Component {
@@ -81,7 +84,7 @@ class FeedList extends Component {
       actionButtonsAnimation: new Animated.Value(1),
       showScrollTopButton: false,
       listAnimation: new Animated.Value(0),
-      dataSource: new ListView.DataSource({ rowHasChanged: (row1, row2) => row1 !== row2 })
+      dataSource: new ListView.DataSource({ rowHasChanged: (row1, row2) => row1 !== row2 }),
     };
   }
 
@@ -94,37 +97,36 @@ class FeedList extends Component {
   componentWillReceiveProps({ feed, feedListState }) {
     if (feed !== this.props.feed) {
       this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(feed.toJS())
+        dataSource: this.state.dataSource.cloneWithRows(feed.toJS()),
       });
     }
     // Scroll to top when user does an action
-    if (this.props.isSending){
+    if (this.props.isSending) {
       this.scrollTop();
     }
 
     if (this.props.feedListState !== LoadingStates.READY && feedListState === LoadingStates.READY) {
       this.animateList();
     }
-
   }
 
   animateList() {
     Animated.timing(this.state.listAnimation, {
       toValue: 1,
       duration: IOS ? 250 : 600,
-      easing: Easing.ease
+      easing: Easing.ease,
     }).start();
   }
 
   @autobind
   scrollTop() {
-    if (this.refs._scrollView){
-     this.refs._scrollView.scrollTo({x: 0, y: 0, animated: true});
+    if (this.refs._scrollView) {
+      this.refs._scrollView.scrollTo({ x: 0, y: 0, animated: true });
     }
   }
 
-  scrollPos: 0
-  showActionButtons: true
+  scrollPos: 0;
+  showActionButtons: true;
 
   @autobind
   _onScroll(event) {
@@ -153,7 +155,6 @@ class FeedList extends Component {
     }
 
     this.scrollPos = scrollTop;
-
   }
 
   @autobind
@@ -170,7 +171,7 @@ class FeedList extends Component {
 
     const oldestItem = feed
       // admin items are not calclulated
-      .filter(item => item.getIn(['author','type']) !== 'SYSTEM')
+      .filter(item => item.getIn(['author', 'type']) !== 'SYSTEM')
       // get oldest by createdAt
       .minBy(item => item.get('createdAt'));
 
@@ -196,25 +197,31 @@ class FeedList extends Component {
 
   @autobind
   openUserPhotos(user) {
-    if (user.id) {
-      this.props.navigator.push({
-        component: UserView,
-        name: `${user.name}`,
-        user
-      });
-    }
+    this.props.openUserView(user);
+    this.props.navigator.push({
+      component: UserView,
+      name: `${user.name}`,
+      user,
+      singleColorHeader: true,
+    });
+  }
+
+  @autobind
+  openPostComments(postId) {
+    this.props.openComments(postId);
+    this.props.navigator.push({ component: CommentsView, name: 'Comment', showName: true });
   }
 
   @autobind
   openImagePicker() {
-    ImagePickerManager.showImagePicker(ImageCaptureOptions, (response) => {
+    ImagePickerManager.showImagePicker(ImageCaptureOptions, response => {
       if (!response.didCancel && !response.error) {
         const data = 'data:image/jpeg;base64,' + response.data;
         const editableImage = {
           data,
           width: response.width,
           height: response.height,
-          vertical: response.isVertical
+          vertical: response.isVertical,
         };
 
         this.openImageEditor(editableImage);
@@ -241,7 +248,6 @@ class FeedList extends Component {
 
   @autobind
   onPressAction(type) {
-
     switch (type) {
       case 'IMAGE':
         return this.chooseImage();
@@ -257,12 +263,15 @@ class FeedList extends Component {
 
   @autobind
   renderFeed(feedListState, isLoadingActionTypes, isLoadingUserData) {
-    const refreshControl = <RefreshControl
-      refreshing={this.props.isRefreshing || this.props.isSending}
-      onRefresh={this.onRefreshFeed}
-      colors={[theme.primary]}
-      tintColor={theme.primary}
-      progressBackgroundColor={theme.light} />;
+    const refreshControl = (
+      <RefreshControl
+        refreshing={this.props.isRefreshing || this.props.isSending}
+        onRefresh={this.onRefreshFeed}
+        colors={[theme.primary]}
+        tintColor={theme.primary}
+        progressBackgroundColor={theme.light}
+      />
+    );
 
     const isLoading = isLoadingActionTypes || isLoadingUserData;
 
@@ -278,27 +287,40 @@ class FeedList extends Component {
       default:
         return (
           <View style={styles.feedContainer}>
-
-            <Animated.View style={{ opacity: this.state.listAnimation, transform: [
-              { translateY: this.state.listAnimation.interpolate({ inputRange: [0, 1], outputRange: [50, 0] })}
-            ]}}>
-            <ListView
-              ref='_scrollView'
-              dataSource={this.state.dataSource}
-              renderRow={item => <FeedListItem
-                item={item}
-                key={item.id}
-                userTeam={this.props.userTeam}
-                removeFeedItem={this.props.removeFeedItem}
-                voteFeedItem={this.props.voteFeedItem}
-                isRegistrationInfoValid={this.props.isRegistrationInfoValid}
-                openUserPhotos={this.openUserPhotos}
-                openLightBox={this.props.openLightBox} />
-              }
-              style={[styles.listView]}
-              onScroll={this._onScroll}
-              onEndReached={this.onLoadMoreItems}
-              refreshControl={refreshControl} />
+            <Animated.View
+              style={{
+                opacity: this.state.listAnimation,
+                transform: [
+                  {
+                    translateY: this.state.listAnimation.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [50, 0],
+                    }),
+                  },
+                ],
+              }}
+            >
+              <ListView
+                ref="_scrollView"
+                dataSource={this.state.dataSource}
+                renderRow={item => (
+                  <FeedListItem
+                    item={item}
+                    key={item.id}
+                    userTeam={this.props.userTeam}
+                    removeFeedItem={this.props.removeFeedItem}
+                    voteFeedItem={this.props.voteFeedItem}
+                    isRegistrationInfoValid={this.props.isRegistrationInfoValid}
+                    openUserPhotos={this.openUserPhotos}
+                    openComments={this.openPostComments}
+                    openLightBox={this.props.openLightBox}
+                  />
+                )}
+                style={[styles.listView]}
+                onScroll={this._onScroll}
+                onEndReached={this.onLoadMoreItems}
+                refreshControl={refreshControl}
+              />
             </Animated.View>
 
             <ActionButtons
@@ -309,14 +331,13 @@ class FeedList extends Component {
               onPressAction={this.onPressAction}
               onScrollTop={this.scrollTop}
               showScrollTopButton={this.state.showScrollTopButton}
-              />
+            />
           </View>
         );
     }
   }
 
   render() {
-
     return (
       <View style={styles.container}>
         {this.renderFeed(
@@ -350,13 +371,15 @@ const mapDispatchToProps = {
   voteFeedItem,
   openCheckInView,
   openLightBox,
+  openComments,
+  openUserView,
   setEditableImage,
-  clearEditableImage
+  clearEditableImage,
 };
 
 const select = store => {
-  const isRegistrationInfoValid = store.registration.get('name') !== '' &&
-    store.registration.get('selectedTeam') > 0;
+  const isRegistrationInfoValid =
+    store.registration.get('name') !== '' && store.registration.get('selectedTeam') > 0;
 
   return {
     feed: store.feed.get('list'),

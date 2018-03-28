@@ -1,12 +1,7 @@
 'use strict';
 
 import React, { Component } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Platform,
-} from 'react-native';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 
 import { isNil } from 'lodash';
 import { VictoryPie } from 'victory-native';
@@ -15,7 +10,6 @@ import theme from '../../style/theme';
 const IOS = Platform.OS === 'ios';
 
 class MoodKpis extends Component {
-
   render() {
     const { kpiValues, teamName, cityName } = this.props;
 
@@ -27,42 +21,48 @@ class MoodKpis extends Component {
       <View style={styles.container}>
         <Text style={styles.title}>VIBES TODAY</Text>
         <View style={styles.data}>
-        {KPI_VALUES.map((value, index) =>
-          <View style={styles.col} key={value}>
-            <View style={styles.doughnut}>
-            <VictoryPie
-              data={[
-                {label: '+', value: kpiValues.get(value)},
-                {label: '-', value: 100 - kpiValues.get(value) }
-              ]}
-              style={{
-                data: {
-                fill: (d) => {
-                  const isBackground = d.label === '-';
-                  if (isBackground) {
-                    return '#eee';
-                  }
-                  return d.y > 50 ? theme.primary : theme.secondary
-                }},
-                labels: { fontSize: 0, opacity: 0 }
-              }}
-              innerRadius={39}
-              padding={0}
-              width={84}
-              height={84}
-              x="label"
-              y={(datum) => datum.value}
-            />
+          {KPI_VALUES.map((value, index) => (
+            <View style={styles.col} key={value}>
+              <View style={styles.doughnut}>
+                <VictoryPie
+                  data={[
+                    { label: '+', value: kpiValues.get(value) },
+                    { label: '-', value: 100 - kpiValues.get(value) },
+                  ]}
+                  style={{
+                    data: {
+                      fill: d => {
+                        const isBackground = d.label === '-';
+                        if (isBackground) {
+                          return '#eee';
+                        }
+                        return d.y > 50 ? theme.primary : theme.secondary;
+                      },
+                    },
+                    labels: { fontSize: 0, opacity: 0 },
+                  }}
+                  innerRadius={38}
+                  padding={0}
+                  width={84}
+                  height={84}
+                  x="label"
+                  y={datum => datum.value}
+                />
+              </View>
+              <Text
+                style={[
+                  styles.kpi,
+                  { color: kpiValues.get(value) > 50 ? theme.primary : theme.secondary },
+                ]}
+              >
+                {!isNil(kpiValues.get(value)) ? `${kpiValues.get(value)}%` : 'N/A'}
+              </Text>
+              <View style={styles.label}>
+                <View style={[styles.bullet, { backgroundColor: KPI_COLORS[index] }]} />
+                <Text style={styles.labelText}>{KPI_LABELS[index] || ''}</Text>
+              </View>
             </View>
-            <Text style={[styles.kpi, { color: kpiValues.get(value) > 50 ? theme.primary : theme.secondary }]}>
-              {!isNil(kpiValues.get(value)) ? `${kpiValues.get(value)}%` : 'N/A'}
-            </Text>
-            <View style={styles.label}>
-              <View style={[styles.bullet, { backgroundColor: KPI_COLORS[index] }]} />
-              <Text style={styles.labelText}>{KPI_LABELS[index] || ''}</Text>
-            </View>
-          </View>
-        )}
+          ))}
         </View>
       </View>
     );
@@ -77,12 +77,12 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     alignItems: 'stretch',
     justifyContent: 'center',
-    flexDirection: 'column'
+    flexDirection: 'column',
   },
   data: {
     alignItems: 'flex-start',
     justifyContent: 'space-around',
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   title: {
     textAlign: 'center',
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     color: theme.dark,
     fontSize: 12,
     fontWeight: 'bold',
-    textAlign: 'center'
+    textAlign: 'center',
   },
   kpi: {
     color: theme.secondary,
@@ -135,9 +135,8 @@ const styles = StyleSheet.create({
     backgroundColor: theme.secondary,
     width: 11,
     height: 11,
-    borderRadius: 6
-  }
+    borderRadius: 6,
+  },
 });
 
 export default MoodKpis;
-

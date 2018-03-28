@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     position: 'absolute',
-    bottom: Platform.OS === 'ios' ? 37 : 20,
+    bottom: Platform.OS === 'ios' ? 0 : 20,
     right: 20,
     backgroundColor: theme.secondary,
     width: 56,
@@ -24,9 +24,9 @@ const styles = StyleSheet.create({
     shadowRadius: 1,
     shadowOffset: {
       height: 2,
-      width: 0
+      width: 0,
     },
-  }
+  },
 });
 
 class ActionButton extends Component {
@@ -39,8 +39,12 @@ class ActionButton extends Component {
     }
 
     return (
-      <Fab onPress={onPress} styles={combinedStyle}
-        disabled={disabled} underlayColor={underLayColor || theme.secondaryLight}>
+      <Fab
+        onPress={onPress}
+        styles={combinedStyle}
+        disabled={disabled}
+        underlayColor={underLayColor || theme.secondaryLight}
+      >
         {children}
       </Fab>
     );

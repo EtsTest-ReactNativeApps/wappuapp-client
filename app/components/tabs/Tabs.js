@@ -1,15 +1,11 @@
-const React = require('react');
-const ReactNative = require('react-native');
-const {
-  StyleSheet,
-  Text,
-  View,
-  Animated,
-  Platform,
-} = ReactNative;
-const Button = require('./TabButton');
-const IOS = Platform.OS === 'ios';
 import theme from '../../style/theme';
+import React from 'react';
+import { StyleSheet, Text, View, Animated, Platform } from 'react-native';
+
+import Button from './TabButton';
+import LinearGradient from '../header/LinearGradient';
+
+const IOS = Platform.OS === 'ios';
 
 const DefaultTabBar = React.createClass({
   propTypes: {
@@ -27,33 +23,34 @@ const DefaultTabBar = React.createClass({
 
   getDefaultProps() {
     return {
-      activeTextColor: 'navy',
-      inactiveTextColor: 'black',
+      activeTextColor: 'black',
+      inactiveTextColor: 'grey',
       backgroundColor: null,
     };
   },
 
-  renderTabOption(name, page) {
-  },
+  renderTabOption(name, page) {},
 
   renderTab(name, page, isTabActive, onPressHandler) {
-    const { activeTextColor, inactiveTextColor, textStyle, } = this.props;
+    const { activeTextColor, inactiveTextColor, textStyle } = this.props;
     const textColor = isTabActive ? activeTextColor : inactiveTextColor;
 
-    return <Button
-      style={{flex: 1}}
-      key={name}
-      accessible={true}
-      accessibilityLabel={name}
-      accessibilityTraits='button'
-      onPress={() => onPressHandler(page)}
-    >
-      <View style={[styles.tab, this.props.tabStyle, ]}>
-        <Text style={[{color: textColor, }, textStyle ]}>
-          {IOS ? name : (name || '').toUpperCase()}
-        </Text>
-      </View>
-    </Button>;
+    return (
+      <Button
+        style={{ flex: 1 }}
+        key={name}
+        accessible={true}
+        accessibilityLabel={name}
+        accessibilityTraits="button"
+        onPress={() => onPressHandler(page)}
+      >
+        <View style={[styles.tab, this.props.tabStyle]}>
+          <Text style={[{ color: textColor, fontWeight: 'bold' }, textStyle]}>
+            {IOS ? name : (name || '').toUpperCase()}
+          </Text>
+        </View>
+      </Button>
+    );
   },
 
   render() {
@@ -65,7 +62,7 @@ const DefaultTabBar = React.createClass({
       backgroundColor,
       activeTab,
       goToPage,
-      underlineStyle
+      underlineStyle,
     } = this.props;
 
     const numberOfTabs = tabs.length;
@@ -73,31 +70,25 @@ const DefaultTabBar = React.createClass({
       position: 'absolute',
       width: containerWidth / numberOfTabs,
       height: 2,
-      backgroundColor: theme.secondary,
+      backgroundColor: theme.transparent,
       bottom: 0,
     };
 
     const left = scrollValue.interpolate({
-      inputRange: [0, 1], outputRange: [0,  containerWidth / numberOfTabs],
+      inputRange: [0, 1],
+      outputRange: [0, containerWidth / numberOfTabs],
     });
 
-    // Changing line bg color
-    // const lineBackgroundColor = scrollValue.interpolate({
-    //   inputRange: [0, 1], outputRange: [theme.primary, theme.primary],
-    // });
-
     return (
-      <View style={[styles.tabs, { backgroundColor }, style, ]}>
+      <View style={[styles.tabs, { backgroundColor }, style]}>
         {tabs.map((name, page) => {
           const isTabActive = activeTab === page;
           const renderTab = this.props.renderTab || this.renderTab;
           return renderTab(name, page, isTabActive, goToPage);
         })}
-        <Animated.View style={
-          [tabUnderlineStyle,
-          { left },
-          underlineStyle
-          ]}/>
+        <Animated.View style={[tabUnderlineStyle, { left }, underlineStyle]}>
+          <LinearGradient style={{ flex: 1 }} />
+        </Animated.View>
       </View>
     );
   },
@@ -111,10 +102,12 @@ const styles = StyleSheet.create({
     padding: 0,
   },
   tabs: {
-    elevation: 2,
+    elevation: 0,
+    borderBottomWidth: IOS ? 0 : 1,
+    borderBottomColor: '#eee',
     height: IOS ? 50 : 56,
     flexDirection: 'row',
-    justifyContent: 'space-around'
+    justifyContent: 'space-around',
   },
 });
 

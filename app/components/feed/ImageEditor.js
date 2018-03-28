@@ -14,13 +14,14 @@ import {
   TextInput,
   BackAndroid,
   KeyboardAvoidingView,
-  PanResponder
+  PanResponder,
 } from 'react-native';
 import autobind from 'autobind-decorator';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import theme from '../../style/theme';
 import Toolbar from '../common/Toolbar';
+import PlatformTouchable from '../common/PlatformTouchable';
 
 const { width, height } = Dimensions.get('window');
 const IOS = Platform.OS === 'ios';
@@ -28,7 +29,6 @@ const IOS = Platform.OS === 'ios';
 const inputHeight = 40;
 
 class ImageEditor extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -67,13 +67,13 @@ class ImageEditor extends Component {
         return true;
       }
       return false;
-    })
+    });
   }
 
   componentWillReceiveProps({ image }) {
     if (image && !this.props.image) {
       // new image arrived
-      this.centerImageText({image});
+      this.centerImageText({ image });
       this.setState({ showTextInput: false });
     } else if (!image && this.props.image) {
       // image removed and editorview hidden
@@ -95,9 +95,9 @@ class ImageEditor extends Component {
 
     const calculatedNewPos = touchPosition - imagePosY - 20;
     const newPos = Math.min(
-          scaledImageHeight - inputHeight, // upper limit
-          Math.max(0, calculatedNewPos)
-          )
+      scaledImageHeight - inputHeight, // upper limit
+      Math.max(0, calculatedNewPos)
+    );
 
     this.setState({ textPosition: newPos });
   }
@@ -133,7 +133,7 @@ class ImageEditor extends Component {
   }
 
   @autobind
-  getImagePosition(){
+  getImagePosition() {
     const view = this.refs.editImgRef;
     if (!view) {
       return;
@@ -141,7 +141,7 @@ class ImageEditor extends Component {
 
     view.measure((x, y, w, h, pageX, pageY) => {
       this.setState({
-        imagePos: { x, y, w, h, pageY }
+        imagePos: { x, y, w, h, pageY },
       });
     });
   }
@@ -160,7 +160,10 @@ class ImageEditor extends Component {
   renderGuideLayer(imgHeight) {
     const visibleHeight = Math.min(imgHeight, height - 100);
     return (
-      <TouchableOpacity style={[styles.tapGuide, { top: visibleHeight / 2 - 25 }]} onPress={this.showTextInput} >
+      <TouchableOpacity
+        style={[styles.tapGuide, { top: visibleHeight / 2 - 25 }]}
+        onPress={this.showTextInput}
+      >
         <Text style={styles.tapGuideText}>ADD CAPTION</Text>
       </TouchableOpacity>
     );
@@ -170,7 +173,6 @@ class ImageEditor extends Component {
   renderTextInput(imgHeight) {
     const { editing, textPosition } = this.state;
     return (
-
       <View
         {...this._panResponder.panHandlers}
         style={{
@@ -181,52 +183,53 @@ class ImageEditor extends Component {
           zIndex: 12,
           backgroundColor: theme.secondaryLayer,
           width,
-          height: inputHeight
-      }}>
-        <KeyboardAvoidingView
-          behavior={'height'}
-          keyboardVerticalOffset={0}
-          style={{flex: 1}}
-        >
-        <View style={{
           height: inputHeight,
-          width,
-          flex: 1,
-          backgroundColor: theme.transparent
-        }}>
-        {!editing
-        ?
-        <TouchableOpacity onPress={() => this.setState({ editing: true })} activeOpacity={1} style={styles.inputFieldWrap}>
-          <Text style={styles.inputFieldText}>{this.state.textInputValue}</Text>
-        </TouchableOpacity>
-        :
-        <TextInput
-          ref={'imageCaptionInput'}
-          autoFocus={true}
-          multiline={false}
-          underlineColorAndroid={'transparent'}
-          clearButtonMode={'never'}
-          returnKeyType={'done'}
-          blurOnSubmit={true}
-          onSubmitEditing={() => this.setState({ editing: false })}
-          onEndEditing={() => this.setState({ editing: false })}
-          onFocus={() => this.setState({ editing: true })}
-          onBlur={() => this.setState({ editing: false })}
-          // onSubmitEditing={this.sendImage}
-          style={styles.inputField}
-          onChangeText={this.onChangeText}
-          numberOfLines={1}
-          maxLength={36}
-          placeholderTextColor={theme.accentLight}
-          placeholder={''}
-          value={this.state.textInputValue}
-        />
-        }
-
+        }}
+      >
+        <KeyboardAvoidingView behavior={'height'} keyboardVerticalOffset={0} style={{ flex: 1 }}>
+          <View
+            style={{
+              height: inputHeight,
+              width,
+              flex: 1,
+              backgroundColor: theme.transparent,
+            }}
+          >
+            {!editing ? (
+              <TouchableOpacity
+                onPress={() => this.setState({ editing: true })}
+                activeOpacity={1}
+                style={styles.inputFieldWrap}
+              >
+                <Text style={styles.inputFieldText}>{this.state.textInputValue}</Text>
+              </TouchableOpacity>
+            ) : (
+              <TextInput
+                ref={'imageCaptionInput'}
+                autoFocus={true}
+                multiline={false}
+                underlineColorAndroid={'transparent'}
+                clearButtonMode={'never'}
+                returnKeyType={'done'}
+                blurOnSubmit={true}
+                onSubmitEditing={() => this.setState({ editing: false })}
+                onEndEditing={() => this.setState({ editing: false })}
+                onFocus={() => this.setState({ editing: true })}
+                onBlur={() => this.setState({ editing: false })}
+                // onSubmitEditing={this.sendImage}
+                style={styles.inputField}
+                onChangeText={this.onChangeText}
+                numberOfLines={1}
+                maxLength={36}
+                placeholderTextColor={theme.white}
+                placeholder={''}
+                value={this.state.textInputValue}
+              />
+            )}
+          </View>
+        </KeyboardAvoidingView>
       </View>
-      </KeyboardAvoidingView>
-      </View>
-      )
+    );
   }
 
   @autobind
@@ -242,32 +245,38 @@ class ImageEditor extends Component {
           zIndex: 12,
           backgroundColor: theme.transparent,
           width: inputHeight,
-          height: inputHeight
-      }}>
+          height: inputHeight,
+        }}
+      >
         <TouchableOpacity
           onPress={() => this.setState({ editing: true })}
           activeOpacity={1}
           style={{ flex: 1 }}
         >
           <Text style={[styles.inputFieldText, styles.editButton]}>
-            <Icon name="create" size={24}/>
+            <Icon name="create" size={24} />
           </Text>
         </TouchableOpacity>
       </View>
-      )
+    );
   }
 
   @autobind
   renderSubmitButtonForAndroid() {
     return (
       <View style={styles.buttonWrap}>
-        <TouchableHighlight underlayColor={theme.primaryDark} onPress={this.sendImage} style={styles.button}>
-          <Text style={styles.buttonText}>
-            <Icon size={38} name="done" />
-          </Text>
-        </TouchableHighlight>
+        <PlatformTouchable
+          onPress={this.sendImage}
+          background={PlatformTouchable.SelectableBackgroundBorderless()}
+        >
+          <View style={styles.button}>
+            <Text style={styles.buttonText}>
+              <Icon size={38} name="done" />
+            </Text>
+          </View>
+        </PlatformTouchable>
       </View>
-    )
+    );
   }
 
   @autobind
@@ -278,9 +287,7 @@ class ImageEditor extends Component {
     this.clearTextInput();
   }
 
-
   render() {
-
     const { image } = this.props;
     const { showTextInput, editing } = this.state;
 
@@ -288,58 +295,49 @@ class ImageEditor extends Component {
     const scaledImageHeightStyle = { height: scaledImageHeight };
 
     return (
-      <Modal
-        visible={!!image}
-        animationType={'fade'}
-        onRequestClose={this.onImageEditCancel}
-      >
-      {image &&
-      <View style={{ flex: 1 }}>
-        <Toolbar
-          leftIcon={'close'}
-          rightText={'Post'}
-          rightIcon={'done'}
-          rightIconClick={this.sendImage}
-          leftIconClick={this.onImageEditCancel}
-          title='Photo'
-        />
-        <View style={styles.container}>
-          <View style={[styles.imageWrap, scaledImageHeightStyle]}>
-            <View
-              style={[styles.imageWrap, scaledImageHeightStyle]}
-              onLayout={this.getImagePosition}
-            >
-              <Image
-                ref="editImgRef"
-                style={[
-                  styles.image,
-                  scaledImageHeightStyle
-                ]}
-                resizeMode={'contain'}
-                source={{ uri: image.data }}
-              />
+      <Modal visible={!!image} animationType={'fade'} onRequestClose={this.onImageEditCancel}>
+        {image && (
+          <View style={{ flex: 1 }}>
+            <Toolbar
+              leftIcon={'close'}
+              rightText={'Post'}
+              rightIcon={'done'}
+              rightIconClick={this.sendImage}
+              leftIconClick={this.onImageEditCancel}
+              title="Photo"
+            />
+            <View style={styles.container}>
+              <View style={[styles.imageWrap, scaledImageHeightStyle]}>
+                <View
+                  style={[styles.imageWrap, scaledImageHeightStyle]}
+                  onLayout={this.getImagePosition}
+                >
+                  <Image
+                    ref="editImgRef"
+                    style={[styles.image, scaledImageHeightStyle]}
+                    resizeMode={'contain'}
+                    source={{ uri: image.data }}
+                  />
+                </View>
+                {showTextInput && this.renderTextInput(scaledImageHeight)}
+              </View>
+              {!showTextInput && this.renderGuideLayer(scaledImageHeight)}
+              {showTextInput && !editing && this.renderEditButton(scaledImageHeight)}
             </View>
-            {showTextInput && this.renderTextInput(scaledImageHeight)}
+            {!IOS && this.renderSubmitButtonForAndroid()}
           </View>
-          {!showTextInput && this.renderGuideLayer(scaledImageHeight)}
-          {showTextInput && !editing && this.renderEditButton(scaledImageHeight)}
-        </View>
-        {!IOS && !editing && this.renderSubmitButtonForAndroid()}
-      </View>
-      }
+        )}
       </Modal>
     );
   }
-};
-
-
+}
 
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     backgroundColor: theme.stable,
     justifyContent: 'flex-start',
-    alignItems: 'flex-start'
+    alignItems: 'flex-start',
   },
   imageWrap: {
     justifyContent: 'flex-start',
@@ -364,7 +362,7 @@ const styles = StyleSheet.create({
     zIndex: 3,
   },
   tapGuideText: {
-    color: theme.accentLight,
+    color: theme.white,
     fontWeight: 'bold',
   },
   inputFieldWrap: {
@@ -385,7 +383,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: theme.transparent,
     fontSize: 17,
-    color: theme.accentLight,
+    color: theme.white,
     textAlign: 'center',
     lineHeight: IOS ? inputHeight - 2 : null,
   },
@@ -394,7 +392,7 @@ const styles = StyleSheet.create({
     top: IOS ? 0 : 1.5,
     left: 0,
     fontSize: 17,
-    color: theme.accentLight,
+    color: theme.white,
     textAlign: 'center',
     height: inputHeight,
     flex: 1,
@@ -416,24 +414,25 @@ const styles = StyleSheet.create({
     right: 20,
     height: 70,
     width: 70,
-    zIndex: 9,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   button: {
     backgroundColor: theme.primary,
-    height: 66,
-    width: 66,
+    height: 60,
+    width: 60,
     borderRadius: 33,
-    elevation: 2,
+    elevation: 3,
     alignItems: 'center',
     justifyContent: 'center',
   },
   buttonText: {
     backgroundColor: 'transparent',
-    fontSize: 25,
+    fontSize: 22,
     fontWeight: 'bold',
-    color: theme.white
+    color: theme.white,
   },
 });
-
 
 export default ImageEditor;

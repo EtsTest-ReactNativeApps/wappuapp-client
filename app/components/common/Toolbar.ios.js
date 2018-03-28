@@ -1,19 +1,15 @@
 'use strict';
 
 import React, { Component } from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  PropTypes
-} from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, PropTypes } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import theme from '../../style/theme';
 
+import LinearGradient from '../header/LinearGradient';
+
 const styles = StyleSheet.create({
   toolbar: {
-    backgroundColor: theme.secondaryLight,
+    // backgroundColor: theme.secondaryLight,
     height: 60,
     flexDirection: 'row',
     paddingTop: 20,
@@ -42,29 +38,30 @@ const styles = StyleSheet.create({
     fontSize: 24,
     paddingLeft: 5,
     paddingRight: 5,
-    color: theme.light
+    color: theme.light,
   },
   rightIcon: {
     paddingRight: 0,
-    color: theme.accentLight
+    color: theme.accentLight,
   },
   text: {
     fontSize: 14,
     paddingLeft: 5,
     paddingRight: 10,
     color: theme.accentLight,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   titleWrap: {
     flex: 1,
-    alignItems: 'center'
+    alignItems: 'center',
   },
-  title:{
+  title: {
+    backgroundColor: 'transparent',
     textAlign: 'center',
-    paddingRight:15,
+    paddingRight: 15,
     color: theme.light,
-    fontWeight: 'bold'
-  }
+    fontWeight: 'bold',
+  },
 });
 
 class Toolbar extends Component {
@@ -74,18 +71,10 @@ class Toolbar extends Component {
     rightIcon: PropTypes.string,
     leftIconClick: PropTypes.func,
     rightIconClick: PropTypes.func,
-  }
+  };
 
   render() {
-
-    const {
-      leftIcon,
-      rightIcon,
-      rightText,
-      leftIconClick,
-      rightIconClick,
-      title
-    } = this.props;
+    const { leftIcon, rightIcon, rightText, leftIconClick, rightIconClick, title } = this.props;
 
     const leftTouchableProps = {};
     if (leftIconClick) {
@@ -98,14 +87,9 @@ class Toolbar extends Component {
     }
 
     return (
-      <View style={styles.toolbar}>
+      <LinearGradient style={styles.toolbar}>
         <TouchableOpacity style={styles.button} {...leftTouchableProps}>
-          {
-            leftIcon
-            ? <Icon style={[styles.icon, { fontSize: 30 }]} name={leftIcon} />
-            : <View />
-          }
-
+          {leftIcon ? <Icon style={[styles.icon, { fontSize: 30 }]} name={leftIcon} /> : <View />}
         </TouchableOpacity>
 
         <View style={styles.titleWrap}>
@@ -113,17 +97,11 @@ class Toolbar extends Component {
         </View>
 
         <TouchableOpacity style={[styles.button, styles.rightButton]} {...rightTouchableProps}>
-          {
-            !!rightIcon && <Icon style={[styles.icon, styles.rightIcon]} name={rightIcon} />
-          }
+          {!!rightIcon && <Icon style={[styles.icon, styles.rightIcon]} name={rightIcon} />}
 
-          {
-            !!rightText && <Text style={styles.text}>{rightText}</Text>
-          }
-
+          {!!rightText && <Text style={styles.text}>{rightText}</Text>}
         </TouchableOpacity>
-      </View>
-
+      </LinearGradient>
     );
   }
 }

@@ -1,28 +1,20 @@
 'use strict';
 
 import React, { Component } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Platform,
-  ScrollView,
-  Dimensions
-} from 'react-native';
+import { View, Text, StyleSheet, Platform, ScrollView, Dimensions } from 'react-native';
 import theme from '../../style/theme';
 import PlatformTouchable from '../../components/common/PlatformTouchable';
+import Button from '../common/Button';
 
 const { width, height } = Dimensions.get('window');
 
 const IOS = Platform.OS === 'ios';
 
 class SkipView extends Component {
-
   render() {
-
     return (
-       <View style={styles.container}>
-          {/*
+      <View style={styles.container}>
+        {/*
           <View style={styles.topArea}>
             <View style={styles.iconWrap}>
               <Image style={styles.bgImage} source={require('../../../assets/frontpage_header-bg.jpg')} />
@@ -31,31 +23,34 @@ class SkipView extends Component {
           </View>
           */}
 
-          <ScrollView style={{flex:1, width: null, height: null}}>
-              <View style={styles.content}>
-                <View style={styles.textContainer}>
-                  <Text style={styles.subTitle}>CHOOSE YOUR TEAM</Text>
-                    <Text style={styles.text}>
-                      <Text style={{fontWeight: 'bold'}}>Edit your profile </Text>
-                      to finish registration.
-                    </Text>
+        <ScrollView style={{ flex: 1, width: null, height: null }}>
+          <View style={styles.content}>
+            <View style={styles.textContainer}>
+              <Text style={styles.subTitle}>CHOOSE YOUR TEAM</Text>
+              <Text style={styles.text}>
+                <Text style={{ fontWeight: 'bold' }}>Add your profile </Text>
+                to finish registration.
+              </Text>
 
-                    <Text style={styles.text}>Just looking around? It's okay, just
-                      <Text style={{fontWeight: 'bold'}}> Skip. </Text>
-                      You can always edit your profile later.
-                    </Text>
+              <Text style={styles.text}>
+                Just looking around? It's okay, just
+                <Text style={{ fontWeight: 'bold' }}> Skip. </Text>
+                You can always edit your profile later.
+              </Text>
 
-                    <Text style={[styles.text, { fontWeight: 'bold' }]}>Whappu starts now!</Text>
-                </View>
-                <PlatformTouchable onPress={this.props.onPressProfileLink}>
-                  <View style={styles.editButton}>
-                    <Text style={{fontSize: 16, fontWeight: 'bold', color: theme.white}}>EDIT YOUR PROFILE</Text>
-                  </View>
-                </PlatformTouchable>
-              </View>
-            </ScrollView>
+              <Text style={[styles.text, { fontWeight: 'bold' }]}>Whappu starts now!</Text>
+            </View>
 
-        </View>
+            <Button
+              onPress={this.props.onPressProfileLink}
+              style={styles.editButton}
+              textStyle={{ fontSize: 16, fontWeight: 'bold', color: theme.secondary }}
+            >
+              Add your profile
+            </Button>
+          </View>
+        </ScrollView>
+      </View>
     );
   }
 }
@@ -90,7 +85,7 @@ const styles = StyleSheet.create({
     left: width / 2 - 100,
     top: 50,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   icon: {
     // width: 200,
@@ -112,7 +107,7 @@ const styles = StyleSheet.create({
     fontSize: 60,
     right: 50,
     top: 30,
-    position: 'absolute'
+    position: 'absolute',
   },
   bgImage: {
     position: 'absolute',
@@ -122,13 +117,13 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     bottom: 0,
-    opacity: 0.3
+    opacity: 0.3,
   },
 
   textContainer: {
     flex: 3,
     marginHorizontal: 30,
-    flexDirection: 'column'
+    flexDirection: 'column',
   },
   subTitle: {
     textAlign: 'center',
@@ -152,21 +147,20 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: IOS ? 25 : 2,
+    borderRadius: IOS ? 30 : 2,
     elevation: 3,
     borderWidth: 0,
     borderColor: theme.grey,
-    backgroundColor: theme.primary,
-    width: 200,
+    backgroundColor: theme.white,
+    width: width - 60,
     shadowColor: '#000000',
     shadowOpacity: 0.15,
-    shadowRadius: 1,
+    shadowRadius: 10,
     shadowOffset: {
-      height: 3,
-      width: 0
-    }
-  }
-
+      height: 10,
+      width: 0,
+    },
+  },
 });
 
 export default SkipView;

@@ -8,7 +8,7 @@ import autobind from 'autobind-decorator';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import ActionButton from './ActionButton';
 import ActionButtonLabel from './ActionButtonLabel';
-import { openRegistrationView } from '../../actions/registration';
+import { openRegistrationView } from '../../concepts/registration';
 import theme from '../../style/theme';
 import reactMixin from 'react-mixin';
 import TimerMixin from 'react-timer-mixin';
@@ -30,7 +30,7 @@ const BUTTON_POS = [];
 for (let i = 0; i < BUTTON_COUNT; i++) {
   BUTTON_POS.push({
     x: 0,
-    y: -DISTANCE * i - (BUTTON_WIDTH + BIG_BUTTON_WIDTH / 2) + 10
+    y: -DISTANCE * i - (BUTTON_WIDTH + BIG_BUTTON_WIDTH / 2) + 10,
   });
 }
 
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     shadowRadius: 1,
     shadowOffset: {
       height: 2,
-      width: 0
+      width: 0,
     },
   },
   scrollTopButton: {
@@ -52,12 +52,12 @@ const styles = StyleSheet.create({
     shadowRadius: 1,
     shadowOffset: {
       height: 2,
-      width: 0
+      width: 0,
     },
-    backgroundColor: '#FFF'
+    backgroundColor: '#FFF',
   },
   scrollTopButtonContent: {
-    color: theme.secondaryLight
+    color: theme.secondaryLight,
   },
   buttonEnclosure: {
     flexDirection: 'column',
@@ -65,32 +65,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     position: 'absolute',
-    bottom: IOS ? 37 : 20,
+    bottom: IOS ? 0 : 20,
     right: 20,
-    overflow:'visible',
+    overflow: 'visible',
     width: 200,
     height: 56,
-    borderRadius: 28
+    borderRadius: 28,
   },
   actionButton: {
     bottom: 4,
     right: 5,
     width: 46,
-    height: 46
+    height: 46,
   },
   actionButtonContent: {
-    color: '#fff'
+    color: '#fff',
   },
-  overlay:{
-    right:43,
-    bottom:IOS ? 60 : 43,
-    position:'absolute',
-    backgroundColor:theme.light,
-    opacity:0.9,
-    width:10,
-    height:10,
-    borderRadius:5
-  }
+  overlay: {
+    right: 43,
+    bottom: 43,
+    position: 'absolute',
+    backgroundColor: theme.light,
+    opacity: 0.9,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+  },
 });
 
 const actions = {};
@@ -114,73 +114,71 @@ class ActionButtons extends Component {
       labels: BUTTON_POS.map(() => new Animated.Value(0)),
       actionButtonsOpen: false,
       actionButtonsWidth: new Animated.Value(56),
-      overlayOpacity: new Animated.Value(0)
+      overlayOpacity: new Animated.Value(0),
     };
   }
 
   animateButtonsToState(nextState) {
-
     // state is manipulated here directly on purpose, so the animations works smoothly
     /*eslint-disable */
     this.state.actionButtonsOpen = nextState === OPEN;
     /*eslint-enable */
     BUTTON_POS.forEach((pos, i) => {
-
       // Animate action buttons, iOS handles delay better
       if (IOS) {
         Animated.parallel([
-          Animated.delay(nextState === OPEN ?
-            BUTTON_POS.length * BUTTON_DELAY - (i * BUTTON_DELAY) :
-            0),
-          Animated.spring(this.state.buttons[i],
-            { toValue: nextState === OPEN ?
-                pos :
-                { x: 0, y: 0 } })
+          Animated.delay(
+            nextState === OPEN ? BUTTON_POS.length * BUTTON_DELAY - i * BUTTON_DELAY : 0
+          ),
+          Animated.spring(this.state.buttons[i], {
+            toValue: nextState === OPEN ? pos : { x: 0, y: 0 },
+          }),
         ]).start();
       } else {
-        Animated.spring(this.state.buttons[i],
-          { toValue: nextState === OPEN ?
-              pos :
-              { x: 0, y: 0 } }).start();
+        Animated.spring(this.state.buttons[i], {
+          toValue: nextState === OPEN ? pos : { x: 0, y: 0 },
+        }).start();
       }
 
       // Animate action button labels, 200ms later than buttons
       Animated.parallel([
-        Animated.delay(nextState === OPEN ?
-          200 + BUTTON_POS.length * BUTTON_DELAY - (i * BUTTON_DELAY) :
-          0),
-        Animated.timing(this.state.labels[i],
-          {duration:200, toValue: nextState === OPEN ? 1 : 0})
+        Animated.delay(
+          nextState === OPEN ? 200 + BUTTON_POS.length * BUTTON_DELAY - i * BUTTON_DELAY : 0
+        ),
+        Animated.timing(this.state.labels[i], {
+          duration: 200,
+          toValue: nextState === OPEN ? 1 : 0,
+        }),
       ]).start();
     });
     Animated.spring(this.state.plusButton, { toValue: nextState === OPEN ? 1 : 0 }).start();
 
     // buttonset width
-    Animated.timing(
-      this.state.actionButtonsWidth,
-      { duration:0, toValue: nextState === OPEN ? 220 : 56 }
-    ).start();
-
-
+    Animated.timing(this.state.actionButtonsWidth, {
+      duration: 0,
+      toValue: nextState === OPEN ? 220 : 56,
+    }).start();
   }
 
   @autobind
   onToggleActionButtons() {
-      this.props.updateCooldowns();
+    this.props.updateCooldowns();
 
-      if (this.state.actionButtonsOpen === false) {
-          this.updateCooldownInterval = this.setInterval(() => {
-              this.props.updateCooldowns();
-          }, 1000);
-      } else {
-          this.clearInterval(this.updateCooldownInterval);
-      }
+    if (this.state.actionButtonsOpen === false) {
+      this.updateCooldownInterval = this.setInterval(() => {
+        this.props.updateCooldowns();
+      }, 1000);
+    } else {
+      this.clearInterval(this.updateCooldownInterval);
+    }
     if (this.props.isRegistrationInfoValid === false) {
       this.props.openRegistrationView();
     } else {
-
-      Animated.timing(this.state.overlayOpacity,
-        {duration:300, easing:Easing.ease, toValue: this.state.actionButtonsOpen ? 0 : 1}).start();
+      Animated.timing(this.state.overlayOpacity, {
+        duration: 300,
+        easing: Easing.ease,
+        toValue: this.state.actionButtonsOpen ? 0 : 1,
+      }).start();
       this.animateButtonsToState(this.state.actionButtonsOpen ? CLOSED : OPEN);
     }
   }
@@ -194,15 +192,15 @@ class ActionButtons extends Component {
     this.onToggleActionButtons();
   }
 
-  componentDidMount(){
+  componentDidMount() {
     // Close Action buttons on back press
     BackAndroid.addEventListener('hardwareBackPress', () => {
       if (this.state.actionButtonsOpen) {
-        this.onToggleActionButtons()
+        this.onToggleActionButtons();
         return true;
       }
       return false;
-    })
+    });
   }
 
   getIconForAction(type) {
@@ -211,7 +209,7 @@ class ActionButtons extends Component {
       IMAGE: 'photo-camera',
       SIMA: 'local-bar',
       CHECK_IN_EVENT: 'location-on',
-      default: 'image'
+      default: 'image',
     };
     return mapping[type] || mapping['default'];
   }
@@ -222,7 +220,7 @@ class ActionButtons extends Component {
       IMAGE: 'Take a photo',
       SIMA: 'Have a sima',
       CHECK_IN_EVENT: 'Check into event',
-      default: 'image'
+      default: 'image',
     };
     return mapping[type] || mapping['default'];
   }
@@ -244,27 +242,33 @@ class ActionButtons extends Component {
       const labelName = this.getLabelForAction(actionTypeCode);
       const isCoolingDown = this.props.disabledActionTypes.find(dat => dat === actionTypeCode);
 
-      const iconOrCooldownTime = isCoolingDown ?
-        <Text style={styles.actionButtonContent}>{this.getCooldownTime(actionTypeCode)}</Text> :
-        <Icon name={iconName} size={22} style={styles.actionButtonContent}></Icon>;
+      const iconOrCooldownTime = isCoolingDown ? (
+        <Text style={styles.actionButtonContent}>{this.getCooldownTime(actionTypeCode)}</Text>
+      ) : (
+        <Icon name={iconName} size={22} style={styles.actionButtonContent} />
+      );
 
       const actionButtonStyles = [
         styles.buttonEnclosure,
         {
           transform: this.state.buttons[i].getTranslateTransform(),
-          width: this.state.actionButtonsWidth
-        }
+          width: this.state.actionButtonsWidth,
+        },
       ];
 
       return (
         <Animated.View key={`button-${i}`} style={actionButtonStyles}>
-          <ActionButtonLabel additionalLabel={actionTypeValue} extraStyle={{opacity:this.state.labels[i] }}>
+          <ActionButtonLabel
+            additionalLabel={actionTypeValue}
+            extraStyle={{ opacity: this.state.labels[i] }}
+          >
             {labelName}
           </ActionButtonLabel>
           <ActionButton
             onPress={this.onPressActionButtons.bind(this, actionTypeCode, this.props.onPressAction)}
             disabled={isCoolingDown}
-            extraStyle={styles.actionButton}>
+            extraStyle={styles.actionButton}
+          >
             {iconOrCooldownTime}
           </ActionButton>
         </Animated.View>
@@ -276,24 +280,31 @@ class ActionButtons extends Component {
     // Show scroll top button instead of add button when scrolled down
     if (this.props.showScrollTopButton) {
       return (
-      <ActionButton onPress={this.props.onScrollTop}
-        underLayColor={theme.lightgrey}
-        extraStyle={styles.scrollTopButton}>
-        <View >
-          <Icon name={'keyboard-arrow-up'} size={26} style={[styles.actionButtonContent, styles.scrollTopButtonContent]}></Icon>
-        </View>
-      </ActionButton>
+        <ActionButton
+          onPress={this.props.onScrollTop}
+          underLayColor={theme.lightgrey}
+          extraStyle={styles.scrollTopButton}
+        >
+          <View>
+            <Icon
+              name={'keyboard-arrow-up'}
+              size={26}
+              style={[styles.actionButtonContent, styles.scrollTopButtonContent]}
+            />
+          </View>
+        </ActionButton>
       );
     }
 
     const rotation = this.state.plusButton.interpolate({
-      inputRange: [0, 1], outputRange: ['0deg', '225deg']
+      inputRange: [0, 1],
+      outputRange: ['0deg', '225deg'],
     });
 
     return (
       <ActionButton onPress={this.onToggleActionButtons} extraStyle={styles.mainButton}>
         <Animated.View style={{ transform: [{ rotate: rotation }] }}>
-          <Icon name={'add'} size={24} style={styles.actionButtonContent}></Icon>
+          <Icon name={'add'} size={24} style={styles.actionButtonContent} />
         </Animated.View>
       </ActionButton>
     );
@@ -308,20 +319,28 @@ class ActionButtons extends Component {
 
     const actionButtonsTranslate = visibilityAnimation.interpolate({
       inputRange: [0, 1],
-      outputRange: [-100, (IOS ? 30 : 0)]
+      outputRange: [-100, IOS ? 30 : 0],
     });
 
     return (
       <Animated.View style={[style, { bottom: actionButtonsTranslate }]}>
-        <Animated.View style={[styles.overlay, {
-          transform:[{scale: this.state.overlayOpacity.interpolate({
-            inputRange: [0, 1],
-            outputRange: [1,200]
-          })}]
-        }]} />
+        <Animated.View
+          style={[
+            styles.overlay,
+            {
+              transform: [
+                {
+                  scale: this.state.overlayOpacity.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [1, 200],
+                  }),
+                },
+              ],
+            },
+          ]}
+        />
         {this.renderActionButtons()}
         {this.renderMenuButton()}
-
       </Animated.View>
     );
   }
@@ -333,7 +352,7 @@ const select = store => {
   return {
     actionTypes: store.competition.get('actionTypes'),
     disabledActionTypes: store.competition.get('disabledActionTypes'),
-    cooldownTimes: store.competition.get('cooldownTimes')
+    cooldownTimes: store.competition.get('cooldownTimes'),
   };
 };
 

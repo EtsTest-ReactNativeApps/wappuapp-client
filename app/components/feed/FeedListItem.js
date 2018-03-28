@@ -11,7 +11,7 @@ import {
   Platform,
   PropTypes,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -20,8 +20,9 @@ import { connect } from 'react-redux';
 import abuse from '../../services/abuse';
 import time from '../../utils/time';
 import theme from '../../style/theme';
-import { openRegistrationView } from '../../actions/registration';
+import { openRegistrationView } from '../../concepts/registration';
 import VotePanel from './VotePanel';
+import CommentsLink from './CommentsLink';
 
 const { width } = Dimensions.get('window');
 const FEED_ITEM_MARGIN_DISTANCE = 0;
@@ -41,7 +42,7 @@ const styles = StyleSheet.create({
     elevation: 1,
     flexGrow: 1,
   },
-  itemContent:{
+  itemContent: {
     flexGrow: 1,
     marginLeft: FEED_ITEM_MARGIN_DEFAULT,
     marginRight: FEED_ITEM_MARGIN_DISTANCE,
@@ -56,12 +57,12 @@ const styles = StyleSheet.create({
     shadowRadius: 1,
     shadowOffset: {
       height: 2,
-      width: 0
+      width: 0,
     },
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
   },
   itemContent_selected: {
-    backgroundColor: theme.stable
+    backgroundColor: theme.stable,
   },
   itemContent_byMyTeam: {
     marginRight: FEED_ITEM_MARGIN_DEFAULT,
@@ -75,11 +76,11 @@ const styles = StyleSheet.create({
     borderRadius: 0,
   },
   itemImageWrapper: {
-    width: width - (2 * FEED_ITEM_MARGIN_DEFAULT),
-    height: width - (2 * FEED_ITEM_MARGIN_DEFAULT),
+    width: width - 2 * FEED_ITEM_MARGIN_DEFAULT,
+    height: width - 2 * FEED_ITEM_MARGIN_DEFAULT,
     // borderBottomLeftRadius: 20,
     // borderBottomRightRadius: 20,
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   itemTextWrapper: {
     paddingLeft: 30,
@@ -92,18 +93,21 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 17,
     lineHeight: 25,
-    color: theme.dark
+    color: theme.dark,
+  },
+  shortText: {
+    fontSize: 25,
+    lineHeight: 30,
   },
   feedItemListItemImg: {
-    width: width - (2 * FEED_ITEM_MARGIN_DEFAULT),
-    height: width - (2 * FEED_ITEM_MARGIN_DEFAULT),
+    width: width - 2 * FEED_ITEM_MARGIN_DEFAULT,
+    height: width - 2 * FEED_ITEM_MARGIN_DEFAULT,
     backgroundColor: 'transparent',
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
-
   },
   feedItemListItemImg__admin: {
-    width: width - (2 * FEED_ADMIN_ITEM_MARGIN_DEFAULT),
+    width: width - 2 * FEED_ADMIN_ITEM_MARGIN_DEFAULT,
     borderRadius: 5,
   },
   feedItemListItemInfo: {
@@ -114,34 +118,34 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     paddingRight: 15,
     alignItems: 'flex-start',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
-  feedItemListItemAuthor:{
+  feedItemListItemAuthor: {
     flex: 1,
     flexDirection: 'column',
-    alignItems: 'flex-start'
+    alignItems: 'flex-start',
   },
   itemAuthorName: {
     fontSize: 13,
-    fontWeight: 'bold',
-    color: theme.secondary,
-    paddingRight: 10
+    fontWeight: 'normal',
+    color: theme.dark,
+    paddingRight: 10,
   },
-  itemAuthorTeam:{
-    fontSize:11,
-    color: '#aaa'
+  itemAuthorTeam: {
+    fontSize: 11,
+    color: theme.inactive,
   },
   itemAuthorTeam__my: {
     color: theme.primary,
-    fontWeight: 'bold'
+    fontWeight: 'normal',
   },
-  feedItemListItemAuthorIcon:{
+  feedItemListItemAuthorIcon: {
     color: '#bbb',
     fontSize: 15,
     marginTop: 1,
-    paddingRight: 10
+    paddingRight: 10,
   },
-  listItemRemoveButton:{
+  listItemRemoveButton: {
     backgroundColor: 'transparent',
     color: 'rgba(150,150,150,.65)',
     fontSize: IOS ? 22 : 20,
@@ -155,36 +159,36 @@ const styles = StyleSheet.create({
     height: 30,
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   itemTimestamp: {
-    top:  IOS ? 1 : 2,
-    color: '#aaa',
+    top: IOS ? 1 : 2,
+    color: theme.inactive,
     fontSize: 11,
   },
-  itemContent__admin:{
+  itemContent__admin: {
     marginLeft: 15,
     marginRight: 15,
     paddingTop: 0,
     paddingBottom: 0,
     borderRadius: 2,
-    backgroundColor: '#faf5ee'
+    backgroundColor: '#faf5ee',
   },
   itemTextWrapper__admin: {
     paddingTop: 0,
     paddingBottom: 5,
     paddingLeft: 15,
-    paddingRight: 15
+    paddingRight: 15,
   },
   feedItemListItemInfo__admin: {
     paddingLeft: 0,
     paddingBottom: 14,
   },
-  feedItemListItemAuthor__admin:  {
+  feedItemListItemAuthor__admin: {
     paddingLeft: 15,
   },
-  itemTimestamp__admin:{
-    color: '#b5afa6'
+  itemTimestamp__admin: {
+    color: '#b5afa6',
   },
   feedItemListText__admin: {
     textAlign: 'left',
@@ -192,14 +196,20 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 12,
     lineHeight: 19,
-  }
+  },
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    justifyContent: 'space-between',
+    overflow: 'hidden',
+  },
 });
 
 class FeedListItem extends Component {
   propTypes: {
     item: PropTypes.object.isRequired,
-    dispatch: PropTypes.func.isRequired
-  }
+    dispatch: PropTypes.func.isRequired,
+  };
 
   constructor(props) {
     super(props);
@@ -209,7 +219,6 @@ class FeedListItem extends Component {
   itemIsCreatedByMe(item) {
     return item.author.type === 'ME';
   }
-
 
   itemIsCreatedByMyTeam(item) {
     const { userTeam } = this.props;
@@ -230,27 +239,37 @@ class FeedListItem extends Component {
 
   showRemoveDialog(item) {
     if (this.itemIsCreatedByMe(item)) {
-      Alert.alert(
-        'Remove Content',
-        'Do you want to remove this item?',
-        [
-          { text: 'Cancel',
-            onPress: () => this.deSelectItem(), style: 'cancel' },
-          { text: 'Yes, remove item',
-            onPress: () => { this.deSelectItem(); this.removeThisItem() }, style: 'destructive' }
-        ]
-      );
+      Alert.alert('Remove Content', 'Do you want to remove this item?', [
+        {
+          text: 'Cancel',
+          onPress: () => this.deSelectItem(),
+          style: 'cancel',
+        },
+        {
+          text: 'Yes, remove item',
+          onPress: () => {
+            this.deSelectItem();
+            this.removeThisItem();
+          },
+          style: 'destructive',
+        },
+      ]);
     } else {
-      Alert.alert(
-        'Flag Content',
-        'Do you want to report this item?',
-        [
-          { text: 'Cancel',
-            onPress: () => this.deSelectItem() , style: 'cancel' },
-          { text: 'Yes, report item',
-            onPress: () => { this.deSelectItem(); abuse.reportFeedItem(item) }, style: 'destructive' }
-        ]
-      );
+      Alert.alert('Flag Content', 'Do you want to report this item?', [
+        {
+          text: 'Cancel',
+          onPress: () => this.deSelectItem(),
+          style: 'cancel',
+        },
+        {
+          text: 'Yes, report item',
+          onPress: () => {
+            this.deSelectItem();
+            abuse.reportFeedItem(item);
+          },
+          style: 'destructive',
+        },
+      ]);
     }
   }
 
@@ -258,35 +277,10 @@ class FeedListItem extends Component {
     this.props.removeFeedItem(this.props.item);
   }
 
-  // Render "remove" button, which is remove OR flag button,
-  // depending is the user the creator of this feed item or not
-  renderRemoveButton(item) {
-    if (item.author.type === 'SYSTEM') {
-
-      return <View></View>; // currently it is not possible to return null in RN as a view
-    }
-
-    const iconName = this.itemIsCreatedByMe(item) ? 'delete' : 'flag';
-    return (
-      <TouchableOpacity
-       style={[styles.listItemRemoveContainer,
-         {backgroundColor:item.type !== 'IMAGE' ? 'transparent' : 'rgba(255,255,255,.1)'}]}
-       onPress={() => this.showRemoveDialog(item)}>
-
-        <Icon name={iconName} style={[styles.listItemRemoveButton,
-          {opacity:item.type !== 'IMAGE' ? 0.7 : 1}]
-        }/>
-
-      </TouchableOpacity>
-    );
-  }
-
   renderAdminItem(item, ago) {
-
     return (
       <View style={styles.itemWrapper}>
         <View style={[styles.itemContent, styles.itemContent__admin]}>
-
           <View style={[styles.feedItemListItemInfo, styles.feedItemListItemInfo__admin]}>
             <View style={[styles.feedItemListItemAuthor, styles.feedItemListItemAuthor__admin]}>
               <Text style={styles.itemAuthorName}>Whappu</Text>
@@ -294,31 +288,29 @@ class FeedListItem extends Component {
             <Text style={[styles.itemTimestamp, styles.itemTimestamp__admin]}>{ago}</Text>
           </View>
 
-          {item.type === 'IMAGE' ?
+          {item.type === 'IMAGE' ? (
             <View style={styles.itemImageWrapper}>
-              <TouchableOpacity
-                activeOpacity={1}
-                onPress={() => this.props.openLightBox(item.id)}
-              >
+              <TouchableOpacity activeOpacity={1} onPress={() => this.props.openLightBox(item.id)}>
                 <Image
                   source={{ uri: item.url }}
-                  style={[styles.feedItemListItemImg, styles.feedItemListItemImg__admin]} />
+                  style={[styles.feedItemListItemImg, styles.feedItemListItemImg__admin]}
+                />
               </TouchableOpacity>
             </View>
-          :
+          ) : (
             <View style={[styles.itemTextWrapper, styles.itemTextWrapper__admin]}>
               <Text style={[styles.feedItemListText, styles.feedItemListText__admin]}>
                 {item.text}
               </Text>
             </View>
-          }
+          )}
         </View>
       </View>
     );
   }
 
   render() {
-    const { item, openUserPhotos } = this.props;
+    const { item, openUserPhotos, openComments } = this.props;
     const { selected } = this.state;
     const ago = time.getTimeAgo(item.createdAt);
 
@@ -334,48 +326,68 @@ class FeedListItem extends Component {
         <TouchableOpacity
           activeOpacity={1}
           style={styles.itemTouchable}
-          onLongPress={() => this.selectItem() }
+          onLongPress={() => this.selectItem()}
         >
-        <View style={[styles.itemContent,
-          itemByMyTeam ? styles.itemContent_byMyTeam : {},
-          isItemImage ? styles.itemContent_image : {},
-          selected ? styles.itemContent_selected : {}
-        ]}>
+          <View
+            style={[
+              styles.itemContent,
+              itemByMyTeam ? styles.itemContent_byMyTeam : {},
+              isItemImage ? styles.itemContent_image : {},
+              selected ? styles.itemContent_selected : {},
+            ]}
+          >
+            <TouchableOpacity
+              activeOpacity={IOS ? 0.7 : 1}
+              style={styles.feedItemListItemInfo}
+              onPress={() => openUserPhotos(item.author)}
+            >
+              <View style={styles.feedItemListItemAuthor}>
+                <Text style={styles.itemAuthorName}>{item.author.name}</Text>
+                <Text
+                  style={[styles.itemAuthorTeam, itemByMyTeam ? styles.itemAuthorTeam__my : {}]}
+                >
+                  {item.author.team}
+                </Text>
+              </View>
+              <Text style={styles.itemTimestamp}>{ago}</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity activeOpacity={IOS ? 0.7 : 1} style={styles.feedItemListItemInfo} onPress={() => openUserPhotos(item.author)}>
-            <View style={styles.feedItemListItemAuthor}>
-              <Text style={styles.itemAuthorName}>{item.author.name}</Text>
-              <Text style={[styles.itemAuthorTeam, itemByMyTeam ? styles.itemAuthorTeam__my : {}]}>{item.author.team}</Text>
+            {isItemImage ? (
+              <View style={styles.itemImageWrapper}>
+                <TouchableOpacity
+                  activeOpacity={1}
+                  onPress={() => this.props.openLightBox(item.id)}
+                >
+                  <Image source={{ uri: item.url }} style={styles.feedItemListItemImg} />
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={styles.itemTextWrapper}>
+                <Text
+                  style={[
+                    styles.feedItemListText,
+                    item.text && item.text.length < 15 ? styles.shortText : {},
+                  ]}
+                >
+                  {item.text}
+                </Text>
+              </View>
+            )}
+
+            <View style={styles.footer}>
+              <VotePanel
+                item={item}
+                voteFeedItem={this.props.voteFeedItem}
+                openRegistrationView={this.props.openRegistrationView}
+              />
+
+              <CommentsLink
+                parentId={item.id}
+                commentCount={item.commentCount}
+                openComments={() => openComments(item.id)}
+              />
             </View>
-            <Text style={styles.itemTimestamp}>{ago}</Text>
-          </TouchableOpacity>
-
-          {isItemImage ?
-            <View style={styles.itemImageWrapper}>
-              <TouchableOpacity
-                activeOpacity={1}
-                onPress={() => this.props.openLightBox(item.id)}
-              >
-                <Image
-                  source={{ uri: item.url }}
-                  style={styles.feedItemListItemImg} />
-              </TouchableOpacity>
-            </View>
-          :
-            <View style={styles.itemTextWrapper}>
-              <Text style={styles.feedItemListText}>{item.text}</Text>
-            </View>
-          }
-
-          <VotePanel
-            item={item}
-            voteFeedItem={this.props.voteFeedItem}
-            openRegistrationView={this.props.openRegistrationView}
-          />
-
-          {/* this.renderRemoveButton(item) */}
-
-        </View>
+          </View>
         </TouchableOpacity>
       </View>
     );

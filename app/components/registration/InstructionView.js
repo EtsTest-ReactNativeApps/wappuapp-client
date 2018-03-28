@@ -1,14 +1,7 @@
 'use strict';
 
 import React, { Component } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Platform,
-  ScrollView,
-  Dimensions
-} from 'react-native';
+import { View, Text, StyleSheet, Platform, ScrollView, Dimensions } from 'react-native';
 import theme from '../../style/theme';
 
 const { width, height } = Dimensions.get('window');
@@ -16,23 +9,23 @@ const IOS = Platform.OS === 'ios';
 
 class InstructionView extends Component {
   render() {
-
     return (
       <View style={styles.container}>
-          <ScrollView style={{flex:1, width: null, height: null}} >
-            <View style={[styles.container, styles.contentContainer]}>
+        <ScrollView style={{ flex: 1, width: null, height: null }}>
+          <View style={[styles.container, styles.contentContainer]}>
+            <View style={styles.content}>
+              <View style={styles.textContainer}>
+                <Text style={styles.title}>HOW TO WHAPPU</Text>
 
-              <View style={styles.content} >
-                <View style={styles.textContainer}>
-                  <Text style={styles.title}>HOW TO WHAPPU</Text>
-
-                  <Text style={styles.subTitle}>Whappu hard & Share it</Text>
-                  <Text style={styles.text}>Team with the best Whappu-buzz wins a juicy prize!</Text>
-                  <Text style={styles.subTitle}>Enjoy sima</Text>
-                  <Text style={styles.text}>Otherwise you might get thirsty!</Text>
-                </View>
+                <Text style={styles.subTitle}>Whappu hard & Share it</Text>
+                <Text style={styles.text}>
+                  Post to Whappu buzz and add keep track of your Whappu Vibe!
+                </Text>
+                <Text style={styles.subTitle}>Enjoy sima</Text>
+                <Text style={styles.text}>Otherwise you might get thirsty!</Text>
               </View>
             </View>
+          </View>
         </ScrollView>
       </View>
     );
@@ -46,7 +39,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.secondary,
   },
   simplified: {
-    alignSelf: 'stretch'
+    alignSelf: 'stretch',
   },
   innerContainer: {
     flex: 1,
@@ -58,7 +51,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
- iconWrap: {
+  iconWrap: {
     // overflow: 'hidden',
     position: 'absolute',
     width: 200,
@@ -68,7 +61,7 @@ const styles = StyleSheet.create({
     left: width / 2 - 100,
     top: 50,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   icon: {
     // width: 200,
@@ -90,7 +83,7 @@ const styles = StyleSheet.create({
     fontSize: 90,
     left: 140,
     top: -5,
-    position: 'absolute'
+    position: 'absolute',
   },
   bgImage: {
     position: 'absolute',
@@ -102,7 +95,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     overflow: 'hidden',
     bottom: 0,
-    opacity: 0.3
+    opacity: 0.3,
   },
   content: {
     margin: 20,
@@ -114,7 +107,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     alignItems: 'center',
-    flexDirection: 'column'
+    flexDirection: 'column',
   },
   title: {
     color: theme.accentLight,
@@ -136,26 +129,26 @@ const styles = StyleSheet.create({
     color: theme.white,
     textAlign: 'center',
   },
-  bottomButtons:{
-    flex:1,
-    flexDirection:'column',
-    margin:0,
-    marginBottom:0,
-    marginLeft:0,
-    marginRight:0,
-    height:50,
-    alignItems:'stretch',
-    position:'absolute',
-    bottom:0,
-    left:0,
-    right:0,
+  bottomButtons: {
+    flex: 1,
+    flexDirection: 'column',
+    margin: 0,
+    marginBottom: 0,
+    marginLeft: 0,
+    marginRight: 0,
+    height: 50,
+    alignItems: 'stretch',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
   modalButton: {
-    borderRadius:0,
-    flex:1,
+    borderRadius: 0,
+    flex: 1,
     backgroundColor: theme.primary,
-    marginLeft:0,
-  }
+    marginLeft: 0,
+  },
 });
 
 export default InstructionView;

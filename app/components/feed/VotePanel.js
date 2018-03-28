@@ -14,7 +14,6 @@ class VotePanel extends Component {
 
   @autobind
   voteThisItem(vote) {
-
     const { id } = this.props.item;
 
     if (this.props.isRegistrationInfoValid === false) {
@@ -39,19 +38,19 @@ class VotePanel extends Component {
           activeOpacity={1}
           style={styles.itemVoteButton}
           underlayColor={'rgba(0,0,0,.05)'}
-          onPress={() => this.voteThisItem(value)}>
-            <View style={styles.itemVoteButton}>
-              <Text style={{color: alreadyVotedThis ? theme.secondary : theme.grey}}>
-                <Icon name={iconName} size={25}/>
-              </Text>
-            </View>
+          onPress={() => this.voteThisItem(value)}
+        >
+          <View style={styles.itemVoteButton}>
+            <Text style={{ color: alreadyVotedThis ? theme.secondary : theme.inactive }}>
+              <Icon name={iconName} size={25} />
+            </Text>
+          </View>
         </TouchableHighlight>
       </View>
     );
   }
 
   render() {
-
     return (
       <View style={styles.itemVoteWrapper}>
         {this.renderVoteButton(true)}
@@ -60,8 +59,7 @@ class VotePanel extends Component {
       </View>
     );
   }
-};
-
+}
 
 const styles = StyleSheet.create({
   itemVoteWrapper: {
@@ -78,7 +76,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: 'transparent',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   itemVoteButton: {
     flex: 1,
@@ -87,16 +85,15 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     backgroundColor: 'transparent',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   itemVoteValue: {
     minWidth: 15,
     textAlign: 'center',
     fontSize: 15,
     paddingVertical: 5,
-    color: theme.grey
-  }
+    color: theme.inactive,
+  },
 });
-
 
 export default VotePanel;

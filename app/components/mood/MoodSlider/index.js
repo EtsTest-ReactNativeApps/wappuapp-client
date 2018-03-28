@@ -18,11 +18,10 @@ import MdIcon from 'react-native-vector-icons/MaterialIcons';
 import { isNil } from 'lodash';
 
 import { submitMood, isMoodSending } from '../../../concepts/mood';
-import Header from '../../common/Header';
+import Header from '../../common/ScrollHeader';
 import theme from '../../../style/theme';
 import getVibeDescription from '../../../services/vibe-descriptions';
 import MoodSubmit from './MoodSubmit';
-
 
 const { height, width } = Dimensions.get('window');
 const isIOS = Platform.OS === 'ios';
@@ -43,7 +42,7 @@ class MoodSlider extends Component {
       confirmScale: new Animated.Value(0),
       showConfirm: false,
       description: '',
-      vibeDescription: ''
+      vibeDescription: '',
     };
 
     this.moodSlider = this.moodSlider.bind(this);
@@ -55,7 +54,7 @@ class MoodSlider extends Component {
   componentDidMount() {
     BackAndroid.addEventListener('hardwareBackPress', () => {
       if (this.state.showConfirm) {
-        this.setState({ showConfirm: false })
+        this.setState({ showConfirm: false });
         return true;
       }
       return false;
@@ -64,7 +63,6 @@ class MoodSlider extends Component {
     setTimeout(() => {
       this.animateBubbles();
     }, 200);
-
   }
 
   animateBubbles() {
@@ -72,28 +70,19 @@ class MoodSlider extends Component {
     const moodPercentage = (mood - footerHeight) / (sliderHeight - headerHeight - footerHeight);
     const speed = moodPercentage >= 0.95 ? 1500 : 3000;
 
-    Animated.timing(
-      this.state.bubblePosition,
-      {
-        toValue: 1,
-        duration: speed,
-        easing: Easing.linear
-      }
-      ).start(() => {
-        Animated.timing(
-          this.state.bubblePosition,
-          {
-            toValue: 0,
-            duration: 0,
-          }
-          ).start(() => {
-            this.animateBubbles(); // repeating
-          });
-        });
-    }
-
-
-
+    Animated.timing(this.state.bubblePosition, {
+      toValue: 1,
+      duration: speed,
+      easing: Easing.linear,
+    }).start(() => {
+      Animated.timing(this.state.bubblePosition, {
+        toValue: 0,
+        duration: 0,
+      }).start(() => {
+        this.animateBubbles(); // repeating
+      });
+    });
+  }
 
   _panResponder = {};
 
@@ -149,8 +138,10 @@ class MoodSlider extends Component {
 
     const moodNotChanged = oldMoodPercentage === newMoodPercentage;
 
-    const nextState = Object.assign({ mood, showConfirm: false},
-      moodNotChanged ? {} : { vibeDescription: getVibeDescription(newMoodPercentage) })
+    const nextState = Object.assign(
+      { mood, showConfirm: false },
+      moodNotChanged ? {} : { vibeDescription: getVibeDescription(newMoodPercentage) }
+    );
     this.setState(nextState);
 
     // Animate submit button
@@ -165,7 +156,7 @@ class MoodSlider extends Component {
   }
 
   animateButton() {
-     Animated.spring(this.state.buttonScale, { toValue: 1, duration: 550 }).start();
+    Animated.spring(this.state.buttonScale, { toValue: 1, duration: 550 }).start();
   }
 
   confirm() {
@@ -176,48 +167,76 @@ class MoodSlider extends Component {
   submit() {
     const { mood, description } = this.state;
     const { navigator } = this.props;
-    const rating = parseInt((mood - footerHeight) / (sliderHeight - headerHeight - footerHeight) * 100, 10) / 10;
+    const rating =
+      parseInt((mood - footerHeight) / (sliderHeight - headerHeight - footerHeight) * 100, 10) / 10;
 
-    const moodSubmitPackage = Object.assign(
-      { rating },
-      description ? { description } : {}
-    );
+    const moodSubmitPackage = Object.assign({ rating }, description ? { description } : {});
 
-    this.props.submitMood(moodSubmitPackage)
-    .then(a => {
+    this.props.submitMood(moodSubmitPackage).then(a => {
       // Without resetting showConfirm state BackAndroid does not work properly
       this.setState({ showConfirm: false });
       navigator.pop();
     });
-
   }
 
   onChangeText(description) {
-    this.setState({ description })
+    this.setState({ description });
   }
 
-
   render() {
-
-    const { mood, bubblePosition, showConfirm, buttonScale, confirmScale, vibeDescription } = this.state;
+    const {
+      mood,
+      bubblePosition,
+      showConfirm,
+      buttonScale,
+      confirmScale,
+      vibeDescription,
+    } = this.state;
     const { moodSending } = this.props;
 
     const bubbleVerticalPositions = [
-      bubblePosition.interpolate({ inputRange: [0, 0.25, 0.5, 0.75, 1], outputRange: [100, 50, 20, -20, -40] }),
-      bubblePosition.interpolate({ inputRange: [0, 0.25, 0.5, 0.75, 1], outputRange: [120, 110, 80, 50, 10] }),
-      bubblePosition.interpolate({ inputRange: [0, 0.25, 0.5, 0.75, 1], outputRange: [200, 180, 140, 120, 80] })
-    ]
+      bubblePosition.interpolate({
+        inputRange: [0, 0.25, 0.5, 0.75, 1],
+        outputRange: [100, 50, 20, -20, -40],
+      }),
+      bubblePosition.interpolate({
+        inputRange: [0, 0.25, 0.5, 0.75, 1],
+        outputRange: [120, 110, 80, 50, 10],
+      }),
+      bubblePosition.interpolate({
+        inputRange: [0, 0.25, 0.5, 0.75, 1],
+        outputRange: [200, 180, 140, 120, 80],
+      }),
+    ];
 
     const bubbleHorizontalPositions = [
-      bubblePosition.interpolate({ inputRange: [0, 0.25, 0.5, 0.75, 1], outputRange: [30, 22, 30, 24, 26] }),
-      bubblePosition.interpolate({ inputRange: [0, 0.25, 0.5, 0.75, 1], outputRange: [10, 16, 10, 14, 12] }),
-      bubblePosition.interpolate({ inputRange: [0, 0.25, 0.5, 0.75, 1], outputRange: [30, 22, 30, 24, 26] })
-    ]
+      bubblePosition.interpolate({
+        inputRange: [0, 0.25, 0.5, 0.75, 1],
+        outputRange: [30, 22, 30, 24, 26],
+      }),
+      bubblePosition.interpolate({
+        inputRange: [0, 0.25, 0.5, 0.75, 1],
+        outputRange: [10, 16, 10, 14, 12],
+      }),
+      bubblePosition.interpolate({
+        inputRange: [0, 0.25, 0.5, 0.75, 1],
+        outputRange: [30, 22, 30, 24, 26],
+      }),
+    ];
 
     const bubbleOpacity = [
-      bubblePosition.interpolate({ inputRange: [0, 0.25, 0.5, 0.75, 1], outputRange: [0.8, 1, 0.4, 0.1, 0] }),
-      bubblePosition.interpolate({ inputRange: [0, 0.25, 0.5, 0.75, 1], outputRange: [0, 0.5, 1, 0.6, 0] }),
-      bubblePosition.interpolate({ inputRange: [0, 0.25, 0.5, 0.75, 1], outputRange: [0, 0, 1, 0.8, 0] })
+      bubblePosition.interpolate({
+        inputRange: [0, 0.25, 0.5, 0.75, 1],
+        outputRange: [0.8, 1, 0.4, 0.1, 0],
+      }),
+      bubblePosition.interpolate({
+        inputRange: [0, 0.25, 0.5, 0.75, 1],
+        outputRange: [0, 0.5, 1, 0.6, 0],
+      }),
+      bubblePosition.interpolate({
+        inputRange: [0, 0.25, 0.5, 0.75, 1],
+        outputRange: [0, 0, 1, 0.8, 0],
+      }),
     ];
 
     const sliderEffectiveHeight = sliderHeight - headerHeight - footerHeight - 5;
@@ -226,20 +245,35 @@ class MoodSlider extends Component {
 
     return (
       <View style={styles.container}>
+        {!isIOS && (
+          <Header
+            backgroundColor={theme.secondary}
+            title="Add Whappu Vibe"
+            icon="arrow-back"
+            onIconClick={() => this.props.navigator.pop()}
+          />
+        )}
 
-        {!isIOS && <Header backgroundColor={theme.secondary} title="Add Whappu Vibe" navigator={this.props.navigator} />}
-
-        {mood !== null &&
-          <Animated.View style={[styles.buttonWrap, { transform: [{ scale: buttonScale }, { translateX: showConfirm ? 100 : 0 }] }]}>
-            <TouchableHighlight underlayColor={'#f2f2f2'} onPress={this.confirm} style={styles.button}>
+        {mood !== null && (
+          <Animated.View
+            style={[
+              styles.buttonWrap,
+              { transform: [{ scale: buttonScale }, { translateX: showConfirm ? 100 : 0 }] },
+            ]}
+          >
+            <TouchableHighlight
+              underlayColor={'#f2f2f2'}
+              onPress={this.confirm}
+              style={styles.button}
+            >
               <Text style={styles.buttonText}>
                 <MdIcon size={38} name="keyboard-arrow-right" />
               </Text>
             </TouchableHighlight>
           </Animated.View>
-        }
+        )}
 
-        {!!showConfirm &&
+        {!!showConfirm && (
           <MoodSubmit
             confirmScale={confirmScale}
             onChangeText={this.onChangeText}
@@ -247,95 +281,431 @@ class MoodSlider extends Component {
             description={this.state.description}
             isMoodSending={moodSending}
           />
-        }
+        )}
         <View style={styles.main} {...this._panResponder.panHandlers}>
-          {mood !== null
-            ? <View style={styles.moodNumberWrap}>
-                <Text style={styles.moodNumber}>
-                  {moodResult}<Text style={styles.decimals}>%</Text>
-                </Text>
-                <View style={styles.vibeWrap}>
-                  {!!vibeDescription && <Text style={styles.vibeDescription}>"{vibeDescription}"</Text>}
-                </View>
+          {mood !== null ? (
+            <View style={styles.moodNumberWrap}>
+              <Text style={styles.moodNumber}>
+                {moodResult}
+                <Text style={styles.decimals}>%</Text>
+              </Text>
+              <View style={styles.vibeWrap}>
+                {!!vibeDescription && (
+                  <Text style={styles.vibeDescription}>"{vibeDescription}"</Text>
+                )}
               </View>
-            : <View style={styles.guideWrap}>
-                <MdIcon style={styles.guideIcon} size={60} name="swap-vert" />
-                <Text style={styles.guide}>Start by touching the screen...</Text>
-              </View>
-          }
+            </View>
+          ) : (
+            <View style={styles.guideWrap}>
+              <MdIcon style={styles.guideIcon} size={60} name="swap-vert" />
+              <Text style={styles.guide}>Start by touching the screen...</Text>
+            </View>
+          )}
 
           <View style={styles.yAxis}>
-            {scale.map((i, index) =>
-              <View key={i} style={[styles.axisLabel, {
-                  bottom: sliderEffectiveHeight * (i * 10 / 100),
-              }]}>
-              <Text
-                style={styles.axisLabelText}
+            {scale.map((i, index) => (
+              <View
+                key={i}
+                style={[
+                  styles.axisLabel,
+                  {
+                    bottom: sliderEffectiveHeight * (i * 10 / 100),
+                  },
+                ]}
               >
-                {i * 10}
-              </Text>
+                <Text style={styles.axisLabelText}>{i * 10}</Text>
               </View>
-            )}
+            ))}
           </View>
 
-          {mood !== null &&
-          <View style={[styles.moodSection, { height: mood }]}>
-            <Animated.View style={[styles.moodSlide,
-               { transform: [
-                { rotate: bubblePosition.interpolate({ inputRange: [0, 0.5, 1], outputRange: ['-2.5deg', '2.5deg', '-2.5deg'] }) },
-                { scale: bubblePosition.interpolate({ inputRange: [0, 0.25, 0.5, 0.75, 1], outputRange: [1, 1.02, 1, 0.98, 1] }) }] }
-            ]} />
+          {mood !== null && (
+            <View style={[styles.moodSection, { height: mood }]}>
+              <Animated.View
+                style={[
+                  styles.moodSlide,
+                  {
+                    transform: [
+                      {
+                        rotate: bubblePosition.interpolate({
+                          inputRange: [0, 0.5, 1],
+                          outputRange: ['-2.5deg', '2.5deg', '-2.5deg'],
+                        }),
+                      },
+                      {
+                        scale: bubblePosition.interpolate({
+                          inputRange: [0, 0.25, 0.5, 0.75, 1],
+                          outputRange: [1, 1.02, 1, 0.98, 1],
+                        }),
+                      },
+                    ],
+                  },
+                ]}
+              />
 
-            <Animated.View style={[styles.raisin,
-              { top: (mood / 2.5) + 50, transform: [
-                { translateY: bubbleOpacity[1].interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 5, 0] }) },
-                { rotate: bubbleOpacity[0].interpolate({ inputRange: [0, 0.5, 1], outputRange: ['-4deg', '0deg', '-4deg'] }) },
-                { scale: bubbleOpacity[0].interpolate({ inputRange: [0, 0.5, 1], outputRange: [1, 1.03, 1] }) }] }]} >
-              <Image style={{width: 70, height: 35 }} source={require('../../../../assets/raisin.png')} />
-            </Animated.View>
+              <Animated.View
+                style={[
+                  styles.raisin,
+                  {
+                    top: mood / 2.5 + 50,
+                    transform: [
+                      {
+                        translateY: bubbleOpacity[1].interpolate({
+                          inputRange: [0, 0.5, 1],
+                          outputRange: [0, 5, 0],
+                        }),
+                      },
+                      {
+                        rotate: bubbleOpacity[0].interpolate({
+                          inputRange: [0, 0.5, 1],
+                          outputRange: ['-4deg', '0deg', '-4deg'],
+                        }),
+                      },
+                      {
+                        scale: bubbleOpacity[0].interpolate({
+                          inputRange: [0, 0.5, 1],
+                          outputRange: [1, 1.03, 1],
+                        }),
+                      },
+                    ],
+                  },
+                ]}
+              >
+                <Image
+                  style={{ width: 70, height: 35 }}
+                  source={require('../../../../assets/raisin.png')}
+                />
+              </Animated.View>
 
-            <Animated.View style={[styles.raisin,
-              { opacity: 0.2, left: 50, right: null, bottom: (mood / 1.5) + 160, transform: [
-                { translateY: bubbleOpacity[2].interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 5, 0] }) },
-                { rotate: bubbleOpacity[1].interpolate({ inputRange: [0, 0.5, 1], outputRange: ['-5deg', '0deg', '-5deg'] }) },
-                { scale: bubbleOpacity[2].interpolate({ inputRange: [0, 0.5, 1], outputRange: [0.9, 0.85, 0.9] }) }] }]} >
-              <Image style={{width: 70, height: 35 }} source={require('../../../../assets/raisin.png')} />
-            </Animated.View>
+              <Animated.View
+                style={[
+                  styles.raisin,
+                  {
+                    opacity: 0.2,
+                    left: 50,
+                    right: null,
+                    bottom: mood / 1.5 + 160,
+                    transform: [
+                      {
+                        translateY: bubbleOpacity[2].interpolate({
+                          inputRange: [0, 0.5, 1],
+                          outputRange: [0, 5, 0],
+                        }),
+                      },
+                      {
+                        rotate: bubbleOpacity[1].interpolate({
+                          inputRange: [0, 0.5, 1],
+                          outputRange: ['-5deg', '0deg', '-5deg'],
+                        }),
+                      },
+                      {
+                        scale: bubbleOpacity[2].interpolate({
+                          inputRange: [0, 0.5, 1],
+                          outputRange: [0.9, 0.85, 0.9],
+                        }),
+                      },
+                    ],
+                  },
+                ]}
+              >
+                <Image
+                  style={{ width: 70, height: 35 }}
+                  source={require('../../../../assets/raisin.png')}
+                />
+              </Animated.View>
 
+              <Animated.View
+                style={[styles.bubbleSet, { bottom: 100, left: width / 2 - 50, opacity: 1 }]}
+              >
+                <Animated.View
+                  style={[
+                    styles.bubble,
+                    {
+                      width: 30,
+                      height: 30,
+                      borderRadius: 15,
+                      transform: [
+                        { translateX: bubbleHorizontalPositions[0] },
+                        { translateY: bubbleVerticalPositions[0] },
+                      ],
+                      opacity: bubbleOpacity[0],
+                      borderWidth: 4,
+                      borderTopWidth: 5,
+                      borderRightWidth: 6,
+                      backgroundColor: 'rgba(255,255,255, .3)',
+                    },
+                  ]}
+                />
+                <Animated.View
+                  style={[
+                    styles.bubble,
+                    {
+                      width: 28,
+                      height: 28,
+                      borderRadius: 14,
+                      transform: [
+                        { translateX: bubbleHorizontalPositions[1] },
+                        { translateY: bubbleVerticalPositions[1] },
+                      ],
+                      opacity: bubbleOpacity[1],
+                      borderWidth: 5,
+                      borderTopWidth: 6,
+                      borderRightWidth: 7,
+                      backgroundColor: 'rgba(255,255,255, .3)',
+                    },
+                  ]}
+                />
+                <Animated.View
+                  style={[
+                    styles.bubble,
+                    {
+                      width: 30,
+                      height: 30,
+                      borderRadius: 15,
+                      transform: [
+                        { translateX: bubbleHorizontalPositions[2] },
+                        { translateY: bubbleVerticalPositions[2] },
+                      ],
+                      opacity: bubbleOpacity[2],
+                      borderWidth: 6,
+                      borderTopWidth: 7,
+                      borderRightWidth: 8,
+                      backgroundColor: 'rgba(255,255,255, .3)',
+                    },
+                  ]}
+                />
+              </Animated.View>
 
-            <Animated.View style={[styles.bubbleSet, { bottom: 100, left: width / 2 - 50, opacity: 1}]} >
-              <Animated.View style={[styles.bubble, { width: 30, height: 30, borderRadius: 15, transform: [{ translateX: bubbleHorizontalPositions[0] }, { translateY: bubbleVerticalPositions[0] }], opacity: bubbleOpacity[0], borderWidth: 4, borderTopWidth:5, borderRightWidth:6, backgroundColor:'rgba(255,255,255, .3)'}]} />
-              <Animated.View style={[styles.bubble, { width: 28, height: 28, borderRadius: 14, transform: [{ translateX: bubbleHorizontalPositions[1] }, { translateY: bubbleVerticalPositions[1] }], opacity: bubbleOpacity[1], borderWidth: 5, borderTopWidth:6, borderRightWidth:7, backgroundColor:'rgba(255,255,255, .3)'}]} />
-              <Animated.View style={[styles.bubble, { width: 30, height: 30, borderRadius: 15, transform: [{ translateX: bubbleHorizontalPositions[2] }, { translateY: bubbleVerticalPositions[2] }], opacity: bubbleOpacity[2], borderWidth: 6, borderTopWidth:7, borderRightWidth:8, backgroundColor:'rgba(255,255,255, .3)'}]} />
-            </Animated.View>
+              <Animated.View
+                style={[styles.bubbleSet, { top: width / 1.5, left: width / 4 - 30, opacity: 1 }]}
+              >
+                <Animated.View
+                  style={[
+                    styles.bubble,
+                    {
+                      width: 15,
+                      height: 15,
+                      borderRadius: 8,
+                      transform: [
+                        { translateX: bubbleHorizontalPositions[2] },
+                        { translateY: bubbleVerticalPositions[1] },
+                      ],
+                      opacity: bubbleOpacity[0],
+                      borderWidth: 4,
+                      borderTopWidth: 5,
+                      borderRightWidth: 6,
+                      backgroundColor: 'rgba(255,255,255, .3)',
+                    },
+                  ]}
+                />
+                <Animated.View
+                  style={[
+                    styles.bubble,
+                    {
+                      width: 33,
+                      height: 33,
+                      borderRadius: 17,
+                      transform: [
+                        { translateX: bubbleHorizontalPositions[0] },
+                        { translateY: bubbleVerticalPositions[2] },
+                      ],
+                      opacity: bubbleOpacity[1],
+                      borderWidth: 5,
+                      borderTopWidth: 6,
+                      borderRightWidth: 7,
+                      backgroundColor: 'rgba(255,255,255, .3)',
+                    },
+                  ]}
+                />
+              </Animated.View>
 
-            <Animated.View style={[styles.bubbleSet, { top: width / 1.5 , left: width / 4 - 30, opacity: 1}]} >
-              <Animated.View style={[styles.bubble, { width: 15, height: 15, borderRadius: 8, transform: [{ translateX: bubbleHorizontalPositions[2] }, { translateY: bubbleVerticalPositions[1] }], opacity: bubbleOpacity[0], borderWidth: 4, borderTopWidth:5, borderRightWidth:6, backgroundColor:'rgba(255,255,255, .3)'}]} />
-              <Animated.View style={[styles.bubble, { width: 33, height: 33, borderRadius: 17, transform: [{ translateX: bubbleHorizontalPositions[0] }, { translateY: bubbleVerticalPositions[2] }], opacity: bubbleOpacity[1], borderWidth: 5, borderTopWidth:6, borderRightWidth:7, backgroundColor:'rgba(255,255,255, .3)'}]} />
-            </Animated.View>
+              <Animated.View
+                style={[styles.bubbleSet, { top: width, left: width / 2 - 50, opacity: 1 }]}
+              >
+                <Animated.View
+                  style={[
+                    styles.bubble,
+                    {
+                      width: 10,
+                      height: 10,
+                      borderRadius: 5,
+                      transform: [
+                        { translateX: bubbleHorizontalPositions[1] },
+                        { translateY: bubbleVerticalPositions[1] },
+                      ],
+                      opacity: bubbleOpacity[2],
+                      borderWidth: 4,
+                      borderTopWidth: 5,
+                      borderRightWidth: 5,
+                      backgroundColor: 'rgba(255,255,255, .25)',
+                    },
+                  ]}
+                />
+                <Animated.View
+                  style={[
+                    styles.bubble,
+                    {
+                      width: 20,
+                      height: 20,
+                      borderRadius: 10,
+                      transform: [
+                        { translateX: bubbleHorizontalPositions[2] },
+                        { translateY: bubbleVerticalPositions[2] },
+                      ],
+                      opacity: bubbleOpacity[1],
+                      borderWidth: 4,
+                      borderTopWidth: 5,
+                      borderRightWidth: 5,
+                      backgroundColor: 'rgba(255,255,255, .25)',
+                    },
+                  ]}
+                />
+                <Animated.View
+                  style={[
+                    styles.bubble,
+                    {
+                      width: 10,
+                      height: 10,
+                      borderRadius: 5,
+                      transform: [
+                        { translateX: bubbleHorizontalPositions[0] },
+                        { translateY: bubbleVerticalPositions[0] },
+                      ],
+                      opacity: bubbleOpacity[0],
+                      borderWidth: 4,
+                      borderTopWidth: 5,
+                      borderRightWidth: 5,
+                      backgroundColor: 'rgba(255,255,255, .25)',
+                    },
+                  ]}
+                />
+              </Animated.View>
 
-            <Animated.View style={[styles.bubbleSet, { top: width, left: width / 2 - 50, opacity: 1} ]} >
-              <Animated.View style={[styles.bubble, { width: 10, height: 10, borderRadius: 5,  transform: [{ translateX: bubbleHorizontalPositions[1] }, { translateY: bubbleVerticalPositions[1] }], opacity: bubbleOpacity[2], borderWidth: 4, borderTopWidth:5, borderRightWidth:5, backgroundColor:'rgba(255,255,255, .25)'}]} />
-              <Animated.View style={[styles.bubble, { width: 20, height: 20, borderRadius: 10, transform: [{ translateX: bubbleHorizontalPositions[2] }, { translateY: bubbleVerticalPositions[2] }], opacity: bubbleOpacity[1], borderWidth: 4, borderTopWidth:5, borderRightWidth:5, backgroundColor:'rgba(255,255,255, .25)'}]} />
-              <Animated.View style={[styles.bubble, { width: 10, height: 10, borderRadius: 5, transform: [{ translateX: bubbleHorizontalPositions[0] }, { translateY: bubbleVerticalPositions[0] }], opacity: bubbleOpacity[0], borderWidth: 4, borderTopWidth:5, borderRightWidth:5, backgroundColor:'rgba(255,255,255, .25)'}]} />
-            </Animated.View>
+              <Animated.View
+                style={[styles.bubbleSet, { top: 0, left: width / 1.5 - 50, opacity: 1 }]}
+              >
+                <Animated.View
+                  style={[
+                    styles.bubble,
+                    {
+                      width: 20,
+                      height: 20,
+                      borderRadius: 10,
+                      transform: [
+                        { translateX: bubbleHorizontalPositions[1] },
+                        { translateY: bubbleVerticalPositions[2] },
+                      ],
+                      opacity: bubbleOpacity[1],
+                      borderWidth: 4,
+                      borderTopWidth: 5,
+                      borderRightWidth: 6,
+                      backgroundColor: 'rgba(255,255,255, .3)',
+                    },
+                  ]}
+                />
+                <Animated.View
+                  style={[
+                    styles.bubble,
+                    {
+                      width: 30,
+                      height: 30,
+                      borderRadius: 15,
+                      transform: [
+                        { translateX: bubbleHorizontalPositions[2] },
+                        { translateY: bubbleVerticalPositions[0] },
+                      ],
+                      opacity: bubbleOpacity[2],
+                      borderWidth: 5,
+                      borderTopWidth: 6,
+                      borderRightWidth: 7,
+                      backgroundColor: 'rgba(255,255,255, .3)',
+                    },
+                  ]}
+                />
+                <Animated.View
+                  style={[
+                    styles.bubble,
+                    {
+                      width: 10,
+                      height: 10,
+                      borderRadius: 5,
+                      transform: [
+                        { translateX: bubbleHorizontalPositions[0] },
+                        { translateY: bubbleVerticalPositions[1] },
+                      ],
+                      opacity: bubbleOpacity[0],
+                      borderWidth: 6,
+                      borderTopWidth: 7,
+                      borderRightWidth: 8,
+                      backgroundColor: 'rgba(255,255,255, .3)',
+                    },
+                  ]}
+                />
+              </Animated.View>
 
-            <Animated.View style={[styles.bubbleSet, { top: 0, left: width / 1.5 - 50, opacity: 1} ]} >
-              <Animated.View style={[styles.bubble, { width: 20, height: 20, borderRadius: 10,  transform: [{ translateX: bubbleHorizontalPositions[1] }, { translateY: bubbleVerticalPositions[2] }], opacity: bubbleOpacity[1], borderWidth: 4, borderTopWidth:5, borderRightWidth:6, backgroundColor:'rgba(255,255,255, .3)'}]} />
-              <Animated.View style={[styles.bubble, { width: 30, height: 30, borderRadius: 15, transform: [{ translateX: bubbleHorizontalPositions[2] }, { translateY: bubbleVerticalPositions[0] }], opacity: bubbleOpacity[2], borderWidth: 5, borderTopWidth:6, borderRightWidth:7, backgroundColor:'rgba(255,255,255, .3)'}]} />
-              <Animated.View style={[styles.bubble, { width: 10, height: 10, borderRadius: 5, transform: [{ translateX: bubbleHorizontalPositions[0] }, { translateY: bubbleVerticalPositions[1] }], opacity: bubbleOpacity[0], borderWidth: 6, borderTopWidth:7, borderRightWidth:8, backgroundColor:'rgba(255,255,255, .3)'}]} />
-            </Animated.View>
-
-            <Animated.View style={[styles.bubbleSet, { top: 150, left: width - 100, opacity: 1}]} >
-              <Animated.View style={[styles.bubble, { width: 10, height: 10, borderRadius: 5,  transform: [{ translateX: bubbleHorizontalPositions[2] }, { translateY: bubbleVerticalPositions[1] }], opacity: bubbleOpacity[1], borderWidth: 4, borderTopWidth:5, borderRightWidth:6, backgroundColor:'rgba(255,255,255, .2)'}]} />
-              <Animated.View style={[styles.bubble, { width: 15, height: 15, borderRadius: 7, transform: [{ translateX: bubbleHorizontalPositions[1] }, { translateY: bubbleVerticalPositions[0] }], opacity: bubbleOpacity[2], borderWidth: 5, borderTopWidth:6, borderRightWidth:7, backgroundColor:'rgba(255,255,255, .4)'}]} />
-              <Animated.View style={[styles.bubble, { width: 13, height: 13, borderRadius: 8, transform: [{ translateX: bubbleHorizontalPositions[0] }, { translateY: bubbleVerticalPositions[2] }], opacity: bubbleOpacity[0], borderWidth: 6, borderTopWidth:7, borderRightWidth:8, backgroundColor:'rgba(255,255,255, .3)'}]} />
-            </Animated.View>
-
-          </View>
-          }
+              <Animated.View
+                style={[styles.bubbleSet, { top: 150, left: width - 100, opacity: 1 }]}
+              >
+                <Animated.View
+                  style={[
+                    styles.bubble,
+                    {
+                      width: 10,
+                      height: 10,
+                      borderRadius: 5,
+                      transform: [
+                        { translateX: bubbleHorizontalPositions[2] },
+                        { translateY: bubbleVerticalPositions[1] },
+                      ],
+                      opacity: bubbleOpacity[1],
+                      borderWidth: 4,
+                      borderTopWidth: 5,
+                      borderRightWidth: 6,
+                      backgroundColor: 'rgba(255,255,255, .2)',
+                    },
+                  ]}
+                />
+                <Animated.View
+                  style={[
+                    styles.bubble,
+                    {
+                      width: 15,
+                      height: 15,
+                      borderRadius: 7,
+                      transform: [
+                        { translateX: bubbleHorizontalPositions[1] },
+                        { translateY: bubbleVerticalPositions[0] },
+                      ],
+                      opacity: bubbleOpacity[2],
+                      borderWidth: 5,
+                      borderTopWidth: 6,
+                      borderRightWidth: 7,
+                      backgroundColor: 'rgba(255,255,255, .4)',
+                    },
+                  ]}
+                />
+                <Animated.View
+                  style={[
+                    styles.bubble,
+                    {
+                      width: 13,
+                      height: 13,
+                      borderRadius: 8,
+                      transform: [
+                        { translateX: bubbleHorizontalPositions[0] },
+                        { translateY: bubbleVerticalPositions[2] },
+                      ],
+                      opacity: bubbleOpacity[0],
+                      borderWidth: 6,
+                      borderTopWidth: 7,
+                      borderRightWidth: 8,
+                      backgroundColor: 'rgba(255,255,255, .3)',
+                    },
+                  ]}
+                />
+              </Animated.View>
+            </View>
+          )}
         </View>
-
       </View>
     );
   }
@@ -364,7 +734,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     borderTopWidth: 2,
     borderColor: '#fff',
-    backgroundColor: theme.simaDark
+    backgroundColor: theme.simaDark,
   },
 
   moodSlide: {
@@ -376,7 +746,7 @@ const styles = StyleSheet.create({
 
   raisin: {
     opacity: 0.3,
-    zIndex:10,
+    zIndex: 10,
     position: 'absolute',
     top: height - 380,
     backgroundColor: 'transparent',
@@ -390,13 +760,13 @@ const styles = StyleSheet.create({
     width: width / 1.5,
     height: height / 1.3,
     overflow: 'visible',
-    position:'absolute',
+    position: 'absolute',
     zIndex: 10,
   },
 
   bubble: {
-    position:'absolute',
-    borderColor: 'rgba(255, 255, 255, .05)'
+    position: 'absolute',
+    borderColor: 'rgba(255, 255, 255, .05)',
   },
   moodNumberWrap: {
     alignItems: 'flex-end',
@@ -408,7 +778,7 @@ const styles = StyleSheet.create({
     zIndex: 9,
   },
   moodNumber: {
-    right: (width / 2) - 83,
+    right: width / 2 - 83,
     backgroundColor: 'transparent',
     fontSize: 90,
     textAlign: 'right',
@@ -435,12 +805,12 @@ const styles = StyleSheet.create({
     fontSize: 90,
     fontWeight: '100',
     textAlign: 'right',
-    marginLeft: 10
+    marginLeft: 10,
   },
   guideWrap: {
     flexDirection: 'column',
     alignItems: 'center',
-    opacity: 0.6
+    opacity: 0.6,
   },
   guideIcon: {
     zIndex: 2,
@@ -449,7 +819,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: 'center',
     fontWeight: 'bold',
-    color: theme.secondaryLight
+    color: theme.secondaryLight,
   },
   guide: {
     zIndex: 2,
@@ -458,7 +828,7 @@ const styles = StyleSheet.create({
     top: 0,
     textAlign: 'center',
     fontWeight: 'bold',
-    color: theme.secondaryLight
+    color: theme.secondaryLight,
   },
   yAxis: {
     position: 'absolute',
@@ -466,7 +836,7 @@ const styles = StyleSheet.create({
     width: 38,
     top: 0,
     bottom: footerHeight - 15,
-    zIndex: 2
+    zIndex: 2,
   },
   axisLabel: {
     position: 'absolute',
@@ -501,7 +871,7 @@ const styles = StyleSheet.create({
     shadowRadius: 1,
     shadowOffset: {
       height: 2,
-      width: 0
+      width: 0,
     },
     alignItems: 'center',
     justifyContent: 'center',
@@ -510,7 +880,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     fontSize: 25,
     fontWeight: 'bold',
-    color: theme.primary
+    color: theme.primary,
   },
   submitButtonWrap: {
     bottom: 15,
@@ -526,7 +896,6 @@ const styles = StyleSheet.create({
   loader: {
     top: 17,
     left: 10,
-
   },
   confirmFormWrap: {
     backgroundColor: theme.white,
@@ -536,11 +905,11 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 8,
-    elevation: 2
+    elevation: 2,
   },
   confirmForm: {
     backgroundColor: theme.white,
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   confirmFormBg: {
     height: 100,
@@ -556,13 +925,12 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     left: 15,
-  }
+  },
 });
 
 const mapDispatchToProps = { submitMood };
 const mapStateToProps = state => ({
-  moodSending: isMoodSending(state)
+  moodSending: isMoodSending(state),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(MoodSlider);
-

@@ -1,43 +1,83 @@
 'use strict';
 
 import React, { Component } from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  TouchableHighlight,
-  Image,
-  Platform,
-  Text,
-} from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
 import { connect } from 'react-redux';
-
-import {
-  getUserImages,
-  getUserName,
-  getUserTeam,
-  getTotalSimas,
-  getTotalVotesForUser,
-  getUserImage,
-  fetchUserImages,
-  isLoadingUserImages,
-} from '../../concepts/user';
-import { openLightBox } from '../../actions/feed';
-import { getCurrentTab } from '../../reducers/navigation';
-
+import { createStructuredSelector } from 'reselect';
+import { cloneDeep } from 'lodash';
+import autobind from 'autobind-decorator';
+import ImagePickerManager from 'react-native-image-picker';
 import ParallaxView from 'react-native-parallax-view';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
+import {
+  getMyImages,
+  getMyTeam,
+  getMyTotalSimas,
+  getMyTotalVotes,
+  fetchMyImages,
+  isLoadingUserImages,
+} from '../../concepts/user';
+import {
+  getUserName,
+  getUserId,
+  postProfilePicture,
+  getUserImage,
+} from '../../concepts/registration';
+import { openLightBox } from '../../actions/feed';
+import { getCurrentTab } from '../../reducers/navigation';
+
+import ImageCaptureOptions from '../../constants/ImageCaptureOptions';
+import permissions from '../../services/android-permissions';
+import { width, IOS } from '../../services/device-info';
 import theme from '../../style/theme';
 import AnimateMe from '../AnimateMe';
-import Header from '../common/Header';
-import Loader from '../common/Loader';
 import LinearGradient from '../header/LinearGradient';
-import { height, width, IOS } from '../../services/device-info';
 
 const headerImage = require('../../../assets/frontpage_header-bg.jpg');
 
 class UserView extends Component {
+  componentDidMount() {
+    const { userId } = this.props;
+
+    this.props.fetchMyImages(userId);
+  }
+
+  @autobind
+  chooseImage() {
+    // cancel action if already loading image
+    if (this.props.isLoadingPicture) {
+      return;
+    }
+
+    if (IOS) {
+      this.openImagePicker();
+    } else {
+      permissions.requestCameraPermission(() => {
+        setTimeout(() => {
+          this.openImagePicker();
+        });
+      });
+    }
+  }
+
+  @autobind
+  openImagePicker() {
+    // Create selfie image capture options
+    const selfieCaptureOptions = Object.assign({}, ImageCaptureOptions, {
+      title: 'Change Avatar',
+      cameraType: 'front',
+      takePhotoButtonTitle: 'Take a selfie',
+    });
+
+    ImagePickerManager.showImagePicker(selfieCaptureOptions, response => {
+      if (!response.didCancel && !response.error) {
+        const image = 'data:image/jpeg;base64,' + response.data;
+        this.props.postProfilePicture(image);
+      }
+    });
+  }
+
   render() {
     const {
       images,
@@ -47,12 +87,21 @@ class UserView extends Component {
       userTeam,
       userName,
       userImage,
-      navigator,
+      renderContent,
+      onEditPress,
     } = this.props;
 
+    let { user } = this.props.route ? this.props.route : { user: null };
+
+    // Show Current user if not user selected
+    if (!user) {
+      user = { name: userName };
+    }
+
     const imagesCount = images.size;
-    const avatarInitialLetters = !!userName
-      ? userName
+
+    const avatarInitialLetters = !!user.name
+      ? user.name
           .split(' ')
           .slice(0, 2)
           .map(t => t.substring(0, 1))
@@ -63,8 +112,8 @@ class UserView extends Component {
       <View style={{ flex: 1 }}>
         <ParallaxView
           backgroundSource={headerImage}
-          windowHeight={270}
-          style={{ backgroundColor: theme.white, shadowOpacity: 0 }}
+          windowHeight={250}
+          style={{ backgroundColor: theme.stable, shadowOpacity: 0 }}
           scrollableViewStyle={{ shadowColor: theme.transparent }}
           header={
             <View style={styles.header}>
@@ -82,19 +131,14 @@ class UserView extends Component {
                   opacity: 0.75,
                 }}
               />
-              {!IOS && (
-                <View style={styles.backLink}>
-                  <TouchableHighlight
-                    onPress={() => navigator.pop()}
-                    style={styles.backLinkText}
-                    underlayColor={'rgba(255, 255, 255, .1)'}
-                  >
-                    <Icon name="arrow-back" size={28} style={styles.backLinkIcon} />
-                  </TouchableHighlight>
-                </View>
+
+              {IOS && (
+                <TouchableOpacity onPress={onEditPress} style={styles.editButton}>
+                  <Icon name="create" style={styles.editIcon} />
+                </TouchableOpacity>
               )}
-              <AnimateMe style={{ flex: 0 }} delay={300} animationType="fade-from-bottom">
-                <View style={styles.avatar}>
+              <View style={styles.avatar} onPress={this.openImagePicker}>
+                <View>
                   {userImage ? (
                     <Image style={styles.profilePic} source={{ uri: userImage }} />
                   ) : !avatarInitialLetters ? (
@@ -103,16 +147,21 @@ class UserView extends Component {
                     <Text style={styles.avatarInitials}>{avatarInitialLetters}</Text>
                   )}
                 </View>
-              </AnimateMe>
+              </View>
 
-              <AnimateMe style={{ flex: 0 }} delay={500} animationType="fade-from-bottom">
-                <Text style={styles.headerTitle}>{userName}</Text>
-              </AnimateMe>
-              <AnimateMe style={{ flex: 0 }} delay={700} animationType="fade-from-bottom">
-                <Text style={styles.headerSubTitle}>{userTeam}</Text>
-              </AnimateMe>
+              <TouchableOpacity onPress={this.openImagePicker} style={styles.avatarChangeIconWrap}>
+                <View>
+                  <Icon style={styles.avatarChangeIcon} name="camera-alt" />
+                </View>
+              </TouchableOpacity>
 
-              <AnimateMe style={styles.headerKpis} delay={900} animationType="fade-in">
+              <AnimateMe delay={100} animationType="fade-from-bottom">
+                <Text style={styles.headerTitle}>{user.name}</Text>
+              </AnimateMe>
+              <AnimateMe delay={300} animationType="fade-from-bottom">
+                <Text style={styles.headerSubTitle}>{userTeam || user.team}</Text>
+              </AnimateMe>
+              <View style={styles.headerKpis}>
                 <View style={styles.headerKpi}>
                   <Text style={styles.headerKpiValue}>{!isLoading ? imagesCount : '-'}</Text>
                   <Text style={styles.headerKpiTitle}>photos</Text>
@@ -125,48 +174,11 @@ class UserView extends Component {
                   <Text style={styles.headerKpiValue}>{!isLoading ? totalSimas || '-' : '-'}</Text>
                   <Text style={styles.headerKpiTitle}>simas</Text>
                 </View>
-              </AnimateMe>
+              </View>
             </View>
           }
         >
-          <View style={styles.container}>
-            {isLoading && (
-              <View style={styles.loader}>
-                <Loader size="large" />
-              </View>
-            )}
-            {images.size > 0 && (
-              <AnimateMe style={{ flex: 1 }} delay={1000} animationType="fade-in">
-                <View style={styles.imageContainer}>
-                  {images.map(image => (
-                    <View key={image.get('id')}>
-                      <TouchableOpacity
-                        activeOpacity={1}
-                        onPress={() => this.props.openLightBox(image.get('id'))}
-                      >
-                        <Image
-                          key={image.get('id')}
-                          style={{
-                            height: width / 3 - 14,
-                            width: width / 3 - 14,
-                            margin: 5,
-                            backgroundColor: theme.stable,
-                          }}
-                          source={{ uri: image.get('url') }}
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  ))}
-                </View>
-              </AnimateMe>
-            )}
-            {!isLoading &&
-              !images.size && (
-                <View style={styles.imageTitleWrap}>
-                  <Text style={styles.imageTitle}>No photos</Text>
-                </View>
-              )}
-          </View>
+          <View style={styles.container}>{renderContent()}</View>
         </ParallaxView>
       </View>
     );
@@ -176,32 +188,14 @@ class UserView extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.white,
-    minHeight: height / 2,
+    backgroundColor: theme.stable,
   },
   header: {
     flex: 1,
     elevation: 3,
-    paddingTop: 30,
+    paddingTop: 20,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  backLink: {
-    position: 'absolute',
-    left: 7,
-    top: 7,
-    zIndex: 2,
-  },
-  backLinkText: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: theme.transparent,
-  },
-  backLinkIcon: {
-    color: theme.white,
   },
   headerTitle: {
     fontSize: 16,
@@ -209,6 +203,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: theme.light,
     marginBottom: 3,
+    backgroundColor: 'transparent',
   },
   headerSubTitle: {
     fontSize: 12,
@@ -216,6 +211,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'rgba(0,0,0,.6)',
     opacity: 0.9,
+    backgroundColor: 'transparent',
   },
   avatar: {
     marginBottom: 10,
@@ -245,6 +241,34 @@ const styles = StyleSheet.create({
     backgroundColor: theme.transparent,
     color: theme.secondary,
   },
+  avatarChangeIconWrap: {
+    position: 'absolute',
+    left: width / 2 - 62,
+    top: 18,
+    backgroundColor: '#FFF',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 2,
+  },
+  avatarTextChangeIconWrap: {},
+  avatarChangeIcon: {
+    color: theme.primary,
+    fontSize: 18,
+    backgroundColor: 'transparent',
+  },
+  editButton: {
+    position: 'absolute',
+    right: 20,
+    top: 20,
+  },
+  editIcon: {
+    color: theme.white,
+    opacity: 0.9,
+    fontSize: 25,
+  },
   headerKpis: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -253,8 +277,8 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
-    marginBottom: 10,
-    marginTop: 25,
+    marginBottom: IOS ? 10 : 20,
+    marginTop: IOS ? 25 : 15,
   },
   headerKpiTitle: {
     color: theme.transparentLight,
@@ -270,7 +294,6 @@ const styles = StyleSheet.create({
     marginTop: 50,
   },
   imageContainer: {
-    padding: 5,
     margin: 1,
     marginTop: 2,
     marginBottom: 30,
@@ -295,17 +318,18 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapDispatchToProps = { openLightBox, fetchUserImages };
+const mapDispatchToProps = { openLightBox, fetchMyImages, postProfilePicture };
 
-const mapStateToProps = state => ({
-  images: getUserImages(state),
-  isLoading: isLoadingUserImages(state),
-  totalSimas: getTotalSimas(state),
-  totalVotes: getTotalVotesForUser(state),
-  userName: getUserName(state),
-  userTeam: getUserTeam(state),
-  userImage: getUserImage(state),
-  tab: getCurrentTab(state),
+const mapStateToProps = createStructuredSelector({
+  images: getMyImages,
+  isLoading: isLoadingUserImages,
+  totalSimas: getMyTotalSimas,
+  totalVotes: getMyTotalVotes,
+  userId: getUserId,
+  userName: getUserName,
+  userTeam: getMyTeam,
+  userImage: getUserImage,
+  tab: getCurrentTab,
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserView);

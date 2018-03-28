@@ -1,13 +1,9 @@
 'use strict';
 
 import React, { Component } from 'react';
-import {
-  View,
-  TouchableOpacity,
-  Text,
-  StyleSheet
-} from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 
+import theme from '../../style/theme';
 
 class Button extends Component {
   // propTypes: Object.assign({},
@@ -23,18 +19,13 @@ class Button extends Component {
   // ),
 
   _renderInnerText() {
-    return (
-      <Text style={[styles.textButton, this.props.textStyle]}>
-        {this.props.children}
-      </Text>
-    );
+    return <Text style={[styles.textButton, this.props.textStyle]}>{this.props.children}</Text>;
   }
 
   render() {
     if (this.props.isDisabled === true) {
       return (
-        <View style={[styles.button, this.props.style,
-            this.props.disabledStyle || styles.opacity]}>
+        <View style={[styles.button, this.props.style, this.props.disabledStyle || styles.opacity]}>
           {this._renderInnerText()}
         </View>
       );
@@ -45,8 +36,7 @@ class Button extends Component {
         onPressOut: this.props.onPressOut,
       };
       return (
-        <TouchableOpacity {...touchableProps}
-          style={[styles.button, this.props.style]}>
+        <TouchableOpacity {...touchableProps} style={[styles.button, this.props.style]}>
           {this._renderInnerText()}
         </TouchableOpacity>
       );
@@ -58,20 +48,20 @@ const styles = StyleSheet.create({
   button: {
     height: 50,
     justifyContent: 'center',
-    backgroundColor: '#50E3C2',
+    backgroundColor: theme.primary,
     borderRadius: 100,
     paddingLeft: 10,
-    paddingRight: 10
+    paddingRight: 10,
   },
   textButton: {
     textAlign: 'center',
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#fff'
+    color: '#fff',
   },
   opacity: {
-    opacity: 0.6
-  }
+    opacity: 0.6,
+  },
 });
 
 export default Button;

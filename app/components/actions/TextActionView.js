@@ -11,40 +11,40 @@ import {
   Animated,
   StyleSheet,
   KeyboardAvoidingView,
-  Modal
+  Modal,
 } from 'react-native';
 import { connect } from 'react-redux';
 import autobind from 'autobind-decorator';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
-import Button from '../../components/common/Button';
+import Button from '../common/Button';
+import LinearGradient from '../header/LinearGradient';
 import theme from '../../style/theme';
 // import Modal from 'react-native-modalbox';
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import * as CompetitionActions from '../../actions/competition';
 const IOS = Platform.OS === 'ios';
 
 const { width, height } = Dimensions.get('window');
 
-
 class TextActionView extends Component {
   propTypes: {
     dispatch: PropTypes.func.isRequired,
-    isTextActionViewOpen: PropTypes.bool.isRequired
-  }
+    isTextActionViewOpen: PropTypes.bool.isRequired,
+  };
 
   constructor(props) {
     super(props);
     this.state = {
       text: '',
       formAnimation: new Animated.Value(1),
-      okAnimation: new Animated.Value(0)
-    }
+      okAnimation: new Animated.Value(0),
+    };
   }
 
   showOK() {
-    Animated.spring(this.state.okAnimation, {toValue:1, duration:250}).start();
-    Animated.timing(this.state.formAnimation, {toValue:0, duration:100}).start();
+    Animated.spring(this.state.okAnimation, { toValue: 1, duration: 250 }).start();
+    Animated.timing(this.state.formAnimation, { toValue: 0, duration: 100 }).start();
   }
 
   hideOK() {
@@ -54,40 +54,36 @@ class TextActionView extends Component {
 
   @autobind
   onChangeText(text) {
-    this.setState({text: text});
+    this.setState({ text: text });
   }
 
   @autobind
   onCancel() {
-    this.setState({text: ''});
+    this.setState({ text: '' });
     this.props.dispatch(CompetitionActions.closeTextActionView());
   }
 
   @autobind
   onSendText() {
-
     if (!this.state.text.length) {
       this.onCancel();
       return;
     }
 
-    this.showOK()
+    this.showOK();
     setTimeout(() => {
       this.props.dispatch(CompetitionActions.postText(this.state.text));
-      this.setState({text: ''});
+      this.setState({ text: '' });
       this.props.dispatch(CompetitionActions.closeTextActionView());
 
       // reset values for the next time
       setTimeout(() => {
         this.hideOK();
-      },100);
-
+      }, 100);
     }, 600);
-
   }
 
   render() {
-
     const { isTextActionViewOpen } = this.props;
 
     if (!isTextActionViewOpen) {
@@ -95,28 +91,38 @@ class TextActionView extends Component {
     }
 
     return (
-      <Modal
-        onRequestClose={this.onCancel}
-        visible={isTextActionViewOpen}
-        animationType={'slide'}
-      >
-        <View style={[styles.container, styles.modalBackgroundStyle]}>
+      <Modal onRequestClose={this.onCancel} visible={isTextActionViewOpen} animationType={'slide'}>
+        <LinearGradient
+          style={[styles.container, styles.modalBackgroundStyle]}
+          start={{ x: 0.5123, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          locations={[0, 0.5, 1]}
+        >
+          <Button onPress={this.onCancel} style={styles.cancelIconButton}>
+            <Icon name={'close'} size={25} />
+          </Button>
 
-          <Animated.View style={[styles.okView, { opacity: this.state.okAnimation}]}>
-            <Animated.View style={[styles.okWrap,
-              {opacity: this.state.okAnimation, transform:[{ scale: this.state.okAnimation }]}
-            ]}>
-              <Icon name='done' style={styles.okSign} />
+          <Animated.View style={[styles.okView, { opacity: this.state.okAnimation }]}>
+            <Animated.View
+              style={[
+                styles.okWrap,
+                { opacity: this.state.okAnimation, transform: [{ scale: this.state.okAnimation }] },
+              ]}
+            >
+              <Icon name="done" style={styles.okSign} />
             </Animated.View>
             <View style={{ marginTop: 20 }}>
               <Text style={styles.okText}>Let's publish your message...</Text>
             </View>
           </Animated.View>
 
-
-          <Animated.View style={[styles.innerContainer, {opacity:this.state.formAnimation}]}>
-          <KeyboardAvoidingView behavior={IOS ? 'position' : 'height'} keyboardVerticalOffset={IOS ? -100 : 30} style={styles.inputContainer}>
-          {/*
+          <Animated.View style={[styles.innerContainer, { opacity: this.state.formAnimation }]}>
+            <KeyboardAvoidingView
+              behavior={IOS ? 'position' : 'height'}
+              keyboardVerticalOffset={IOS ? -100 : 30}
+              style={styles.inputContainer}
+            >
+              {/*
             <View>
               <View style={styles.title}>
                 <Icon name='textsms' style={styles.titleIcon} />
@@ -124,49 +130,37 @@ class TextActionView extends Component {
               </View>
             </View>
           */}
-            <TextInput
-              autoFocus={true}
-              multiline={true}
-              autoCapitalize={'sentences'}
-              underlineColorAndroid={'transparent'}
-              clearButtonMode={'while-editing'}
-              returnKeyType={'send'}
-              blurOnSubmit={true}
-              onSubmitEditing={this.onSendText}
-              style={styles.inputField}
-              onChangeText={this.onChangeText}
-              numberOfLines={3}
-              maxLength={151}
-              placeholderTextColor={'rgba(255,255,255, 0.65)'}
-              placeholder="Say something..."
-              value={this.state.text} />
+              <TextInput
+                autoFocus={true}
+                multiline={true}
+                autoCapitalize={'sentences'}
+                underlineColorAndroid={'transparent'}
+                clearButtonMode={'while-editing'}
+                returnKeyType={'send'}
+                blurOnSubmit={true}
+                onSubmitEditing={this.onSendText}
+                style={styles.inputField}
+                onChangeText={this.onChangeText}
+                numberOfLines={3}
+                maxLength={151}
+                placeholderTextColor={'rgba(255,255,255, 0.65)'}
+                placeholder="Say something..."
+                value={this.state.text}
+              />
 
-
-          {/*
-            <View style={styles.bottomInfo}>
-              <Text style={styles.bottomInfoText}>
-                How is it going?
-              </Text>
-            </View>
-          */}
-
-            <View style={styles.bottomButtons}>
-              <Button
-                onPress={this.onCancel}
-                style={styles.cancelButton}>
-                Cancel
-              </Button>
-
-              <Button
-                onPress={this.onSendText}
-                style={styles.modalButton}
-                isDisabled={!this.state.text}>
-                Post
-              </Button>
-            </View>
+              <View style={styles.bottomButtons}>
+                <Button
+                  onPress={this.onSendText}
+                  style={styles.modalButton}
+                  isDisabled={!this.state.text}
+                  textStyle={styles.modalButtonText}
+                >
+                  Post
+                </Button>
+              </View>
             </KeyboardAvoidingView>
           </Animated.View>
-        </View>
+        </LinearGradient>
       </Modal>
     );
   }
@@ -178,12 +172,12 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 0,
     paddingBottom: 0,
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   innerContainer: {
-    padding: IOS ? 10 : 0,
+    padding: IOS ? 0 : 0,
     paddingBottom: 10,
-    flex:1,
+    flex: 1,
     justifyContent: 'center',
   },
   inputContainer: {
@@ -191,27 +185,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexGrow: 1,
   },
-  title:{
+  title: {
     padding: 10,
     paddingBottom: 100,
     paddingTop: 0,
-    backgroundColor:'transparent',
+    backgroundColor: 'transparent',
     flexDirection: 'row',
     justifyContent: IOS ? 'center' : 'center',
   },
-  titleText:{
+  titleText: {
     fontSize: 20,
     color: theme.primary,
     fontWeight: 'bold',
     textAlign: IOS ? 'center' : 'left',
   },
-  titleIcon:{
-    top:5,
-    fontSize:20,
-    marginRight:5,
-    color:theme.primary,
+  titleIcon: {
+    top: 5,
+    fontSize: 20,
+    marginRight: 5,
+    color: theme.primary,
   },
-  bottomButtons:{
+  bottomButtons: {
     flexDirection: 'row',
     alignItems: IOS ? 'stretch' : 'flex-end',
     justifyContent: IOS ? 'center' : 'flex-end',
@@ -223,41 +217,59 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
     paddingLeft: 20,
     paddingRight: 20,
-    borderTopWidth: IOS ? 0 : 1,
-    borderTopColor:'rgba(0,0,0,.1)',
   },
   modalButton: {
+    backgroundColor: theme.white,
     flex: 1,
-    marginLeft: 10,
+    elevation: 5,
+    shadowColor: '#000000',
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    shadowOffset: {
+      height: 10,
+      width: 0,
+    },
   },
-  cancelButton: {
-    flex: 1,
+  modalButtonText: {
+    color: theme.secondary,
+    fontSize: 16,
+  },
+  cancelIconButton: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    position: 'absolute',
+    left: 5,
+    top: 15,
     marginRight: 10,
-    backgroundColor: '#999',
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    borderColor: theme.white,
+    zIndex: 99,
   },
   modalBackgroundStyle: {
-    backgroundColor: theme.secondary
+    backgroundColor: theme.transparent,
   },
   inputField: {
     fontSize: 18,
     margin: 0,
     marginLeft: 10,
     marginTop: IOS ? 110 : 0,
-    color:'#FFF',
+    color: '#FFF',
     textAlign: 'center',
     height: 220,
     width: width - 40,
   },
-  bottomInfo:{
+  bottomInfo: {
     padding: 15,
-    paddingBottom:10,
-    paddingTop:5,
-    backgroundColor: 'transparent'
+    paddingBottom: 10,
+    paddingTop: 5,
+    backgroundColor: 'transparent',
   },
-  bottomInfoText:{
+  bottomInfoText: {
     textAlign: IOS ? 'center' : 'left',
     fontSize: 12,
-    color: 'rgba(255,255,255,.7)'
+    color: 'rgba(255,255,255,.7)',
   },
   okView: {
     position: 'absolute',
@@ -268,7 +280,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flex: 1,
   },
-  okWrap:{
+  okWrap: {
     position: 'relative',
     overflow: 'visible',
     borderWidth: 5,
@@ -278,26 +290,26 @@ const styles = StyleSheet.create({
     width: 140,
     height: 140,
     opacity: 0,
-    transform: [{scale: 0}]
+    transform: [{ scale: 0 }],
   },
-  okSign:{
+  okSign: {
     fontSize: 65,
     color: theme.light,
     backgroundColor: 'transparent',
     textAlign: 'center',
   },
-  okText:{
+  okText: {
     color: theme.light,
     fontWeight: 'bold',
     textAlign: 'center',
     backgroundColor: 'transparent',
-    fontSize: 15
-  }
+    fontSize: 15,
+  },
 });
 
 const select = store => {
   return {
-    isTextActionViewOpen: store.competition.get('isTextActionViewOpen')
+    isTextActionViewOpen: store.competition.get('isTextActionViewOpen'),
   };
 };
 

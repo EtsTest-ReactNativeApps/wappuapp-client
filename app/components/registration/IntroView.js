@@ -10,40 +10,40 @@ import {
   Easing,
   TouchableOpacity,
   ScrollView,
-  Dimensions
+  Dimensions,
 } from 'react-native';
-
-import theme from '../../style/theme';
 
 import Icon from 'react-native-vector-icons/Ionicons';
 import MdIcon from 'react-native-vector-icons/MaterialIcons';
 
+import theme from '../../style/theme';
+import { isIphoneX } from '../../services/device-info';
+import AnimateMe from '../AnimateMe';
+
 const { width, height } = Dimensions.get('window');
 const cityIcons = {
-  'helsinki': require('../../../assets/cities/icon-ota-amfi-accent.png'),
-  'tampere': require('../../../assets/cities/icon-tampere-accent.png')
+  helsinki: require('../../../assets/cities/icon-ota-amfi-accent.png'),
+  tampere: require('../../../assets/cities/icon-tampere-accent.png'),
 };
 
 class InstructionView extends Component {
   constructor(props) {
-     super(props);
-     this.state = {
-       springAnim: new Animated.Value(0),
-     };
-   }
+    super(props);
+    this.state = {
+      springAnim: new Animated.Value(0),
+    };
+  }
 
-   handlePress(id) {
-     this.props.onSelect(id);
+  handlePress(id) {
+    this.props.onSelect(id);
 
-     this.state.springAnim.setValue(0);
-      Animated.timing(
-        this.state.springAnim,
-        {
-          toValue: 1,
-          duration: 800,
-          easing: Easing.elastic(1)}
-      ).start();
-   }
+    this.state.springAnim.setValue(0);
+    Animated.timing(this.state.springAnim, {
+      toValue: 1,
+      duration: 800,
+      easing: Easing.elastic(1),
+    }).start();
+  }
 
   render() {
     const containerStyles = [styles.container, styles.modalBackgroundStyle];
@@ -53,60 +53,72 @@ class InstructionView extends Component {
     const unactive = springAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [1, 1, 1] });
 
     return (
-       <View style={containerStyles}>
-
-          <View style={styles.topArea}>
-            <View style={styles.iconWrap}>
-              <Image style={styles.bgImage} source={require('../../../assets/frontpage_header-bg.jpg')} />
-              <Icon style={styles.icon} name={'md-globe'} />
+      <View style={containerStyles}>
+        <View style={styles.topArea}>
+          <View style={styles.iconWrap}>
+            <Image
+              style={styles.bgImage}
+              source={require('../../../assets/frontpage_header-bg.jpg')}
+            />
+            <Icon style={styles.icon} name={'md-globe'} />
+            <AnimateMe style={styles.subIconWrap} infinite animationType="up-down">
               <MdIcon style={styles.subIcon} name={'location-on'} />
-            </View>
+            </AnimateMe>
           </View>
+        </View>
 
-          <ScrollView style={{flex:1, width: null, height: null}}>
-            <View style={styles.container}>
-              <View style={styles.bottomArea}>
+        <ScrollView style={{ flex: 1, width: null, height: null }}>
+          <View style={styles.container}>
+            <View style={styles.bottomArea}>
+              <View style={styles.content}>
+                <View style={styles.textContainer}>
+                  <Text style={styles.subTitle}>PICK YOUR CITY</Text>
+                  <Text style={styles.text}>Don't worry, you can change your selection later.</Text>
+                </View>
+              </View>
+              <View style={styles.cities}>
+                {this.props.cities.map((city, i) => {
+                  const isCitySelected = city.get('id') === this.props.selectedCity;
+                  return (
+                    <TouchableOpacity
+                      key={i}
+                      activeOpacity={0.5}
+                      style={styles.button}
+                      onPress={this.handlePress.bind(this, city.get('id'))}
+                    >
+                      <Animated.View
+                        style={[
+                          styles.touchable,
+                          { transform: [{ scale: isCitySelected ? active : unactive }] },
+                        ]}
+                      >
+                        <View style={styles.circle}>
+                          {isCitySelected && <MdIcon name={'done'} style={styles.checked} />}
 
-                  <View style={styles.content}>
-                    <View style={styles.textContainer}>
-                      <Text style={styles.subTitle}>PICK YOUR CITY</Text>
-                      <Text style={styles.text}>
-                      Don't worry, you can change your selection later.</Text>
-                    </View>
-                  </View>
-                  <View style={styles.cities}>
-                    {this.props.cities.map((city, i) => {
-                      const isCitySelected = city.get('id') === this.props.selectedCity;
-                      return <TouchableOpacity
-                        key={i}
-                        activeOpacity={0.5}
-                        style={styles.button}
-                        onPress={this.handlePress.bind(this, city.get('id'))}>
-                        <Animated.View style={[styles.touchable, {transform: [{ scale: isCitySelected ? active : unactive }] }]}>
-                          <View style={styles.circle}>
-                            {isCitySelected && <MdIcon name={'done'} style={styles.checked} />}
-
-                            <Image
-                              source={(city.get('name') || '').toLowerCase() === 'tampere'
+                          <Image
+                            source={
+                              (city.get('name') || '').toLowerCase() === 'tampere'
                                 ? cityIcons.tampere
                                 : cityIcons.helsinki
-                              }
-                              style={styles.cityIcon}
-                            />
+                            }
+                            style={styles.cityIcon}
+                          />
 
-                            <Text style={[styles.cityText, isCitySelected ? styles.activeCityText : {}]}>
-                              {city.get('name')}
-                            </Text>
-                          </View>
-                        </Animated.View>
-                      </TouchableOpacity>}
-                    )}
-                  </View>
-                </View>
-
+                          <Text
+                            style={[styles.cityText, isCitySelected ? styles.activeCityText : {}]}
+                          >
+                            {city.get('name')}
+                          </Text>
+                        </View>
+                      </Animated.View>
+                    </TouchableOpacity>
+                  );
+                })}
               </View>
-            </ScrollView>
-        </View>
+            </View>
+          </View>
+        </ScrollView>
+      </View>
     );
   }
 }
@@ -115,10 +127,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.secondary,
-    alignSelf: 'stretch'
+    alignSelf: 'stretch',
   },
   area: {
-    alignItems: 'stretch'
+    alignItems: 'stretch',
   },
   topArea: {
     backgroundColor: theme.secondary,
@@ -134,11 +146,11 @@ const styles = StyleSheet.create({
     width: 190,
     height: 190,
     borderRadius: 95,
-    backgroundColor: 'rgba(255,255,255,.1)',
+    backgroundColor: 'rgba(255,255,255,.2)',
     left: width / 2 - 95,
-    top: width / 8,
+    top: isIphoneX ? 100 : width / 8,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   icon: {
     // width: 200,
@@ -154,13 +166,16 @@ const styles = StyleSheet.create({
     // tintColor: theme.white,
     color: theme.white,
   },
+
+  subIconWrap: {
+    right: 40,
+    top: 10,
+    position: 'absolute',
+  },
   subIcon: {
     backgroundColor: theme.transparent,
     color: theme.accentLight,
     fontSize: 60,
-    right: 40,
-    top: 10,
-    position: 'absolute'
   },
   bgImage: {
     position: 'absolute',
@@ -171,7 +186,7 @@ const styles = StyleSheet.create({
     height: 190,
     borderRadius: 95,
     bottom: 0,
-    opacity: 0.3
+    opacity: 0.3,
   },
   content: {
     margin: 20,
@@ -183,7 +198,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     alignItems: 'center',
-    flexDirection: 'column'
+    flexDirection: 'column',
   },
   subTitle: {
     color: theme.accentLight,
@@ -201,7 +216,7 @@ const styles = StyleSheet.create({
     marginTop: 0,
     justifyContent: 'center',
     flexDirection: 'row',
-    flex: 1
+    flex: 1,
   },
   button: {
     height: 120,
@@ -240,7 +255,7 @@ const styles = StyleSheet.create({
     zIndex: 3,
   },
   activeCityText: {
-    color: theme.accentLight
+    color: theme.accentLight,
   },
   cityTitle: {
     fontSize: 15,
@@ -258,25 +273,25 @@ const styles = StyleSheet.create({
     opacity: 1,
     backgroundColor: 'rgba(0,0,0,0)',
   },
-  bottomButtons:{
-    flex:1,
-    flexDirection:'column',
-    margin:0,
-    marginBottom:0,
-    marginLeft:0,
-    marginRight:0,
+  bottomButtons: {
+    flex: 1,
+    flexDirection: 'column',
+    margin: 0,
+    marginBottom: 0,
+    marginLeft: 0,
+    marginRight: 0,
     height: 50,
-    alignItems:'stretch',
-    position:'absolute',
-    bottom:0,
-    left:0,
-    right:0,
+    alignItems: 'stretch',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
   modalButton: {
-    borderRadius:0,
-    flex:1,
-    marginLeft:0,
-  }
+    borderRadius: 0,
+    flex: 1,
+    marginLeft: 0,
+  },
 });
 
 export default InstructionView;

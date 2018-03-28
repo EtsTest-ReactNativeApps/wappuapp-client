@@ -10,7 +10,7 @@ import {
   Dimensions,
   StyleSheet,
   TouchableWithoutFeedback,
-  Modal
+  Modal,
 } from 'react-native';
 import moment from 'moment';
 import location from '../../services/location';
@@ -27,7 +27,6 @@ import theme from '../../style/theme';
 const { width } = Dimensions.get('window');
 
 class CheckInActionView extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -35,12 +34,12 @@ class CheckInActionView extends Component {
       eventContent: [],
       dataSource: new ListView.DataSource({
         rowHasChanged: (row1, row2) => row1 !== row2,
-        sectionHeaderHasChanged: (s1, s2) => s1 !== s2
-      })
+        sectionHeaderHasChanged: (s1, s2) => s1 !== s2,
+      }),
     };
   }
 
-  componentWillReceiveProps({events}) {
+  componentWillReceiveProps({ events }) {
     this.getContent(events);
   }
 
@@ -52,8 +51,11 @@ class CheckInActionView extends Component {
   getContent(events) {
     const currentTime = moment();
 
-    const activeEvents = events.filter((event) => {
-      if (moment(event.get('startTime')).isBefore(currentTime) && moment(event.get('endTime')).isAfter(currentTime)) {
+    const activeEvents = events.filter(event => {
+      if (
+        moment(event.get('startTime')).isBefore(currentTime) &&
+        moment(event.get('endTime')).isAfter(currentTime)
+      ) {
         return event;
       }
     });
@@ -62,29 +64,34 @@ class CheckInActionView extends Component {
       this.setState({
         eventContent: activeEvents,
         activeContentWasFound: true,
-        dataSource: this.state.dataSource.cloneWithRows(activeEvents.toJS())
+        dataSource: this.state.dataSource.cloneWithRows(activeEvents.toJS()),
       });
     } else {
-      this.setState({eventContent: events.get(0), activeContentWasFound: false});
+      this.setState({ eventContent: events.get(0), activeContentWasFound: false });
     }
   }
 
   noActiveEventsView() {
     return (
       <View style={styles.eventContainer}>
-          <Image style={{
+        <Image
+          style={{
             height: 180,
             width: 180,
             marginBottom: 0,
-            }} source={require('../../../assets/sad-wappu-panda.png')}/>
+          }}
+          source={require('../../../assets/sad-wappu-panda.png')}
+        />
 
-        <Text style={{fontSize: 40, textAlign: 'center', color: theme.white}}>OH NO!</Text>
+        <Text style={{ fontSize: 40, textAlign: 'center', color: theme.white }}>OH NO!</Text>
         <Text style={[styles.text]}>No ongoing events available in {this.props.city}.</Text>
         <Text style={[styles.text]}>Try again later.</Text>
 
         <TouchableWithoutFeedback onPress={this.props.closeCheckInView}>
           <View style={[styles.cancelButton, { bottom: 25 }]}>
-            <Text style={styles.cancelButtonText}><Icon name="close" style={styles.cancelButtonText} /></Text>
+            <Text style={styles.cancelButtonText}>
+              <Icon name="close" style={styles.cancelButtonText} />
+            </Text>
           </View>
         </TouchableWithoutFeedback>
       </View>
@@ -95,12 +102,14 @@ class CheckInActionView extends Component {
     return (
       <View style={styles.eventContainer}>
         <View style={styles.headerContainer}>
-          <Icon name="pin-drop" style={{color: theme.accentLight, marginRight: 5 }} size={30}/>
+          <Icon name="pin-drop" style={{ color: theme.accentLight, marginRight: 5 }} size={30} />
           <Text style={styles.title}>CHECK IN</Text>
         </View>
 
-        <View style={{minHeight: 40}}>
-          <Text style={[styles.text, {fontSize: 12, padding: 10}]}>You can only check-in to events if you are in the event area</Text>
+        <View style={{ minHeight: 40 }}>
+          <Text style={[styles.text, { fontSize: 12, padding: 10 }]}>
+            You can only check-in to events if you are in the event area
+          </Text>
         </View>
 
         <ListView
@@ -115,7 +124,9 @@ class CheckInActionView extends Component {
 
         <TouchableWithoutFeedback onPress={this.props.closeCheckInView}>
           <View style={styles.cancelButton}>
-            <Text style={styles.cancelButtonText}><Icon name="arrow-back" style={styles.cancelButtonText} /></Text>
+            <Text style={styles.cancelButtonText}>
+              <Icon name="arrow-back" style={styles.cancelButtonText} />
+            </Text>
           </View>
         </TouchableWithoutFeedback>
       </View>
@@ -127,7 +138,7 @@ class CheckInActionView extends Component {
     let validLocation = false;
     let distanceInKm = null;
 
-    if ( userLocation && item.location ) {
+    if (userLocation && item.location) {
       const distance = location.getDiscanceInMeters(userLocation, item.location);
       validLocation = item.radius > distance;
       distanceInKm = location.getDistance(userLocation, item.location);
@@ -135,9 +146,15 @@ class CheckInActionView extends Component {
 
     return (
       <View>
-        <EventListItem currentDistance={distanceInKm} item={item} rowId={+rowId} hideStatus={true}/>
+        <EventListItem
+          currentDistance={distanceInKm}
+          item={item}
+          rowId={+rowId}
+          hideStatus={true}
+        />
         <CheckInButton validLocation={validLocation} checkIn={() => this.checkIn(item.id)} />
-      </View>);
+      </View>
+    );
   }
 
   renderHeader() {
@@ -146,11 +163,9 @@ class CheckInActionView extends Component {
         <Text style={[styles.title, styles.subtitle]}>ONGOING</Text>
       </View>
     );
-
   }
 
   render() {
-
     const { isCheckInViewOpen } = this.props;
 
     if (!isCheckInViewOpen) {
@@ -164,10 +179,7 @@ class CheckInActionView extends Component {
         animationType={'slide'}
       >
         <View style={[styles.container, styles.modalBackgroundStyle]}>
-          {this.state.activeContentWasFound
-            ? this.renderEventList()
-            : this.noActiveEventsView()
-          }
+          {this.state.activeContentWasFound ? this.renderEventList() : this.noActiveEventsView()}
         </View>
       </Modal>
     );
@@ -177,21 +189,21 @@ class CheckInActionView extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop:30,
+    paddingTop: 30,
   },
   modalBackgroundStyle: {
-    backgroundColor: theme.secondaryLight
+    backgroundColor: theme.secondary,
   },
   eventContainer: {
     alignItems: 'center',
     flexDirection: 'column',
     justifyContent: 'center',
-    flex: 1
+    flex: 1,
   },
   headerContainer: {
-    backgroundColor: theme.secondaryLight,
+    backgroundColor: theme.secondary,
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   title: {
     color: theme.white,
@@ -201,15 +213,15 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 18,
-    color: theme.secondaryLight
+    color: theme.secondary,
   },
   text: {
-    color: theme.light
+    color: theme.light,
   },
   header: {
     fontSize: 30,
     color: theme.secondaryLight,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   listHeader: {
     alignItems: 'flex-start',
@@ -238,8 +250,8 @@ const styles = StyleSheet.create({
     shadowRadius: 1,
     shadowOffset: {
       height: 5,
-      width: 0
-    }
+      width: 0,
+    },
   },
   cancelButtonText: {
     fontSize: 22,
@@ -255,8 +267,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontWeight: '600',
     textAlign: 'center',
-    color: theme.accentLight
-  }
+    color: theme.accentLight,
+  },
 });
 
 const mapDispatchToProps = {
@@ -269,7 +281,7 @@ const select = store => {
     isCheckInViewOpen: store.competition.get('isCheckInViewOpen'),
     events: store.event.get('list'),
     city: getCurrentCityName(store),
-    userLocation: store.location.get('currentLocation')
+    userLocation: store.location.get('currentLocation'),
   };
 };
 

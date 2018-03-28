@@ -9,7 +9,7 @@ import {
   Text,
   ActivityIndicator,
   KeyboardAvoidingView,
-  TouchableHighlight
+  TouchableHighlight,
 } from 'react-native';
 import MdIcon from 'react-native-vector-icons/MaterialIcons';
 
@@ -17,47 +17,55 @@ import theme from '../../../style/theme';
 
 class MoodSubmit extends Component {
   render() {
-
     const { confirmScale, onChangeText, submit, description, isMoodSending } = this.props;
 
     return (
-      <KeyboardAvoidingView behavior="position" keyboardVerticalOffset={-40} style={styles.confirmForm}>
-
-        <Animated.View style={[styles.confirmFormBg, { opacity: confirmScale, transform:[ { scale: confirmScale }] }]}>
+      <KeyboardAvoidingView
+        behavior="position"
+        keyboardVerticalOffset={-40}
+        style={styles.confirmForm}
+      >
+        <Animated.View
+          style={[
+            styles.confirmFormBg,
+            { opacity: confirmScale, transform: [{ scale: confirmScale }] },
+          ]}
+        >
           <TextInput
-          autoFocus={false}
-          autoCapitalize={'sentences'}
-          underlineColorAndroid={'transparent'}
-          clearButtonMode={'while-editing'}
-          returnKeyType={'send'}
-          onSubmitEditing={submit}
-          onChangeText={onChangeText}
-          style={styles.inputField}
-          maxLength={131}
-          placeholderTextColor={'rgba(0,0,0, 0.3)'}
-          placeholder="Describe Your Wappuvibe..."
-          value={description}
+            autoFocus={false}
+            autoCapitalize={'sentences'}
+            underlineColorAndroid={'transparent'}
+            clearButtonMode={'while-editing'}
+            returnKeyType={'send'}
+            onSubmitEditing={submit}
+            onChangeText={onChangeText}
+            style={styles.inputField}
+            maxLength={131}
+            placeholderTextColor={'rgba(0,0,0, 0.3)'}
+            placeholder="Describe Your Wappuvibe..."
+            value={description}
           />
 
           <View style={styles.buttonWrap}>
-          {isMoodSending
-            ?
-            <ActivityIndicator style={styles.loader} size={'large'} color={theme.primary} />
-            :
-            <TouchableHighlight underlayColor={theme.primary} onPress={submit} style={[styles.button, styles.submitButton]}>
-              <Text style={[styles.buttonText, styles.submitButtonText]}>
-                <MdIcon size={30} name={'done'} />
-              </Text>
-            </TouchableHighlight>
-          }
+            {isMoodSending ? (
+              <ActivityIndicator style={styles.loader} size={'large'} color={theme.primary} />
+            ) : (
+              <TouchableHighlight
+                underlayColor={theme.primary}
+                onPress={submit}
+                style={[styles.button, styles.submitButton]}
+              >
+                <Text style={[styles.buttonText, styles.submitButtonText]}>
+                  <MdIcon size={30} name={'done'} />
+                </Text>
+              </TouchableHighlight>
+            )}
           </View>
         </Animated.View>
       </KeyboardAvoidingView>
-      );
+    );
   }
-};
-
-
+}
 
 const styles = StyleSheet.create({
   confirmForm: {
@@ -69,7 +77,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 8,
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   confirmFormBg: {
     height: 100,
@@ -106,7 +114,7 @@ const styles = StyleSheet.create({
     shadowRadius: 1,
     shadowOffset: {
       height: 2,
-      width: 0
+      width: 0,
     },
     alignItems: 'center',
     justifyContent: 'center',
@@ -115,7 +123,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     fontSize: 25,
     fontWeight: 'bold',
-    color: theme.primary
+    color: theme.primary,
   },
   submitButtonWrap: {
     bottom: 15,
@@ -123,7 +131,7 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     elevation: 3,
-    backgroundColor: theme.primaryLight,
+    backgroundColor: theme.primary,
   },
   submitButtonText: {
     color: theme.white,
@@ -140,8 +148,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     left: 15,
-  }
+  },
 });
-
 
 export default MoodSubmit;

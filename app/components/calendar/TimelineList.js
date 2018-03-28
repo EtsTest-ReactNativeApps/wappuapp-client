@@ -1,4 +1,4 @@
-  'use strict';
+'use strict';
 
 import React, { Component } from 'react';
 import {
@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import { connect } from 'react-redux';
 import autobind from 'autobind-decorator';
-
 
 import _ from 'lodash';
 import moment from 'moment';
@@ -40,17 +39,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: theme.light,
   },
-  loaderText:{
-    color:'#aaa',
+  loaderText: {
+    color: '#aaa',
   },
-  reloadButton:{
-    marginTop:20,
-    width: 100
+  reloadButton: {
+    marginTop: 20,
+    width: 100,
   },
-  reloadButtonText:{
-    fontSize:30,
-    color:theme.secondary,
-    fontWeight:'bold',
+  reloadButtonText: {
+    fontSize: 30,
+    color: theme.secondary,
+    fontWeight: 'bold',
   },
   listView: {
     flexGrow: 1,
@@ -61,7 +60,7 @@ const styles = StyleSheet.create({
     backgroundColor: IOS ? 'rgba(255,255,255,.88)' : 'transparent',
     opacity: IOS ? 1 : 1,
     padding: IOS ? 15 : 35,
-    paddingLeft:15,
+    paddingLeft: 15,
     flexGrow: 1,
   },
   sectionHeaderAnnouncement: {
@@ -70,16 +69,16 @@ const styles = StyleSheet.create({
     padding: IOS ? 20 : 15,
     flexGrow: 1,
   },
-  sectionHeaderAnnouncementText:{
+  sectionHeaderAnnouncementText: {
     backgroundColor: 'transparent',
-    color: theme.secondary
+    color: theme.secondary,
   },
   sectionHeaderText: {
     textAlign: 'left',
-    fontWeight: IOS ? 'bold' : 'bold',
-    fontSize: IOS ? 18 : 16,
-    color: IOS ? theme.secondary : theme.secondary
-  }
+    fontWeight: 'bold',
+    fontSize: 14,
+    color: theme.dark,
+  },
 });
 
 class TimelineList extends Component {
@@ -88,17 +87,17 @@ class TimelineList extends Component {
     events: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
     navigator: PropTypes.object.isRequired,
-    eventsFetchState: PropTypes.any
-  }
+    eventsFetchState: PropTypes.any,
+  };
 
   constructor(props) {
     super(props);
     this.state = {
       dataSource: new ListView.DataSource({
         rowHasChanged: (row1, row2) => row1 !== row2,
-        sectionHeaderHasChanged: (s1, s2) => s1 !== s2
-      })
-    }
+        sectionHeaderHasChanged: (s1, s2) => s1 !== s2,
+      }),
+    };
   }
 
   componentWillReceiveProps({ events, announcements }) {
@@ -124,27 +123,27 @@ class TimelineList extends Component {
 
   @autobind
   navigateToSingleEvent(model) {
-    const currentDistance = model.location.latitude !== 0 & model.location.longitude !== 0 ?
-      location.getDistance(this.props.userLocation, model.location) : null;
+    const currentDistance =
+      (model.location.latitude !== 0) & (model.location.longitude !== 0)
+        ? location.getDistance(this.props.userLocation, model.location)
+        : null;
 
-    const startDay = moment(model.startTime).format('ddd D.M.')
+    const startDay = moment(model.startTime).format('ddd D.M.');
 
     this.props.navigator.push({
       showName: true,
       component: EventDetail,
       name: startDay,
       currentDistance: currentDistance,
-      model
+      model,
     });
   }
 
   updateListItems(eventsData, announcementData) {
-
-    let announcements = announcementData.toJS()
-      .map(item => {
-        item.timelineType = 'announcement';
-        return item;
-      });
+    let announcements = announcementData.toJS().map(item => {
+      item.timelineType = 'announcement';
+      return item;
+    });
 
     const now = moment();
     let events = eventsData
@@ -152,18 +151,22 @@ class TimelineList extends Component {
       .map(item => {
         item.set('timelineType', 'event');
         return item;
-      }).toJS()
+      })
+      .toJS();
 
     let pastEvents = eventsData
       .filter(item => moment(item.get('endTime')).isBefore(now))
       .map(item => {
         item.set('timelineType', PAST_EVENTS_SECTION);
         return item;
-      }).toJS()
+      })
+      .toJS();
 
-
-    let listSections = _.groupBy(events,
-      event => moment(event.startTime).startOf('day').unix());
+    let listSections = _.groupBy(events, event =>
+      moment(event.startTime)
+        .startOf('day')
+        .unix()
+    );
 
     // Set flag for last of day if more than one event
     _.map(listSections || [], eventsPerDay => {
@@ -183,7 +186,7 @@ class TimelineList extends Component {
       // Make the order to be that the first section is the announcements, then comes event sections
       listOrder = [ANNOUNCEMENTS_SECTION, ...eventSectionsOrder];
     } else {
-      listOrder = [...eventSectionsOrder]
+      listOrder = [...eventSectionsOrder];
     }
 
     // Past events
@@ -193,20 +196,23 @@ class TimelineList extends Component {
     }
 
     this.setState({
-      dataSource: this.state.dataSource.cloneWithRowsAndSections(listSections, listOrder)
+      dataSource: this.state.dataSource.cloneWithRowsAndSections(listSections, listOrder),
     });
   }
 
   renderLoadingView() {
     // TODO: platform-specific if-else
-    return <View style={styles.container}>
-      <ActivityIndicator
-        color={theme.primary}
-        animating={true}
-        style={{ alignItems: 'center', justifyContent: 'center', height: 80 }}
-        size='large' />
-      <Text style={styles.loaderText}>Loading events...</Text>
-    </View>;
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator
+          color={theme.primary}
+          animating={true}
+          style={{ alignItems: 'center', justifyContent: 'center', height: 80 }}
+          size="large"
+        />
+        <Text style={styles.loaderText}>Loading events...</Text>
+      </View>
+    );
   }
 
   @autobind
@@ -218,12 +224,10 @@ class TimelineList extends Component {
     // Announcement-section
     if (sectionId === ANNOUNCEMENTS_SECTION) {
       sectionCaption = 'Announcement';
-    }
-    else if (sectionId === PAST_EVENTS_SECTION) {
+    } else if (sectionId === PAST_EVENTS_SECTION) {
       sectionCaption = 'Past Events';
-    }
-    // Day-sections
-    else if (sectionStartMoment.isSame(moment(), 'day')) {
+    } else if (sectionStartMoment.isSame(moment(), 'day')) {
+      // Day-sections
       sectionCaption = 'Today';
     } else if (sectionStartMoment.isSame(moment().add(1, 'day'), 'day')) {
       sectionCaption = 'Tomorrow';
@@ -233,14 +237,16 @@ class TimelineList extends Component {
     sectionCaption = sectionCaption.toUpperCase();
 
     // # Style
-    const headerStyle = (sectionId === ANNOUNCEMENTS_SECTION) ?
-      styles.sectionHeaderAnnouncement : styles.sectionHeader;
-    const headerTextStyle = (sectionId === ANNOUNCEMENTS_SECTION) ?
-      styles.sectionHeaderAnnouncementText : {};
+    const headerStyle =
+      sectionId === ANNOUNCEMENTS_SECTION ? styles.sectionHeaderAnnouncement : styles.sectionHeader;
+    const headerTextStyle =
+      sectionId === ANNOUNCEMENTS_SECTION ? styles.sectionHeaderAnnouncementText : {};
 
-    return <View style={headerStyle}>
-      <Text style={[styles.sectionHeaderText,headerTextStyle]}>{sectionCaption}</Text>
-    </View>;
+    return (
+      <View style={headerStyle}>
+        <Text style={[styles.sectionHeaderText, headerTextStyle]}>{sectionCaption}</Text>
+      </View>
+    );
   }
 
   @autobind
@@ -250,15 +256,19 @@ class TimelineList extends Component {
         return <AnnouncementListItem item={item} />;
 
       default:
-        const currentDistance = item.location.latitude !== 0 && item.location.longitude !== 0 ?
-          location.getDistance(this.props.userLocation, item.location) : null;
-        return <EventListItem
-          item={item}
-          rowId={+rowId}
-          pastEvent={sectionId === PAST_EVENTS_SECTION}
-          currentDistance={currentDistance}
-          handlePress={() => this.navigateToSingleEvent(item)}
-        />;
+        const currentDistance =
+          item.location.latitude !== 0 && item.location.longitude !== 0
+            ? location.getDistance(this.props.userLocation, item.location)
+            : null;
+        return (
+          <EventListItem
+            item={item}
+            rowId={+rowId}
+            pastEvent={sectionId === PAST_EVENTS_SECTION}
+            currentDistance={currentDistance}
+            handlePress={() => this.navigateToSingleEvent(item)}
+          />
+        );
     }
   }
 
@@ -270,22 +280,21 @@ class TimelineList extends Component {
         return (
           <View style={styles.container}>
             <Text style={styles.loaderText}>Could not get events :(</Text>
-            <Button
-              onPress={this.getViewContent}
-              style={styles.reloadButton}
-            >
+            <Button onPress={this.getViewContent} style={styles.reloadButton}>
               Reload
             </Button>
           </View>
         );
       default:
-        return <ListView
-          enableEmptySections={true}
-          dataSource={this.state.dataSource}
-          renderSectionHeader={this.renderSectionHeader}
-          renderRow={this.renderListItem}
-          style={styles.listView}
-        />;
+        return (
+          <ListView
+            enableEmptySections={true}
+            dataSource={this.state.dataSource}
+            renderSectionHeader={this.renderSectionHeader}
+            renderRow={this.renderListItem}
+            style={styles.listView}
+          />
+        );
     }
   }
 }
@@ -297,8 +306,8 @@ const select = store => {
     announcements: store.announcement.get('list'),
     events: store.event.get('list'),
     eventsFetchState: store.event.get('listState'),
-    userLocation: store.location.get('currentLocation')
-  }
+    userLocation: store.location.get('currentLocation'),
+  };
 };
 
 export default connect(select, mapDispatchToProps)(TimelineList);
