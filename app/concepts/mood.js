@@ -14,25 +14,25 @@ import { SHOW_NOTIFICATION, HIDE_NOTIFICATION } from '../actions/competition';
 import * as NotificationMessages from '../utils/notificationMessage';
 import ActionTypes from '../constants/ActionTypes';
 
-const placeHolderMoodData = times(40)
-  .map((item, index) => ({
-    date: moment(`${config.WHAPPU_YEAR}-04-29`)
-      .subtract(index, 'days')
-      .format('YYYY-MM-DD'),
-    ratingPersonal: index > 6 ? (70 - index * Math.floor(Math.random() * 2)) / 10 : null,
-    ratingTeam: index > 6 ? (70 - index * Math.floor(Math.random() * 2)) / 10 : null,
-    ratingCity: index > 6 ? (70 - index * Math.floor(Math.random() * 2)) / 10 : null,
-  }))
-  .reverse();
+// const placeHolderMoodData = times(40)
+//   .map((item, index) => ({
+//     date: moment(`${config.WHAPPU_YEAR}-04-29`)
+//       .subtract(index, 'days')
+//       .format('YYYY-MM-DD'),
+//     ratingPersonal: index > 6 ? (70 - index * Math.floor(Math.random() * 2)) / 10 : null,
+//     ratingTeam: index > 6 ? (70 - index * Math.floor(Math.random() * 2)) / 10 : null,
+//     ratingCity: index > 6 ? (70 - index * Math.floor(Math.random() * 2)) / 10 : null,
+//   }))
+//   .reverse();
 
 // # Selectors
-// export const getMoodData = state => state.mood.get('data', List()) || List();
-export const getMoodData = () => fromJS(placeHolderMoodData);
+// export const getMoodData = () => fromJS(placeHolderMoodData);
+export const getMoodData = state => state.mood.get('data', List()) || List();
 export const getLimitLine = state => state.mood.get('limitLine');
 export const isMoodSending = state => state.mood.get('moodSending');
 export const isMoodLoading = state => state.mood.get('isLoading');
 
-const showAfter = `${config.WHAPPU_YEAR}-03-25`;
+const showAfter = `${config.WHAPPU_YEAR}-03-31`;
 const showAfterISO = moment(showAfter).toISOString();
 const getValidMoodData = createSelector(getMoodData, data => {
   if (!data || data.isEmpty()) {
