@@ -20,8 +20,10 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import EventListItem from '../calendar/CheckInListItem';
 import { checkIn, closeCheckInView } from '../../actions/competition';
 import { getCurrentCityName } from '../../concepts/city';
+import { getLocation, fetchUserLocation } from '../../concepts/location';
 
 import CheckInButton from './CheckInButton';
+import AnimateMe from '../AnimateMe';
 import theme from '../../style/theme';
 
 const { width } = Dimensions.get('window');
@@ -39,8 +41,12 @@ class CheckInActionView extends Component {
     };
   }
 
-  componentWillReceiveProps({ events }) {
+  componentWillReceiveProps({ events, isCheckInViewOpen }) {
     this.getContent(events);
+
+    if (isCheckInViewOpen && this.props.isCheckInViewOpen !== isCheckInViewOpen) {
+      this.props.fetchUserLocation();
+    }
   }
 
   checkIn(eventId) {
@@ -73,19 +79,23 @@ class CheckInActionView extends Component {
 
   noActiveEventsView() {
     return (
-      <View style={styles.eventContainer}>
-        <Image
-          style={{
-            height: 180,
-            width: 180,
-            marginBottom: 0,
-          }}
-          source={require('../../../assets/sad-wappu-panda.png')}
-        />
+      <View style={styles.emptyEventContainer}>
+        <AnimateMe style={{ flex: 0 }} infinite animationType="up-down" duration={500}>
+          <Image
+            style={{
+              height: 180,
+              width: 180,
+              marginBottom: 0,
+            }}
+            source={require('../../../assets/sad-wappu-panda.png')}
+          />
+        </AnimateMe>
 
         <Text style={{ fontSize: 40, textAlign: 'center', color: theme.white }}>OH NO!</Text>
-        <Text style={[styles.text]}>No ongoing events available in {this.props.city}.</Text>
-        <Text style={[styles.text]}>Try again later.</Text>
+        <Text style={[styles.text, styles.emptyStateText]}>
+          No ongoing events available in {this.props.city}.
+        </Text>
+        <Text style={[styles.text, styles.emptyStateText]}>Try again later.</Text>
 
         <TouchableWithoutFeedback onPress={this.props.closeCheckInView}>
           <View style={[styles.cancelButton, { bottom: 25 }]}>
@@ -102,13 +112,13 @@ class CheckInActionView extends Component {
     return (
       <View style={styles.eventContainer}>
         <View style={styles.headerContainer}>
-          <Icon name="pin-drop" style={{ color: theme.accentLight, marginRight: 5 }} size={30} />
-          <Text style={styles.title}>CHECK IN</Text>
+          <Text style={styles.title}>Check In</Text>
+          <Icon name="pin-drop" style={{ color: theme.secondaryLight, marginLeft: 5 }} size={30} />
         </View>
 
-        <View style={{ minHeight: 40 }}>
-          <Text style={[styles.text, { fontSize: 12, padding: 10 }]}>
-            You can only check-in to events if you are in the event area
+        <View style={{ minHeight: 40, padding: 5, paddingHorizontal: 20 }}>
+          <Text style={[styles.text, { fontSize: 12 }]}>
+            You can only check in to events if you are in the event area
           </Text>
         </View>
 
@@ -140,7 +150,11 @@ class CheckInActionView extends Component {
 
     if (userLocation && item.location) {
       const distance = location.getDiscanceInMeters(userLocation, item.location);
-      validLocation = item.radius > distance;
+
+      if (distance >= 0 && distance !== '') {
+        validLocation = item.radius > distance;
+      }
+
       distanceInKm = location.getDistance(userLocation, item.location);
     }
 
@@ -189,34 +203,46 @@ class CheckInActionView extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 30,
+    paddingTop: 0,
   },
   modalBackgroundStyle: {
-    backgroundColor: theme.secondary,
+    backgroundColor: theme.white,
   },
   eventContainer: {
+    alignItems: 'flex-start',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    flex: 1,
+  },
+  emptyEventContainer: {
+    backgroundColor: theme.secondary,
     alignItems: 'center',
     flexDirection: 'column',
     justifyContent: 'center',
     flex: 1,
   },
   headerContainer: {
-    backgroundColor: theme.secondary,
+    backgroundColor: theme.white,
     flexDirection: 'row',
+    paddingHorizontal: 20,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   title: {
-    color: theme.white,
-    fontWeight: 'normal',
+    color: theme.dark,
+    fontWeight: 'bold',
     paddingLeft: 0,
     fontSize: 30,
   },
   subtitle: {
     fontSize: 18,
-    color: theme.secondary,
+    color: theme.dark,
   },
   text: {
-    color: theme.light,
+    color: theme.dark,
+  },
+  emptyStateText: {
+    color: theme.white,
   },
   header: {
     fontSize: 30,
@@ -252,6 +278,7 @@ const styles = StyleSheet.create({
       height: 5,
       width: 0,
     },
+    elevation: 3,
   },
   cancelButtonText: {
     fontSize: 22,
@@ -274,6 +301,7 @@ const styles = StyleSheet.create({
 const mapDispatchToProps = {
   checkIn,
   closeCheckInView,
+  fetchUserLocation,
 };
 
 const select = store => {
@@ -281,7 +309,7 @@ const select = store => {
     isCheckInViewOpen: store.competition.get('isCheckInViewOpen'),
     events: store.event.get('list'),
     city: getCurrentCityName(store),
-    userLocation: store.location.get('currentLocation'),
+    userLocation: getLocation(store),
   };
 };
 

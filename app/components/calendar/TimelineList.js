@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   },
   sectionHeaderAnnouncementText: {
     backgroundColor: 'transparent',
-    color: theme.secondary,
+    color: theme.dark,
   },
   sectionHeaderText: {
     textAlign: 'left',
