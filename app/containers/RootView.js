@@ -10,14 +10,13 @@ import loggerConfig from '../utils/loggerConfig';
 import * as reducers from '../reducers';
 import MainView from './MainView';
 import * as CompetitionActions from '../actions/competition';
-import * as LocationActions from '../actions/location';
+import { startLocationWatcher, stopLocationWatcher } from '../concepts/location';
 import { getUser } from '../concepts/registration';
 import { initializeUsersCity, fetchCities } from '../concepts/city';
 import { initializeUsersRadio, fetchRadioStations } from '../concepts/radio';
 import permissions from '../services/android-permissions';
 
 const IOS = Platform.OS === 'ios';
-// var HockeyApp = require('react-native-hockeyapp');
 
 const middlewares = [thunk];
 if (__DEV__) {
@@ -39,29 +38,19 @@ store.dispatch(getUser());
 // Fetch all cities
 store
   .dispatch(fetchCities())
-  // load selectd city from local storage
+  // And load selected city from local storage
   .then(() => store.dispatch(initializeUsersCity()));
 
-// load radio settings from local storage
+// Load radio settings from local storage
 store
   .dispatch(initializeUsersRadio())
-  // fetch radio stations
+  // And fetch radio stations
   .then(() => store.dispatch(fetchRadioStations()));
 
 class RootView extends Component {
-  constructor(props) {
-    super(props);
-
-    this.startLocationWatcher = this.startLocationWatcher.bind(this);
-  }
-
   componentDidMount() {
-    // Location watcher
-    if (IOS) {
-      this.startLocationWatcher();
-    } else {
-      permissions.requestLocationPermission(this.startLocationWatcher);
-    }
+    // Initialize location watcher
+    store.dispatch(startLocationWatcher());
 
     // Statusbar style
     if (IOS) {
@@ -71,35 +60,8 @@ class RootView extends Component {
   }
 
   componentWillUnmount() {
-    navigator.geolocation.clearWatch(this.watchID);
-  }
-
-  startLocationWatcher() {
-    const locationOpts = {
-      enableHighAccuracy: false,
-      timeout: 20000,
-      maximumAge: 1000 * 60 * 5,
-    };
-
-    navigator.geolocation.getCurrentPosition(
-      position => this.updateLocation,
-      error => console.log(error.message),
-      locationOpts
-    );
-    this.watchID = navigator.geolocation.watchPosition(
-      this.updateLocation,
-      error => console.log(error.message),
-      locationOpts
-    );
-  }
-
-  updateLocation(position) {
-    store.dispatch(
-      LocationActions.updateLocation({
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-      })
-    );
+    // Shut down location watcher
+    store.dispatch(stopLocationWatcher());
   }
 
   render() {

@@ -1,7 +1,7 @@
 rootProject.name = 'wappuapp'
 include ':app'
-include ':react-native-code-push'
-project(':react-native-code-push').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-code-push/android/app')
+include ':react-native-maps'
+project(':react-native-maps').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-maps/android')
 include ':react-native-svg'
 project(':react-native-svg').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-svg/android')
 include ':react-native-vector-icons'
@@ -18,11 +18,9 @@ include ':react-native-photo-view'
 project(':react-native-photo-view').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-photo-view/android')
 include ':react-native-image-zoom'
 project(':react-native-image-zoom').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-image-zoom/android')
-include ':react-native-blur'
-project(':react-native-blur').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-blur/android')
-include ':react-native-hockeyapp'
-project(':react-native-hockeyapp').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-hockeyapp/android')
 include ':react-native-maps'
 project(':react-native-maps').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-maps/android')
 include ':react-native-audio-streaming'
 project(':react-native-audio-streaming').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-audio-streaming/android')
+include ':react-native-android-location-enabler'
+project(':react-native-android-location-enabler').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-android-location-enabler/android')
