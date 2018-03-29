@@ -65,19 +65,29 @@ class AndroidTabNavigation extends Component {
           tabBarPosition={'bottom'}
           tabBarBackgroundColor={theme.white}
           tabBarActiveTextColor={theme.secondaryLight}
-          tabBarInactiveTextColor={'rgba(0, 0, 0, 0.5)'}
+          tabBarInactiveTextColor={theme.inactive}
           locked={true}
           scrollWithoutAnimation={true}
           prerenderingSiblingsNumber={0}
           renderTabBar={() => <IconTabBar />}
         >
-          <FeedView navigator={navigator} tabLabel={{ title: 'Buzz', icon: 'whatshot' }} />
-          <CalendarView navigator={navigator} tabLabel={{ title: 'Events', icon: 'event' }} />
+          <FeedView
+            id={Tabs.FEED}
+            navigator={navigator}
+            tabLabel={{ title: 'Buzz', icon: 'whatshot' }}
+          />
+          <CalendarView
+            id={Tabs.CALENDAR}
+            navigator={navigator}
+            tabLabel={{ title: 'Events', icon: 'event' }}
+          />
           <MoodView
+            id={Tabs.MOOD}
             navigator={navigator}
             tabLabel={{ title: 'Vibes', icon: 'trending-up', iconSize: 26 }}
           />
           <ProfileView
+            id={Tabs.SETTINGS}
             navigator={navigator}
             tabLabel={{ title: 'Profile', icon: 'account-circle' }}
           />
