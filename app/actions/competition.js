@@ -7,17 +7,15 @@ import * as NotificationMessages from '../utils/notificationMessage';
 import { refreshFeed } from './feed';
 import { sortFeedChronological } from '../concepts/sortType';
 import { getCityId } from '../concepts/city';
-import {createRequestActionTypes} from '.';
+import { createRequestActionTypes } from '.';
 
-const {
-  POST_ACTION_REQUEST,
-  POST_ACTION_SUCCESS,
-  POST_ACTION_FAILURE
-} = createRequestActionTypes('POST_ACTION');
+const { POST_ACTION_REQUEST, POST_ACTION_SUCCESS, POST_ACTION_FAILURE } = createRequestActionTypes(
+  'POST_ACTION'
+);
 const {
   GET_ACTION_TYPES_REQUEST,
   GET_ACTION_TYPES_SUCCESS,
-  GET_ACTION_TYPES_FAILURE
+  GET_ACTION_TYPES_FAILURE,
 } = createRequestActionTypes('GET_ACTION_TYPES');
 
 const OPEN_TEXTACTION_VIEW = 'OPEN_TEXTACTION_VIEW';
@@ -39,14 +37,14 @@ const closeTextActionView = () => {
 };
 
 const openCheckInView = () => {
-  return { type : OPEN_CHECKIN_VIEW };
+  return { type: OPEN_CHECKIN_VIEW };
 };
 
 const closeCheckInView = () => {
   return { type: CLOSE_CHECKIN_VIEW };
 };
 
-const _postAction = (payload) => {
+const _postAction = payload => {
   return (dispatch, getState) => {
     dispatch({ type: POST_ACTION_REQUEST });
 
@@ -54,21 +52,24 @@ const _postAction = (payload) => {
     const cityId = getCityId(state);
     const queryParams = !isNil(cityId) ? { cityId } : {};
 
-    return api.postAction(payload, state.location.get('currentLocation'), queryParams)
+    // Post location only for Check-ins
+    // @todo get location only here, not anywhere else
+    const locationMaybe = ActionTypes.CHECK_IN_EVENT ? state.location.get('currentLocation') : null;
+
+    return api
+      .postAction(payload, locationMaybe, queryParams)
       .then(response => {
-         setTimeout(() => {
+        setTimeout(() => {
+          // Set feed sort to 'new' if posted image or text, otherwise just refresh
+          if ([ActionTypes.TEXT, ActionTypes.IMAGE].indexOf(payload.type) >= 0) {
+            dispatch(sortFeedChronological());
+          } else {
+            dispatch(refreshFeed());
+          }
 
-            // Set feed sort to 'new' if posted image or text, otherwise just refresh
-            if ([ActionTypes.TEXT, ActionTypes.IMAGE].indexOf(payload.type) >= 0) {
-              dispatch(sortFeedChronological())
-            } else {
-              dispatch(refreshFeed());
-            }
-
-            dispatch({ type: POST_ACTION_SUCCESS, payload: { type: payload.type } });
-            dispatch({ type: SHOW_NOTIFICATION, payload: NotificationMessages.getMessage(payload) });
-
-         }, 1000);
+          dispatch({ type: POST_ACTION_SUCCESS, payload: { type: payload.type } });
+          dispatch({ type: SHOW_NOTIFICATION, payload: NotificationMessages.getMessage(payload) });
+        }, 1000);
 
         setTimeout(() => {
           dispatch({ type: HIDE_NOTIFICATION });
@@ -80,17 +81,17 @@ const _postAction = (payload) => {
         if (e.response.status === 429) {
           dispatch({
             type: SHOW_NOTIFICATION,
-            payload: NotificationMessages.getRateLimitMessage(payload)
+            payload: NotificationMessages.getRateLimitMessage(payload),
           });
         } else if (e.response.status === 403) {
           dispatch({
             type: SHOW_NOTIFICATION,
-            payload: NotificationMessages.getInvalidEventMessage(payload)
+            payload: NotificationMessages.getInvalidEventMessage(payload),
           });
         } else {
           dispatch({
             type: SHOW_NOTIFICATION,
-            payload: NotificationMessages.getErrorMessage(payload)
+            payload: NotificationMessages.getErrorMessage(payload),
           });
         }
         dispatch({ type: POST_ACTION_FAILURE, error: e });
@@ -104,36 +105,40 @@ const _postAction = (payload) => {
 
 const postAction = type => {
   return _postAction({
-    type
+    type,
   });
 };
 
 const postText = text => {
   return _postAction({
     type: ActionTypes.TEXT,
-    text: text
+    text: text,
   });
 };
 
 const postImage = (image, imageText, imageTextPosition) => {
-  const postObject = Object.assign({
-    type: ActionTypes.IMAGE,
-    imageData: image,
-  }, !!imageText ? { imageText, imageTextPosition } : {});
+  const postObject = Object.assign(
+    {
+      type: ActionTypes.IMAGE,
+      imageData: image,
+    },
+    !!imageText ? { imageText, imageTextPosition } : {}
+  );
   return _postAction(postObject);
 };
 
 const checkIn = eventId => {
   return _postAction({
     type: ActionTypes.CHECK_IN_EVENT,
-    eventId: eventId
+    eventId: eventId,
   });
-}
+};
 
 const fetchActionTypes = () => {
   return dispatch => {
     dispatch({ type: GET_ACTION_TYPES_REQUEST });
-    api.fetchModels('actionTypes')
+    api
+      .fetchModels('actionTypes')
       .then(actionTypes => dispatch({ type: GET_ACTION_TYPES_SUCCESS, payload: actionTypes }))
       .catch(e => dispatch({ type: GET_ACTION_TYPES_FAILURE, error: true, payload: e }));
   };
@@ -143,7 +148,7 @@ const updateCooldowns = () => {
   return { type: UPDATE_COOLDOWNS };
 };
 
-const setEditableImage = (editableImage) => ({ type: SET_EDITABLE_IMAGE, payload: editableImage });
+const setEditableImage = editableImage => ({ type: SET_EDITABLE_IMAGE, payload: editableImage });
 const clearEditableImage = () => ({ type: CLEAR_EDITABLE_IMAGE });
 
 export {
@@ -173,5 +178,5 @@ export {
   fetchActionTypes,
   updateCooldowns,
   setEditableImage,
-  clearEditableImage
+  clearEditableImage,
 };
