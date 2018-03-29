@@ -88,7 +88,6 @@ class UserView extends Component {
       userName,
       userImage,
       renderContent,
-      onEditPress,
     } = this.props;
 
     let { user } = this.props.route ? this.props.route : { user: null };
@@ -132,11 +131,6 @@ class UserView extends Component {
                 }}
               />
 
-              {IOS && (
-                <TouchableOpacity onPress={onEditPress} style={styles.editButton}>
-                  <Icon name="create" style={styles.editIcon} />
-                </TouchableOpacity>
-              )}
               <View style={styles.avatar} onPress={this.openImagePicker}>
                 <View>
                   {userImage ? (
@@ -149,11 +143,16 @@ class UserView extends Component {
                 </View>
               </View>
 
-              <TouchableOpacity onPress={this.openImagePicker} style={styles.avatarChangeIconWrap}>
-                <View>
-                  <Icon style={styles.avatarChangeIcon} name="camera-alt" />
-                </View>
-              </TouchableOpacity>
+              {!!user.name && (
+                <TouchableOpacity
+                  onPress={this.openImagePicker}
+                  style={styles.avatarChangeIconWrap}
+                >
+                  <View>
+                    <Icon style={styles.avatarChangeIcon} name="camera-alt" />
+                  </View>
+                </TouchableOpacity>
+              )}
 
               <AnimateMe delay={100} animationType="fade-from-bottom">
                 <Text style={styles.headerTitle}>{user.name}</Text>

@@ -53,10 +53,10 @@ const styles = StyleSheet.create({
     // // # Drop shadows
     elevation: 2,
     shadowColor: '#000000',
-    shadowOpacity: 0.075,
-    shadowRadius: 1,
+    shadowOpacity: 0.035,
+    shadowRadius: 3,
     shadowOffset: {
-      height: 2,
+      height: 3,
       width: 0,
     },
     backgroundColor: '#fff',

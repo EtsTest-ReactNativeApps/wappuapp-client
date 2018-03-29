@@ -867,10 +867,10 @@ const styles = StyleSheet.create({
     borderRadius: 33,
     elevation: 2,
     shadowColor: '#000000',
-    shadowOpacity: 0.075,
-    shadowRadius: 1,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
     shadowOffset: {
-      height: 2,
+      height: 6,
       width: 0,
     },
     alignItems: 'center',

@@ -44,10 +44,10 @@ var styles = StyleSheet.create({
     fontSize: 24,
   },
   cityIcon: {
-    top: -1,
+    top: 1,
     left: 7,
-    width: 38,
-    height: 38,
+    width: 36,
+    height: 36,
   },
 });
 

@@ -110,10 +110,10 @@ const styles = StyleSheet.create({
     borderRadius: 33,
     elevation: 2,
     shadowColor: '#000000',
-    shadowOpacity: 0.075,
-    shadowRadius: 1,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
     shadowOffset: {
-      height: 2,
+      height: 6,
       width: 0,
     },
     alignItems: 'center',
@@ -132,6 +132,13 @@ const styles = StyleSheet.create({
   submitButton: {
     elevation: 3,
     backgroundColor: theme.primary,
+    shadowColor: '#000000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    shadowOffset: {
+      height: 6,
+      width: 0,
+    },
   },
   submitButtonText: {
     color: theme.white,

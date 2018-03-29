@@ -1,12 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import {
-  Text,
-  Easing,
-  Animated,
-  Dimensions,
-  View,
-  StyleSheet
-} from 'react-native';
+import { Text, Easing, Animated, Dimensions, View, StyleSheet } from 'react-native';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import theme from '../../style/theme';
@@ -27,7 +20,7 @@ const styles = StyleSheet.create({
     paddingBottom: 18,
   },
   message: {
-    color: '#fff',
+    color: theme.white,
     fontSize: 14,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -38,8 +31,8 @@ const styles = StyleSheet.create({
     left: 0,
     backgroundColor: 'rgba(0,0,0,0)',
     width: width,
-    height: 400
-  }
+    height: 400,
+  },
 });
 
 class Notification extends Component {
@@ -57,7 +50,7 @@ class Notification extends Component {
 
     this.state = {
       translate: new Animated.ValueXY(),
-      height: 0
+      height: 0,
     };
   }
 
@@ -68,7 +61,6 @@ class Notification extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-
     if (nextProps.visible && !this.props.visible) {
       this.fadeIn(nextProps.topOffset);
     } else {
@@ -91,7 +83,7 @@ class Notification extends Component {
     Animated.timing(this.state.translate, {
       duration: 300,
       easing: Easing.ease,
-      toValue: { x: 0, y: topOffset }
+      toValue: { x: 0, y: topOffset },
     }).start();
   }
 
@@ -99,7 +91,7 @@ class Notification extends Component {
     Animated.timing(this.state.translate, {
       duration: 200,
       easing: Easing.ease,
-      toValue: { x: 0, y: -this.state.height }
+      toValue: { x: 0, y: -this.state.height },
     }).start();
   }
 
@@ -117,18 +109,22 @@ class Notification extends Component {
     const message = this.props.children;
     const animatedViewStyles = [
       styles.container,
-      { /* backgroundColor: this.props.success ? theme.green : theme.red */},
+      {
+        /* backgroundColor: this.props.success ? theme.green : theme.red */
+      },
       { top: this.state.height === 0 ? -100 : 0 },
-      { transform: this.state.translate.getTranslateTransform() }
+      { transform: this.state.translate.getTranslateTransform() },
     ];
 
     return (
       <View style={styles.wrapper} pointerEvents={'box-none'}>
-        <Animated.View
-          onLayout={this.getViewSize.bind(this)}
-          style={animatedViewStyles}>
-          {this.props.success &&
-            <Icon name="done" style={{fontSize:20, color:theme.white, position:'absolute', left: 15, top: 17 }} />}
+        <Animated.View onLayout={this.getViewSize.bind(this)} style={animatedViewStyles}>
+          {this.props.success && (
+            <Icon
+              name="done"
+              style={{ fontSize: 20, color: theme.white, position: 'absolute', left: 15, top: 17 }}
+            />
+          )}
           <Text style={styles.message}>{message}</Text>
         </Animated.View>
       </View>

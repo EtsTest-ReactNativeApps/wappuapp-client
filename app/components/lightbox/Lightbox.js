@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import { connect } from 'react-redux';
 import autobind from 'autobind-decorator';
-// import ModalBox from 'react-native-modalbox';
 
 import { openRegistrationView } from '../../concepts/registration';
 import { voteFeedItem, removeFeedItem, closeLightBox } from '../../actions/feed';
@@ -203,7 +202,7 @@ class LightBox extends Component {
               <PlatformTouchable
                 delayPressIn={0}
                 onPress={this.onClose}
-                background={PlatformTouchable.SelectableBackgroundBorderless()}
+                background={IOS ? null : PlatformTouchable.SelectableBackgroundBorderless()}
               >
                 <View>
                   <Icon

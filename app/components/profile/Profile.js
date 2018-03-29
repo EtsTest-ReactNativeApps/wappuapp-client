@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
   },
   listItemIcon: {
     fontSize: 22,
-    color: theme.primary,
+    color: theme.inactive,
     alignItems: 'center',
     width: 50,
   },
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     top: 45,
   },
   listItemText: {
-    color: '#000',
+    color: theme.dark,
     fontSize: 16,
   },
   listItemText__highlight: {
@@ -408,7 +408,7 @@ class Profile extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <ProfileHero onEditPress={this.openRegistration} renderContent={this.renderContent} />
+        <ProfileHero renderContent={this.renderContent} />
       </View>
     );
   }

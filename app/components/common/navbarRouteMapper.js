@@ -70,6 +70,14 @@ let NavigationBarRouteMapper = props => ({
       return <SortSelector />;
     }
 
+    if (props.currentTab === Tabs.SETTINGS && index === 0) {
+      return (
+        <TouchableOpacity onPress={() => props.openRegistrationView()}>
+          <Icon name="md-create" style={[styles.navBarIcon, { paddingRight: 12, paddingTop: 8 }]} />
+        </TouchableOpacity>
+      );
+    }
+
     if (props.currentTab === Tabs.MOOD && !route.hideNavButton) {
       return (
         <TouchableOpacity
@@ -83,7 +91,7 @@ let NavigationBarRouteMapper = props => ({
           }}
         >
           <Icon
-            name="ios-information-circle-outline"
+            name="md-information-circle"
             style={[styles.navBarIcon, { paddingRight: 12, paddingTop: 8 }]}
           />
         </TouchableOpacity>
@@ -157,7 +165,7 @@ var styles = StyleSheet.create({
     padding: 6,
     paddingLeft: 10,
     paddingRight: 10,
-    fontSize: 28,
+    fontSize: 24,
     textAlign: 'center',
   },
   navBarLogo: {

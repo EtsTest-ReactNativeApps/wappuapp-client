@@ -204,7 +204,7 @@ var styles = StyleSheet.create({
     alignItems: 'center',
   },
   filterText: {
-    color: theme.midgrey,
+    color: theme.inactive,
     fontSize: 14,
     paddingTop: 8,
     textAlign: 'center',
