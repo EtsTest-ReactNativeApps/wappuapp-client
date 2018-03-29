@@ -1,6 +1,6 @@
 import ActionTypes from '../constants/ActionTypes';
 
-const getMessage = (payload) => {
+const getMessage = payload => {
   switch (payload.type) {
     case ActionTypes.IMAGE: {
       return 'Great shot!';
@@ -9,7 +9,7 @@ const getMessage = (payload) => {
       return 'One sima down!';
     }
     case ActionTypes.TEXT: {
-      return 'That\'s cool!';
+      return "That's cool!";
     }
     case ActionTypes.CHECK_IN_EVENT: {
       return '*Check* Whappu hard!';
@@ -20,21 +20,16 @@ const getMessage = (payload) => {
   }
 };
 
-const getErrorMessage = (payload) => {
+const getErrorMessage = payload => {
   return 'Oh no, an error occurred! :-(';
 };
 
-const getRateLimitMessage = (payload) => {
-  return 'Hold your horses!'
+const getRateLimitMessage = payload => {
+  return 'Hold your horses!';
 };
 
-const getInvalidEventMessage = (payload) => {
-  return 'Hold your horses! No double check-ins!'
+const getInvalidEventMessage = payload => {
+  return "Hold on there! That's not possible!";
 };
 
-export {
-  getMessage,
-  getErrorMessage,
-  getRateLimitMessage,
-  getInvalidEventMessage
-};
+export { getMessage, getErrorMessage, getRateLimitMessage, getInvalidEventMessage };
