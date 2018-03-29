@@ -1,6 +1,8 @@
-import {Platform} from 'react-native';
+import { Platform } from 'react-native';
 import geolib from 'geolib';
 import { round, isNil } from 'lodash';
+
+const isIOS = Platform.OS === 'ios';
 
 function getGeoUrl(event) {
   if (isNil(event.location) || isNil(event.location.latitude) || isNil(event.location.longitude)) {
@@ -10,7 +12,7 @@ function getGeoUrl(event) {
   const ZOOM_LEVEL = '18';
 
   var geoUrl = null;
-  let {latitude, longitude} = event.location;
+  let { latitude, longitude } = event.location;
 
   if (Platform.OS === 'ios') {
     // On iOS use Apple Maps
@@ -19,8 +21,18 @@ function getGeoUrl(event) {
     geoUrl += '&q=' + latitude + ',' + longitude;
   } else {
     //<lat>,<long>?q=<lat>,<long>(Label+Name)"
-    geoUrl = 'geo:' + latitude + ',' + longitude + '?q=' + latitude + ',' + longitude +
-      '(' + encodeURIComponent(event.locationName) + ')';
+    geoUrl =
+      'geo:' +
+      latitude +
+      ',' +
+      longitude +
+      '?q=' +
+      latitude +
+      ',' +
+      longitude +
+      '(' +
+      encodeURIComponent(event.locationName) +
+      ')';
   }
 
   return geoUrl;
@@ -28,7 +40,14 @@ function getGeoUrl(event) {
 
 // jscs:disable disallowImplicitTypeConversion
 function getDistance(userLocation, eventLocation) {
-  if (isNil(userLocation) || isNil(eventLocation) || isNil(eventLocation.latitude) || isNil(eventLocation.longitude)) {
+  if (
+    isNil(userLocation) ||
+    isNil(eventLocation) ||
+    isNil(userLocation.latitude) ||
+    isNil(userLocation.longitude) ||
+    isNil(eventLocation.latitude) ||
+    isNil(eventLocation.longitude)
+  ) {
     return '';
   }
 
@@ -39,7 +58,14 @@ function getDistance(userLocation, eventLocation) {
 }
 
 function getDiscanceInMeters(userLocation, eventLocation) {
-  if (isNil(userLocation) || isNil(eventLocation) || isNil(eventLocation.latitude) || isNil(eventLocation.longitude)) {
+  if (
+    isNil(userLocation) ||
+    isNil(userLocation.latitude) ||
+    isNil(userLocation.longitude) ||
+    isNil(eventLocation) ||
+    isNil(eventLocation.latitude) ||
+    isNil(eventLocation.longitude)
+  ) {
     return '';
   }
 
@@ -51,5 +77,5 @@ function getDiscanceInMeters(userLocation, eventLocation) {
 export default {
   getGeoUrl,
   getDistance,
-  getDiscanceInMeters
+  getDiscanceInMeters,
 };
