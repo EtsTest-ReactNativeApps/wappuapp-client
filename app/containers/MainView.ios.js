@@ -10,6 +10,7 @@ import NavRouteMapper from '../components/common/navbarRouteMapper';
 import errorAlert from '../utils/error-alert';
 
 import { getCityPanelShowState } from '../concepts/city';
+import { openRegistrationView } from '../concepts/registration';
 import IOSTabNavigation from './Navigation';
 import RegistrationView from '../components/registration/RegistrationView';
 import CheckInActionView from '../components/actions/CheckInActionView';
@@ -84,4 +85,8 @@ const select = state => {
   };
 };
 
-export default connect(select)(MainView);
+const mapDispatchToProps = {
+  openRegistrationView,
+};
+
+export default connect(select, mapDispatchToProps)(MainView);
