@@ -9,8 +9,8 @@ import com.BV.LinearGradient.LinearGradientPackage;
 import cl.json.RNSharePackage;
 import com.reactnative.photoview.PhotoViewPackage;
 import com.image.zoom.ReactImageZoom;
-//import com.cmcewen.blurview.BlurViewPackage;
 import com.airbnb.android.react.maps.MapsPackage;
+import com.heanoria.library.reactnative.locationenabler.RNAndroidLocationEnablerPackage;
 
 public class MainActivity extends ReactActivity {
 
