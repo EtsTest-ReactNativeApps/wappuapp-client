@@ -212,7 +212,7 @@ class RadioPlayer extends Component {
             </Text>
 
             <TouchableHighlight
-              underlayColor={url ? theme.stable : theme.grey}
+              underlayColor={url ? theme.stable : theme.stable}
               onPress={this.onRadioButtonPress}
               style={buttonStyle}
             >
@@ -409,7 +409,7 @@ const styles = StyleSheet.create({
     fontSize: width / 6,
   },
   button__disabled: {
-    backgroundColor: theme.grey,
+    backgroundColor: theme.stable,
   },
 });
 
