@@ -105,7 +105,7 @@ var MdIconTabBar = React.createClass({
             name={item.icon}
             size={item.iconSize || defaultIconSize}
             style={{
-              bottom: buttonAnimation.interpolate({ inputRange: [0, 1], outputRange: [0, 7] }),
+              bottom: buttonAnimation.interpolate({ inputRange: [0, 1], outputRange: [0, 6] }),
               color: isTabActive ? activeTextColor : inactiveTextColor,
             }}
           />

@@ -100,6 +100,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 0,
+    paddingTop: 1,
   },
   tabs: {
     elevation: 0,

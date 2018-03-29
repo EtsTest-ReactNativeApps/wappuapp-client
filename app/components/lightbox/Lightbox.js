@@ -246,7 +246,10 @@ class LightBox extends Component {
             </View>
 
             {!isSystemUser && (
-              <PlatformTouchable onPress={() => this.showRemoveDialog(lightBoxItem)}>
+              <PlatformTouchable
+                onPress={() => this.showRemoveDialog(lightBoxItem)}
+                activeOpacity={0.8}
+              >
                 <View style={styles.toolbar__button}>
                   <Icon
                     style={styles.toolbar__icon}
@@ -255,7 +258,7 @@ class LightBox extends Component {
                 </View>
               </PlatformTouchable>
             )}
-            <PlatformTouchable onPress={this.onShare.bind(this, itemImage)}>
+            <PlatformTouchable onPress={this.onShare.bind(this, itemImage)} activeOpacity={0.8}>
               <View style={styles.toolbar__button}>
                 <Icon style={styles.toolbar__icon} name="share" />
               </View>
@@ -351,7 +354,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     width: 50,
     height: 50,
-    marginTop: IOS ? 5 : 1,
+    marginTop: IOS ? 0 : 1,
     marginLeft: 15,
     alignItems: 'center',
     justifyContent: 'center',
