@@ -3,7 +3,6 @@ import { Linking } from 'react-native';
 const ABUSE_EMAIL_ADDRESS = '88c477b70c5d1a7d8d1a68bd2ec2402d@mail.flowdock.com';
 const ABUSE_EMAIL_SUBJECT = 'Whappu Flagged Content';
 
-
 // item.type === 'IMAGE', item.url
 function parseUrl(url) {
   const urlParts = url.split('/');
@@ -13,8 +12,7 @@ function parseUrl(url) {
 }
 
 // Reports feed item via email
-function reportFeedItem(item) {
-
+function reportFeedItem(item, type = 'feed item') {
   if (!item.id) {
     throw new Error('No ID available for reported item!');
   }
@@ -22,10 +20,10 @@ function reportFeedItem(item) {
   let emailURL = 'mailto:' + ABUSE_EMAIL_ADDRESS;
 
   // Subject (ID-hashtag to help searching from Flowdock inbox)
-  emailURL += '?subject=' + ABUSE_EMAIL_SUBJECT + ' (ID' + item.id + ')';
+  emailURL += '?subject=' + ABUSE_EMAIL_SUBJECT + '(ID' + item.id + ')';
 
   // Body
-  emailURL += '&body=I want to report content with ID ' + item.id;
+  emailURL += '&body=I want to report ' + type + ' with ID ' + item.id;
   if (item.url) {
     emailURL += ' \n\n ';
     emailURL += parseUrl(item.url);
@@ -38,5 +36,5 @@ function reportFeedItem(item) {
 }
 
 export default {
-  reportFeedItem
-}
+  reportFeedItem,
+};
