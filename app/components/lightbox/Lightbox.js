@@ -14,8 +14,8 @@ import { connect } from 'react-redux';
 import autobind from 'autobind-decorator';
 
 import { openRegistrationView } from '../../concepts/registration';
-import { voteFeedItem, removeFeedItem, closeLightBox } from '../../actions/feed';
-import { getLightboxItem } from '../../reducers/feed';
+import { voteFeedItem, removeFeedItem } from '../../actions/feed';
+import { closeLightBox, getLightboxItem, isLightBoxOpen } from '../../concepts/lightbox';
 import { openComments } from '../../concepts/comments';
 import abuse from '../../services/abuse';
 
@@ -205,10 +205,7 @@ class LightBox extends Component {
                 background={IOS ? null : PlatformTouchable.SelectableBackgroundBorderless()}
               >
                 <View>
-                  <Icon
-                    style={{ color: IOS ? theme.dark : theme.white, fontSize: 26 }}
-                    name="close"
-                  />
+                  <Icon style={{ color: theme.dark, fontSize: 26 }} name="close" />
                 </View>
               </PlatformTouchable>
 
@@ -279,12 +276,24 @@ const IOS_header = {
 
 const ANDROID_Header = {
   marginTop: 0,
-  height: 66,
-  backgroundColor: 'rgba(0,0,0,.3)',
-  top: -10,
+  height: 56,
+  backgroundColor: 'rgba(255,255,255,.8)',
+  top: 0,
+  left: 0,
+  right: 0,
+  borderRadius: 0,
+};
+
+const ANDROID_toolbar = {
+  bottom: 0,
+  left: 0,
+  right: 0,
+  borderRadius: 0,
+  backgroundColor: 'rgba(255,255,255,.8)',
 };
 
 const headerStyles = IOS ? IOS_header : ANDROID_Header;
+const toolbarStyles = IOS ? {} : ANDROID_toolbar;
 
 // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
 const styles = StyleSheet.create({
@@ -294,19 +303,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: IOS ? 'transparent' : theme.black,
+    backgroundColor: IOS ? 'transparent' : '#eee',
   },
   header: {
-    ...headerStyles,
     justifyContent: 'center',
     position: 'absolute',
     left: 0,
     right: 0,
     zIndex: 2,
+    ...headerStyles,
   },
   header__icon: {
     position: 'absolute',
-    top: IOS ? (isIphoneX ? 40 : 30) : 20,
+    top: IOS ? (isIphoneX ? 40 : 30) : 10,
     left: 15,
     right: 15,
     flex: 1,
@@ -317,7 +326,7 @@ const styles = StyleSheet.create({
     marginLeft: 15,
   },
   headerTitleText: {
-    color: IOS ? theme.dark : theme.white,
+    color: theme.dark,
     fontWeight: 'bold',
     fontSize: 14,
   },
@@ -325,7 +334,7 @@ const styles = StyleSheet.create({
     paddingTop: IOS ? 2 : 0,
   },
   dateText: {
-    color: IOS ? theme.dark : theme.white,
+    color: theme.dark,
     opacity: 0.9,
     fontSize: 12,
   },
@@ -344,6 +353,7 @@ const styles = StyleSheet.create({
     paddingBottom: isIphoneX ? 10 : 0,
     zIndex: 3,
     backgroundColor: IOS ? 'rgba(255,255,255,.6)' : 'rgba(0,0,0,.3)',
+    ...toolbarStyles,
   },
   toolbar__buttons: {
     justifyContent: 'flex-end',
@@ -374,13 +384,10 @@ const styles = StyleSheet.create({
   },
 });
 
-const select = store => {
-  return {
-    // lightBoxItem: store.feed.get('lightBoxItem'),
-    lightBoxItem: getLightboxItem(store),
-    isLightBoxOpen: store.feed.get('isLightBoxOpen'),
-  };
-};
+const select = store => ({
+  lightBoxItem: getLightboxItem(store),
+  isLightBoxOpen: isLightBoxOpen(store),
+});
 
 const mapDispatch = {
   removeFeedItem,

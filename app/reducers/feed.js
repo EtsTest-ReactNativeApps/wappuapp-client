@@ -12,12 +12,10 @@ import {
   REFRESH_FEED_REQUEST,
   REFRESH_FEED_SUCCESS,
   DELETE_FEED_ITEM,
-  OPEN_LIGHTBOX,
   VOTE_FEED_ITEM_REQUEST,
-  CLOSE_LIGHTBOX,
   SET_COMMENTS,
 } from '../actions/feed';
-import { getUserImages } from '../concepts/user';
+import { getUserImages, getMyImages } from '../concepts/user';
 import { getEventImages } from './event';
 import LoadingStates from '../constants/LoadingStates';
 
@@ -27,21 +25,10 @@ export const getLightBoxItemId = state => state.feed.get('lightBoxItemId', null)
 
 export const getAllPostsInStore = createSelector(
   getFeed,
-  getUserImages,
   getEventImages,
-  (feedList, userImages, eventImages) => feedList.concat(userImages, eventImages)
-);
-
-export const getLightboxItem = createSelector(
-  getLightBoxItemId,
-  getAllPostsInStore,
-  (id, posts) => {
-    if (isNil(id)) {
-      return Immutable.Map();
-    }
-
-    return posts.find(item => item.get('id') === id);
-  }
+  getUserImages,
+  getMyImages,
+  (feed, event, user, my) => feed.concat(event, user, my)
 );
 
 // # Reducer
@@ -99,18 +86,6 @@ export default function feed(state = initialState, action) {
         });
       }
     }
-
-    case OPEN_LIGHTBOX:
-      return state.merge({
-        isLightBoxOpen: true,
-        lightBoxItemId: action.payload,
-      });
-
-    case CLOSE_LIGHTBOX:
-      return state.merge({
-        isLightBoxOpen: false,
-        lightBoxItemId: null,
-      });
 
     case SET_COMMENTS: {
       const list = state.get('list');
