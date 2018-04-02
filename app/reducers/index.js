@@ -15,6 +15,7 @@ import mood from '../concepts/mood';
 import sortType from '../concepts/sortType';
 import user from '../concepts/user';
 import comments from '../concepts/comments';
+import lightbox from '../concepts/lightbox';
 
 export {
   errors,
@@ -34,4 +35,5 @@ export {
   sortType,
   user,
   comments,
+  lightbox,
 };
