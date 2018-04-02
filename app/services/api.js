@@ -70,6 +70,10 @@ const deleteFeedItem = item => {
   return _delete(Endpoints.urls.feedItem(item.id));
 };
 
+const deleteComment = commentId => {
+  return _delete(Endpoints.urls.comment(commentId));
+};
+
 const voteFeedItem = payload => {
   return _put(Endpoints.urls.vote, payload);
 };
@@ -190,6 +194,7 @@ const queryParametrize = (url, query) => {
 
 export default {
   deleteFeedItem,
+  deleteComment,
   voteFeedItem,
   fetchModels,
   fetchMoreFeed,
