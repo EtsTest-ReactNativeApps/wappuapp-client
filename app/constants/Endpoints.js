@@ -8,6 +8,7 @@ const EndpointUrls = {
   event: eventId => `${ROOT_URL}/events/${eventId}`,
   feed: `${ROOT_URL}/feed`,
   feedItem: itemId => `${ROOT_URL}/feed/${itemId}`,
+  comment: commentId => `${ROOT_URL}/comment/${commentId}`,
   leaderboard: `${ROOT_URL}/leaderboard`,
   guilds: `${ROOT_URL}/guilds`,
   action: `${ROOT_URL}/actions`,

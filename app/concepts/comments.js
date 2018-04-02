@@ -104,6 +104,22 @@ export const postComment = ({ text, imageData }) => (dispatch, getState) => {
     .catch(error => dispatch({ type: POST_COMMENT_FAILURE, error: true, payload: error }));
 };
 
+export const deleteComment = commentId => (dispatch, getState) => {
+  // cannot delete comment without id
+  if (isNil(commentId)) {
+    return;
+  }
+
+  const state = getState();
+  const feedItemId = getCommentItemId(state);
+
+  return api.deleteComment(commentId).then(response => {
+    console.log('deleted comment', response);
+    // Fetch all comments to get updated comment state
+    return dispatch(refreshPostComments(feedItemId));
+  });
+};
+
 export const openComments = postId => dispatch => {
   dispatch(fetchPostComments(postId));
   return dispatch({ type: OPEN_COMMENTS, payload: postId });
