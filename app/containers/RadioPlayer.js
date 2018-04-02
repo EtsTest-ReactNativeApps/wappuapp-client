@@ -38,6 +38,7 @@ import PlayerUI from '../components/radio/PlayerUI';
 import PlatformTouchable from '../components/common/PlatformTouchable';
 import ModalBackgroundView from '../components/common/ModalBackgroundView';
 import RadioWebsiteLink from '../components/radio/RadioWebsiteLink';
+import RadioButton from '../components/radio/RadioButton';
 import { isIphoneX } from '../services/device-info';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -211,13 +212,12 @@ class RadioPlayer extends Component {
                   } is Available Soon`}
             </Text>
 
-            <TouchableHighlight
-              underlayColor={url ? theme.stable : theme.stable}
+            <RadioButton
               onPress={this.onRadioButtonPress}
-              style={buttonStyle}
-            >
-              <Text style={styles.buttonText}>{icon}</Text>
-            </TouchableHighlight>
+              buttonStyle={buttonStyle}
+              buttonTextStyle={styles.buttonText}
+              icon={icon}
+            />
           </View>
 
           {!!currentStation.get('website') && <RadioWebsiteLink currentStation={currentStation} />}
@@ -387,7 +387,7 @@ const styles = StyleSheet.create({
     height: width / 3,
     width: width / 3,
     borderRadius: width / 6,
-    elevation: 7,
+    elevation: 20,
     borderWidth: 0,
     shadowColor: '#000000',
     shadowOpacity: 0.15,
