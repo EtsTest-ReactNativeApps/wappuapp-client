@@ -21,6 +21,7 @@ import abuse from '../../services/abuse';
 import time from '../../utils/time';
 import theme from '../../style/theme';
 import { openRegistrationView } from '../../concepts/registration';
+import { getInitialLetters } from '../../services/user';
 import VotePanel from './VotePanel';
 import CommentsLink from './CommentsLink';
 
@@ -34,7 +35,7 @@ const styles = StyleSheet.create({
   itemWrapper: {
     width,
     flex: 1,
-    backgroundColor: '#f2f2f2',
+    backgroundColor: '#f3f3f3',
     paddingBottom: 10,
     paddingTop: 0,
   },
@@ -49,7 +50,7 @@ const styles = StyleSheet.create({
     borderRadius: 0,
     // overflow: 'hidden',
     borderBottomWidth: IOS ? 0 : 1,
-    borderBottomColor: 'rgba(0, 0, 0, .075)',
+    borderBottomColor: 'rgba(0, 0, 0, .06)',
     // // # Drop shadows
     elevation: 2,
     shadowColor: '#000000',
@@ -120,23 +121,56 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'space-between',
   },
+  avatar: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    marginRight: 10,
+    backgroundColor: '#e3e3e3',
+    justifyContent: 'center',
+    alignItems: 'center',
+    top: IOS ? 1 : 3,
+  },
+  avatarImage: {
+    borderRadius: 13,
+    width: 26,
+    height: 26,
+  },
+  avatarLetters: {
+    fontSize: 10,
+    color: 'rgba(255,255,255,1)',
+    fontWeight: 'bold',
+  },
+  avatarIcon: {
+    textAlign: 'center',
+    width: 26,
+    height: 26,
+    borderWidth: 2,
+    borderColor: '#e3e3e3',
+    borderRadius: 13,
+    color: theme.white,
+    fontSize: 26,
+    lineHeight: 31,
+    backgroundColor: theme.transparent,
+  },
   feedItemListItemAuthor: {
     flex: 1,
     flexDirection: 'column',
     alignItems: 'flex-start',
   },
   itemAuthorName: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: 'normal',
     color: theme.dark,
     paddingRight: 10,
+    marginBottom: IOS ? 2 : 0,
   },
   itemAuthorTeam: {
     fontSize: 11,
     color: theme.inactive,
   },
   itemAuthorTeam__my: {
-    color: theme.primary,
+    color: theme.secondaryLight,
     fontWeight: 'normal',
   },
   feedItemListItemAuthorIcon: {
@@ -321,6 +355,13 @@ class FeedListItem extends Component {
     const itemByMyTeam = this.itemIsCreatedByMyTeam(item);
     const isItemImage = item.type === 'IMAGE';
 
+    let avatarInitialLetters;
+    const avatar = item.author.profilePicture;
+    // Initial letters only if user has no avatar
+    if (!avatar) {
+      avatarInitialLetters = getInitialLetters(item.author.name);
+    }
+
     return (
       <View style={styles.itemWrapper}>
         <TouchableOpacity
@@ -341,6 +382,13 @@ class FeedListItem extends Component {
               style={styles.feedItemListItemInfo}
               onPress={() => openUserPhotos(item.author)}
             >
+              <View style={styles.avatar}>
+                {avatar ? (
+                  <Image source={{ uri: avatar }} style={styles.avatarImage} />
+                ) : (
+                  <Text style={styles.avatarLetters}>{avatarInitialLetters}</Text>
+                )}
+              </View>
               <View style={styles.feedItemListItemAuthor}>
                 <Text style={styles.itemAuthorName}>{item.author.name}</Text>
                 <Text

@@ -22,6 +22,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import theme from '../../style/theme';
 import Toolbar from '../common/Toolbar';
 import PlatformTouchable from '../common/PlatformTouchable';
+import Fab from '../common/Fab';
 
 const { width, height } = Dimensions.get('window');
 const IOS = Platform.OS === 'ios';
@@ -264,6 +265,11 @@ class ImageEditor extends Component {
   @autobind
   renderSubmitButtonForAndroid() {
     return (
+      <Fab onPress={this.sendImage} styles={{ backgroundColor: theme.primary }}>
+        <Icon size={27} name="done" style={{ color: '#FFF' }} />
+      </Fab>
+    );
+    /*
       <View style={styles.buttonWrap}>
         <PlatformTouchable
           onPress={this.sendImage}
@@ -276,7 +282,7 @@ class ImageEditor extends Component {
           </View>
         </PlatformTouchable>
       </View>
-    );
+*/
   }
 
   @autobind

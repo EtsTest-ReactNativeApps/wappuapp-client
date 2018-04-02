@@ -4,16 +4,21 @@ import {
   View,
   Image,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   Platform,
   Dimensions,
   Linking,
   Text,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { noop } from 'lodash';
 
 import ParsedText from 'react-native-parsed-text';
 import time from '../../utils/time';
 import theme from '../../style/theme';
+import abuse from '../../services/abuse';
+import { getInitialLetters } from '../../services/user';
 import AnimateMe from '../AnimateMe';
 
 const { width } = Dimensions.get('window');
@@ -25,16 +30,18 @@ const CommentAvatar = ({ onAuthorPress, name, id, avatar }) => (
       {avatar ? (
         <Image source={{ uri: avatar }} style={styles.commentAvatarImage} />
       ) : (
-        <Icon name="person" style={styles.commentAvatarIcon} />
+        <Text style={styles.commentAvatarLetters}>{getInitialLetters(name)}</Text>
       )}
     </TouchableOpacity>
   </View>
 );
 
-const CommentAuthor = ({ name, ago, avatar, id, onAuthorPress }) => (
+const CommentAuthor = ({ name, ago, avatar, id, ownComment, onAuthorPress }) => (
   <View style={styles.authorField}>
     <TouchableOpacity onPress={() => onAuthorPress({ name, id })}>
-      <Text style={styles.commentAuthor}>{name}</Text>
+      <Text style={[styles.commentAuthor, ownComment && styles.myCommentName]}>
+        {ownComment ? 'You' : name}
+      </Text>
     </TouchableOpacity>
     <Text style={styles.itemTimestamp}>• {ago}</Text>
   </View>
@@ -55,7 +62,40 @@ const CommentText = ({ text, style }) => (
   </ParsedText>
 );
 
-const Comment = ({ item, openUserView, onImagePress }) => {
+const commentIsCreatedByMe = item => item.get('authorType') === 'ME';
+const feedItemIsCreatedByMe = item => item.getIn(['author', 'type']) === 'ME';
+
+const showCommentDialog = (onDelete, comment) => {
+  if (commentIsCreatedByMe(comment)) {
+    Alert.alert('Remove Comment', 'Do you want to remove this comment?', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Yes, remove comment',
+        onPress: () => onDelete(comment.get('id')),
+        style: 'destructive',
+      },
+    ]);
+  } else {
+    Alert.alert('Report Content', 'Do you want to report this comment?', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Yes, report comment',
+        onPress: () => {
+          abuse.reportFeedItem(comment.toJS(), 'comment');
+        },
+        style: 'destructive',
+      },
+    ]);
+  }
+};
+
+const Comment = ({ item, openUserView, onImagePress, deleteComment }) => {
   const ago = time.getTimeAgo(item.get('createdAt'));
   const profilePicture = item.get('profilePicture');
 
@@ -67,6 +107,7 @@ const Comment = ({ item, openUserView, onImagePress }) => {
     id: item.get('userId'),
     name: item.get('userName'),
     ago: ago,
+    ownComment: commentIsCreatedByMe(item),
   };
 
   return (
@@ -79,17 +120,21 @@ const Comment = ({ item, openUserView, onImagePress }) => {
 
           <View style={styles.commentTextContent}>
             {hasImage ? (
-              <View>
-                <CommentAuthor {...authorProps} />
-                <TouchableOpacity onPress={() => onImagePress(item.get('imagePath'))}>
-                  <Image style={styles.commentImage} source={{ uri: item.get('imagePath') }} />
-                </TouchableOpacity>
-              </View>
+              <TouchableWithoutFeedback onLongPress={() => showCommentDialog(deleteComment, item)}>
+                <View>
+                  <CommentAuthor {...authorProps} />
+                  <TouchableOpacity onPress={() => onImagePress(item.get('imagePath'))}>
+                    <Image style={styles.commentImage} source={{ uri: item.get('imagePath') }} />
+                  </TouchableOpacity>
+                </View>
+              </TouchableWithoutFeedback>
             ) : (
-              <View>
-                <CommentAuthor {...authorProps} />
-                <CommentText style={styles.commentText} text={item.get('text')} />
-              </View>
+              <TouchableWithoutFeedback onLongPress={() => showCommentDialog(deleteComment, item)}>
+                <View>
+                  <CommentAuthor {...authorProps} />
+                  <CommentText style={styles.commentText} text={item.get('text')} />
+                </View>
+              </TouchableWithoutFeedback>
             )}
           </View>
         </View>
@@ -115,7 +160,8 @@ const CommentPost = ({ item, openUserView, onImagePress }) => {
     onAuthorPress: openUserView,
     id: userId,
     name: userName,
-    ago: ago,
+    ago,
+    ownComment: feedItemIsCreatedByMe(item),
   };
 
   return (
@@ -155,8 +201,8 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'space-between',
     padding: 15,
-    paddingBottom: 5,
-    paddingTop: 15,
+    paddingBottom: 3,
+    paddingTop: 13,
   },
   commentContent: {
     flexDirection: 'row',
@@ -165,33 +211,38 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
   },
   commentAvatarCol: {
-    paddingRight: 18,
+    paddingRight: 15,
   },
   commentAvatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#ddd',
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: '#e3e3e3',
     justifyContent: 'center',
     alignItems: 'center',
   },
   commentAvatarImage: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+  },
+  commentAvatarLetters: {
+    fontSize: 10,
+    color: 'rgba(255,255,255,1)',
+    fontWeight: 'bold',
   },
   commentAvatarIcon: {
     top: 0,
     left: 0,
     textAlign: 'center',
-    width: 32,
-    height: 32,
+    width: 26,
+    height: 26,
     borderWidth: 2,
-    borderColor: '#ddd',
-    borderRadius: 16,
+    borderColor: '#e3e3e3',
+    borderRadius: 13,
     color: theme.white,
     fontSize: 32,
-    lineHeight: 38,
+    lineHeight: IOS ? 38 : 37,
     backgroundColor: theme.transparent,
   },
   commentImage: {
@@ -218,16 +269,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 7,
+    marginBottom: 4,
   },
   commentAuthor: {
     color: theme.dark,
-    fontWeight: IOS ? 'normal' : 'normal',
+    fontWeight: 'normal',
     opacity: 0.8,
     fontSize: 11,
   },
+  myCommentName: {
+    opacity: 1,
+    color: theme.black,
+  },
   itemTimestamp: {
-    marginLeft: 5,
+    marginLeft: 4,
     flex: 1,
     color: theme.dark,
     opacity: 0.8,

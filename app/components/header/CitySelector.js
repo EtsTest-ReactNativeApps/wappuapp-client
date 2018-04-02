@@ -77,7 +77,6 @@ class CitySelector extends Component {
               }
               style={styles.cityIcon}
             />
-            {/*<MdIcon name={city.get('id') === 3 ? 'domain' : 'location-city'} style={styles.filterIcon} />*/}
           </TouchableHighlight>
         </View>
         <Text style={[styles.filterText, isActive ? styles.activeText : {}]}>

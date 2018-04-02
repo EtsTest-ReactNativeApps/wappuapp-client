@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   logo: {
     width: 60,
     height: 37,
-    marginLeft: 20,
+    marginLeft: 16,
   },
   titleWrap: {
     flex: 1,

@@ -10,7 +10,7 @@ import {
   isLoadingUserImages,
 } from '../../concepts/user';
 import { getUserName, getUserId } from '../../concepts/registration';
-import { openLightBox } from '../../actions/feed';
+import { openLightBox } from '../../concepts/lightbox';
 
 import UserComponent from './UserComponent';
 

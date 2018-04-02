@@ -32,7 +32,7 @@ import time from '../../utils/time';
 import locationService from '../../services/location';
 import Button from '../common/Button';
 
-import { openLightBox } from '../../actions/feed';
+import { openLightBox } from '../../concepts/lightbox';
 import { openRegistrationView } from '../../concepts/registration';
 import { fetchImages } from '../../actions/event';
 import { INACTIVE, UNAVAILABLE, AVAILABLE, CHECKED } from '../../constants/CheckInStates';

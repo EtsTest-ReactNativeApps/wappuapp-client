@@ -7,7 +7,7 @@ import {
   Platform,
   Dimensions,
   StyleSheet,
-  Modal
+  Modal,
 } from 'react-native';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
@@ -22,7 +22,8 @@ import {
   getCommentEditText,
   editComment,
   postComment,
-  closeComments
+  deleteComment,
+  closeComments,
 } from '../../concepts/comments';
 import { openUserView } from '../../concepts/user';
 
@@ -49,7 +50,6 @@ class CommentsView extends Component {
   }
 
   render() {
-
     const {
       isCommentsViewOpen,
       commentItem,
@@ -58,7 +58,7 @@ class CommentsView extends Component {
       editComment,
       editCommentText,
       loadingComments,
-      loadingCommentPost
+      loadingCommentPost,
     } = this.props;
 
     if (!isCommentsViewOpen) {
@@ -67,16 +67,13 @@ class CommentsView extends Component {
 
     return (
       <View style={styles.container}>
-        <ScrollHeader
-          icon={'close'}
-          onIconClick={this.onClose}
-          title="Comment"
-        />
+        <ScrollHeader icon={'close'} onIconClick={this.onClose} title="Comment" />
         <CommentList
           openUserView={this.openUserView}
           postItem={commentItem}
           comments={comments}
           postComment={postComment}
+          deleteComment={this.props.deleteComment}
           editComment={editComment}
           editCommentText={editCommentText}
           loadingComments={loadingComments}
@@ -90,13 +87,14 @@ class CommentsView extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  }
+  },
 });
 
 const mapDispatchToProps = {
   editComment,
   postComment,
   closeComments,
+  deleteComment,
   openUserView,
 };
 
@@ -106,7 +104,7 @@ const select = createStructuredSelector({
   comments: getComments,
   editCommentText: getCommentEditText,
   loadingComments: isLoadingComments,
-  loadingCommentPost: isLoadingCommentPost
-})
+  loadingCommentPost: isLoadingCommentPost,
+});
 
 export default connect(select, mapDispatchToProps)(CommentsView);

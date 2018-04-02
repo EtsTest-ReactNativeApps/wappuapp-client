@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, ScrollView, ActivityIndicator, NativeModules } from 'react-native';
+import { StyleSheet, View, ScrollView, ActivityIndicator } from 'react-native';
 import autobind from 'autobind-decorator';
+import { get } from 'lodash';
 
 import { height } from '../../services/device-info';
 import theme from '../../style/theme';
@@ -8,8 +9,6 @@ import { Comment, CommentPost } from './CommentPost';
 import CommentImageZoom from './CommentImageZoom';
 import CommentForm from './CommentForm';
 import SimpleEmojiPicker from './SimpleEmojiPicker';
-
-const ScrollViewManager = NativeModules.ScrollViewManager;
 
 const insertText = (str, index, indexEnd, value) =>
   str.substr(0, index) + value + str.substr(index + (indexEnd - index));
@@ -19,27 +18,23 @@ class CommentList extends Component {
     super(props);
     this.state = {
       zoomedImage: null,
+      scrollHeight: null,
     };
   }
 
   @autobind
-  scrollBottom(animated = false) {
-    if (this.commentScrollView) {
-      const containerHeight = height - 130;
-      // this.commentScrollView.scrollToEnd({ animated });
-      if (ScrollViewManager && ScrollViewManager.getContentSize) {
-        ScrollViewManager.getContentSize(
-          ReactNative.findNodeHandle(this.commentScrollView),
-          contentSize => {
-            const scrollYPos = contentSize.height - containerHeight;
-            this.commentScrollView.scrollTo({
-              x: 0,
-              y: Math.max(0, scrollYPos),
-              animated,
-            });
-          }
-        );
-      }
+  scrollBottom(animated = false, timeout = 0) {
+    const scrollHeight = get(this.state, 'scrollHeight');
+    if (this.commentScrollView && scrollHeight) {
+      const containerHeight = height - (timeout > 0 ? 400 : 130);
+      const scrollYPos = scrollHeight - containerHeight;
+      setTimeout(() => {
+        this.commentScrollView.scrollTo({
+          x: 0,
+          y: Math.max(0, scrollYPos),
+          animated,
+        });
+      }, timeout);
     }
   }
 
@@ -63,11 +58,17 @@ class CommentList extends Component {
     return <ActivityIndicator size="large" color={theme.blue1} />;
   }
 
+  @autobind
+  onContentSizeChange(_, scrollHeight) {
+    this.setState({ scrollHeight }, this.scrollBottom);
+  }
+
   render() {
     const {
       postItem,
       comments,
       postComment,
+      deleteComment,
       editComment,
       editCommentText,
       loadingComments,
@@ -85,9 +86,7 @@ class CommentList extends Component {
               <ScrollView
                 keyboardShouldPersistTaps={'handled'}
                 ref={ref => (this.commentScrollView = ref)}
-                onContentSizeChange={(contentWidth, contentHeight) => {
-                  this.scrollBottom(false);
-                }}
+                onContentSizeChange={this.onContentSizeChange}
               >
                 <CommentPost
                   item={postItem}
@@ -96,6 +95,7 @@ class CommentList extends Component {
                 />
                 {comments.map((comment, index) => (
                   <Comment
+                    deleteComment={deleteComment}
                     key={index}
                     item={comment}
                     openUserView={openUserView}

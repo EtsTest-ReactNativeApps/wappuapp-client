@@ -77,6 +77,7 @@ class CommentList extends Component {
       postItem,
       comments,
       postComment,
+      deleteComment,
       editComment,
       editCommentText,
       loadingComments,
@@ -114,6 +115,7 @@ class CommentList extends Component {
                       <Comment
                         onImagePress={this.zoomImage}
                         key={index}
+                        deleteComment={deleteComment}
                         item={comment}
                         openUserView={openUserView}
                       />

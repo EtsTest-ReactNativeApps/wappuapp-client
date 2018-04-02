@@ -33,7 +33,7 @@ class CommentForm extends Component {
 
   @autobind
   onSendText() {
-    const { postComment, text, loadingCommentPost } = this.props;
+    const { postComment, text, loadingCommentPost, postCommentCallback } = this.props;
 
     if (!text) {
       Keyboard.dismiss();
@@ -43,7 +43,10 @@ class CommentForm extends Component {
       return;
     }
 
-    postComment({ text }).then(() => Keyboard.dismiss());
+    postComment({ text }).then(() => {
+      Keyboard.dismiss();
+      postCommentCallback();
+    });
   }
 
   renderPostLoader() {
@@ -69,7 +72,7 @@ class CommentForm extends Component {
       if (!response.didCancel && !response.error) {
         const imageData = 'data:image/jpeg;base64,' + response.data;
         // text as '...'' because API does not yet approve comments without text
-        this.props.postComment({ imageData });
+        this.props.postComment({ imageData }).then(this.props.postCommentCallback);
       }
     });
   }
@@ -202,7 +205,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
   },
   secondaryIcon: {
-    color: theme.grey,
+    color: theme.inactive,
   },
 });
 

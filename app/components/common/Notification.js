@@ -9,18 +9,25 @@ const styles = StyleSheet.create({
   container: {
     position: 'absolute',
     top: -100,
-    width: width,
-    left: 0,
-    right: 0,
-    backgroundColor: theme.primary,
+    left: 15,
+    right: 15,
+    borderRadius: 5,
+    backgroundColor: theme.white,
     alignItems: 'center',
     paddingTop: 18,
     paddingLeft: 10,
     paddingRight: 10,
     paddingBottom: 18,
+    shadowColor: '#000000',
+    shadowOpacity: 0,
+    shadowRadius: 7,
+    shadowOffset: {
+      height: 5,
+      width: 0,
+    },
   },
   message: {
-    color: theme.white,
+    color: theme.primary,
     fontSize: 14,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -79,7 +86,7 @@ class Notification extends Component {
     return false;
   }
 
-  fadeIn(topOffset = 0) {
+  fadeIn(topOffset = 20) {
     Animated.timing(this.state.translate, {
       duration: 300,
       easing: Easing.ease,
@@ -111,6 +118,8 @@ class Notification extends Component {
       styles.container,
       {
         /* backgroundColor: this.props.success ? theme.green : theme.red */
+        shadowOpacity: this.props.visible ? 0.2 : 0,
+        elevation: this.props.visible ? 2 : 0,
       },
       { top: this.state.height === 0 ? -100 : 0 },
       { transform: this.state.translate.getTranslateTransform() },

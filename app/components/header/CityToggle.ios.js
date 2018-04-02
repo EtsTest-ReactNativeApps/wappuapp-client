@@ -25,11 +25,6 @@ const CitySelector = ({ currentCity, toggleCityPanel: onCityIconClicked, current
         style={styles.cityIcon}
       />
     </View>
-    {/*
-     <Text style={styles.filterText}>
-      <MdIcon name='location-city' style={styles.filterIcon} /> {/*currentCity
-    </Text>
-    */}
   </TouchableHighlight>
 );
 
@@ -44,10 +39,10 @@ var styles = StyleSheet.create({
     fontSize: 24,
   },
   cityIcon: {
-    top: 1,
+    top: 3,
     left: 7,
-    width: 36,
-    height: 36,
+    width: 34,
+    height: 34,
   },
 });
 

@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
   sectionHeaderAnnouncement: {
     backgroundColor: IOS ? 'rgba(255,255,255,.88)' : 'transparent',
     marginTop: 0,
-    padding: IOS ? 20 : 15,
+    padding: IOS ? 15 : 15,
     flexGrow: 1,
   },
   sectionHeaderAnnouncementText: {

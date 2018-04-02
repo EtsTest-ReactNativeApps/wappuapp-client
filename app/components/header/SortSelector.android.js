@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableHighlight,
   TouchableOpacity,
+  TouchableNativeFeedback,
   View,
   Text,
 } from 'react-native';
@@ -17,8 +18,8 @@ import theme from '../../style/theme';
 import SortTypes from '../../constants/SortTypes';
 
 const sortTypeTitles = {
-  [SortTypes.SORT_NEW]: 'New',
-  [SortTypes.SORT_HOT]: 'Hot',
+  [SortTypes.SORT_NEW]: 'NEW',
+  [SortTypes.SORT_HOT]: 'HOT',
 };
 
 class SortSelector extends Component {
@@ -66,43 +67,53 @@ class SortSelector extends Component {
     const onSortSelectorPress = () => this.props.setFeedSortType(nextSortTypeItem);
 
     return (
-      <TouchableHighlight underlayColor="transparent" onPress={onSortSelectorPress}>
-        <View style={styles.sortSelector}>
-          <TouchableOpacity onPress={onSortSelectorPress} activeOpacity={0.7}>
-            <Text style={styles.filterText}>{sortTypeTitles[selectedSortType]}</Text>
-          </TouchableOpacity>
-          <View style={styles.indicators}>
-            {sortTypeOptions.map((type, index) => <View key={type} style={styles.indicator} />)}
+      <View style={styles.sortSelectorWrap}>
+        <TouchableNativeFeedback
+          onPress={onSortSelectorPress}
+          background={TouchableNativeFeedback.SelectableBackgroundBorderless()}
+        >
+          <View style={styles.sortSelector}>
+            <View onPress={onSortSelectorPress}>
+              <Text style={styles.filterText}>{sortTypeTitles[selectedSortType]}</Text>
+            </View>
+            <View style={styles.indicators}>
+              {sortTypeOptions.map((type, index) => <View key={type} style={styles.indicator} />)}
 
-            <Animated.View
-              style={[styles.indicator, styles.activeIndicator, animatedIndicatorStyles]}
-            />
+              <Animated.View
+                style={[styles.indicator, styles.activeIndicator, animatedIndicatorStyles]}
+              />
+            </View>
           </View>
-        </View>
-      </TouchableHighlight>
+        </TouchableNativeFeedback>
+      </View>
     );
   }
 }
 
 var styles = StyleSheet.create({
+  sortSelectorWrap: {
+    backgroundColor: 'transparent',
+    flex: 0,
+  },
   sortSelector: {
-    top: 1,
-    paddingTop: 15,
-    paddingBottom: 8,
+    paddingTop: 23,
+    paddingBottom: 13,
     paddingRight: 25,
-    paddingLeft: 15,
+    paddingLeft: 10,
+    flex: 1,
   },
   filterText: {
     color: theme.white,
     fontSize: 14,
-    fontWeight: 'normal',
+    fontWeight: 'bold',
+    minWidth: 30,
     textAlign: 'right',
-    top: -2,
+    top: -4,
   },
   indicators: {
     position: 'absolute',
     right: 10,
-    top: 13,
+    top: 20,
     width: 8,
     alignItems: 'flex-start',
     height: 20,

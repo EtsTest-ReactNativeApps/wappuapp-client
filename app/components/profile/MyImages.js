@@ -13,7 +13,7 @@ import {
   isLoadingUserImages,
 } from '../../concepts/user';
 import { getUserName, getUserId, openRegistrationView } from '../../concepts/registration';
-import { openLightBox } from '../../actions/feed';
+import { openLightBox } from '../../concepts/lightbox';
 import { getCurrentTab } from '../../reducers/navigation';
 
 import AnimateMe from '../AnimateMe';

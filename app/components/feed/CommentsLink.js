@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   commentText: {
-    color: theme.grey,
+    color: theme.inactive,
     fontSize: 15,
     top: 0,
   },

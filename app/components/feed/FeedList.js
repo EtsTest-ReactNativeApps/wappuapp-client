@@ -23,8 +23,8 @@ import {
   loadMoreItems,
   removeFeedItem,
   voteFeedItem,
-  openLightBox,
 } from '../../actions/feed';
+import { openLightBox } from '../../concepts/lightbox';
 import { openComments } from '../../concepts/comments';
 import { openUserView } from '../../concepts/user';
 

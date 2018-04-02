@@ -24,12 +24,13 @@ import {
   postProfilePicture,
   getUserImage,
 } from '../../concepts/registration';
-import { openLightBox } from '../../actions/feed';
+import { openLightBox } from '../../concepts/lightbox';
 import { getCurrentTab } from '../../reducers/navigation';
 
 import ImageCaptureOptions from '../../constants/ImageCaptureOptions';
 import permissions from '../../services/android-permissions';
 import { width, IOS } from '../../services/device-info';
+import { getInitialLetters } from '../../services/user';
 import theme from '../../style/theme';
 import AnimateMe from '../AnimateMe';
 import LinearGradient from '../header/LinearGradient';
@@ -66,6 +67,8 @@ class UserView extends Component {
     // Create selfie image capture options
     const selfieCaptureOptions = Object.assign({}, ImageCaptureOptions, {
       title: 'Change Avatar',
+      maxWidth: 200,
+      maxHeight: 200,
       cameraType: 'front',
       takePhotoButtonTitle: 'Take a selfie',
     });
@@ -99,13 +102,7 @@ class UserView extends Component {
 
     const imagesCount = images.size;
 
-    const avatarInitialLetters = !!user.name
-      ? user.name
-          .split(' ')
-          .slice(0, 2)
-          .map(t => t.substring(0, 1))
-          .join('')
-      : null;
+    const avatarInitialLetters = getInitialLetters(user.name);
 
     return (
       <View style={{ flex: 1 }}>

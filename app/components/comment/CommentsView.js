@@ -23,6 +23,7 @@ import {
   editComment,
   postComment,
   closeComments,
+  deleteComment,
 } from '../../concepts/comments';
 import { openUserView } from '../../concepts/user';
 
@@ -76,6 +77,7 @@ class CommentsView extends Component {
           postItem={commentItem}
           comments={comments}
           postComment={postComment}
+          deleteComment={this.props.deleteComment}
           editComment={editComment}
           editCommentText={editCommentText}
           loadingComments={loadingComments}
@@ -117,6 +119,7 @@ const styles = StyleSheet.create({
 const mapDispatchToProps = {
   editComment,
   postComment,
+  deleteComment,
   closeComments,
   openUserView,
 };

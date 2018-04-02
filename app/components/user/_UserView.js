@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import {
   getUserImages,
@@ -7,11 +7,11 @@ import {
   getTotalSimas,
   getTotalVotesForUser,
   fetchUserImages,
-  isLoadingUserImages
-} from "../../concepts/user";
-import { openLightBox } from "../../actions/feed";
+  isLoadingUserImages,
+} from '../../concepts/user';
+import { openLightBox } from '../../concepts/lightbox';
 
-import UserComponent from "./UserComponent";
+import UserComponent from './UserComponent';
 
 class UserView extends Component {
   componentDidMount() {
@@ -41,7 +41,7 @@ const mapStateToProps = state => ({
   isLoading: isLoadingUserImages(state),
   totalSimas: getTotalSimas(state),
   totalVotes: getTotalVotesForUser(state),
-  userTeam: getUserTeam(state)
+  userTeam: getUserTeam(state),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserView);

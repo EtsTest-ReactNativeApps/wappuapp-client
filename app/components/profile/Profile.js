@@ -29,6 +29,7 @@ import { fetchLinks } from '../../actions/profile';
 import { getCurrentCityName } from '../../concepts/city';
 import { openRegistrationView } from '../../concepts/registration';
 import feedback from '../../services/feedback';
+import { getInitialLetters } from '../../services/user';
 
 const IOS = Platform.OS === 'ios';
 
@@ -81,7 +82,7 @@ const styles = StyleSheet.create({
   },
   listItemIcon: {
     fontSize: 22,
-    color: theme.inactive,
+    color: theme.primary,
     alignItems: 'center',
     width: 50,
   },
@@ -279,13 +280,7 @@ class Profile extends Component {
       name: '',
     };
     const hasName = !!item.title;
-    const avatarInitialLetters = hasName
-      ? item.title
-          .split(' ')
-          .slice(0, 2)
-          .map(t => t.substring(0, 1))
-          .join('')
-      : null;
+    const avatarInitialLetters = getInitialLetters(item.title);
 
     return (
       <View key={index} style={{ flex: 1 }}>

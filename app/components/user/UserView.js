@@ -22,7 +22,7 @@ import {
   fetchUserImages,
   isLoadingUserImages,
 } from '../../concepts/user';
-import { openLightBox } from '../../actions/feed';
+import { openLightBox } from '../../concepts/lightbox';
 import { getCurrentTab } from '../../reducers/navigation';
 
 import ParallaxView from 'react-native-parallax-view';
@@ -34,6 +34,7 @@ import Header from '../common/Header';
 import Loader from '../common/Loader';
 import LinearGradient from '../header/LinearGradient';
 import { height, width, IOS } from '../../services/device-info';
+import { getInitialLetters } from '../../services/user';
 
 const headerImage = require('../../../assets/frontpage_header-bg.jpg');
 
@@ -51,13 +52,7 @@ class UserView extends Component {
     } = this.props;
 
     const imagesCount = images.size;
-    const avatarInitialLetters = !!userName
-      ? userName
-          .split(' ')
-          .slice(0, 2)
-          .map(t => t.substring(0, 1))
-          .join('')
-      : null;
+    const avatarInitialLetters = getInitialLetters(userName);
 
     return (
       <View style={{ flex: 1 }}>
