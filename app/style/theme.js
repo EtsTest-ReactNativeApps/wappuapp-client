@@ -6,7 +6,8 @@ const theme = {
   // primary: '#1eedce',
   // primary: '#09d893',
   // primary: '#4B61F7',
-  primary: '#452abf',
+  // primary: '#452abf',
+  primary: '#67ceb4',
   primaryDarker: '#10bdb9', // This is used for Android Status bar (needs darker version of primary color) (also used for currently active iOS tab item)
   primaryDark: '#075755',
   primaryLight: '#6967fc',
