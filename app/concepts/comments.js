@@ -24,11 +24,11 @@ export const getCommentItem = createSelector(
   getCommentItemId,
   getAllPostsInStore,
   getUserImages,
-  (id, feedPosts, mapPosts, userPosts) => {
+  (id, feedPosts, userPosts) => {
     if (isNil(id)) {
       return Map();
     }
-    const allPosts = feedPosts.concat(mapPosts, userPosts);
+    const allPosts = feedPosts.concat(userPosts);
     return allPosts.find(item => item.get('id') === id);
   }
 );
