@@ -12,7 +12,7 @@ import {
   fetchMyImages,
   isLoadingUserImages,
 } from '../../concepts/user';
-import { getUserName, getUserId, openRegistrationView } from '../../concepts/registration';
+import { getUserName, getUserId } from '../../concepts/registration';
 import { openLightBox } from '../../concepts/lightbox';
 import { getCurrentTab } from '../../reducers/navigation';
 
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapDispatchToProps = { openLightBox, fetchMyImages, openRegistrationView };
+const mapDispatchToProps = { openLightBox, fetchMyImages };
 
 const mapStateToProps = state => ({
   images: getMyImages(state),

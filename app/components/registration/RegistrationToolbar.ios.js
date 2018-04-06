@@ -21,6 +21,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 10,
     color: theme.light,
+    backgroundColor: 'transparent',
   },
   title: {
     color: theme.light,

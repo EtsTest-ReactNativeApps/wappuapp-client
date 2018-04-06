@@ -245,6 +245,7 @@ class LightBox extends Component {
             {!isSystemUser && (
               <PlatformTouchable
                 onPress={() => this.showRemoveDialog(lightBoxItem)}
+                delayPressIn={0}
                 activeOpacity={0.8}
               >
                 <View style={styles.toolbar__button}>

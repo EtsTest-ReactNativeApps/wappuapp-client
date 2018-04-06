@@ -39,6 +39,7 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     paddingRight: 5,
     color: theme.light,
+    backgroundColor: theme.transparent,
   },
   rightIcon: {
     paddingRight: 0,

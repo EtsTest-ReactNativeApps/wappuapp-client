@@ -99,7 +99,7 @@ class MoodView extends Component {
 
         <MoodKpis kpiValues={moodKpiValues} cityName={cityName} teamName={teamName} />
 
-        <Notification visible={isNotificationVisible} topOffset={IOS ? 20 : 0}>
+        <Notification visible={isNotificationVisible} topOffset={IOS ? 50 : 20}>
           {notificationText}
         </Notification>
       </View>
