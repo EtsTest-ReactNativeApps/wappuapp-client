@@ -56,7 +56,8 @@ class Notification extends Component {
     super(props);
 
     this.state = {
-      translate: new Animated.ValueXY(),
+      translate: new Animated.Value(0),
+      // translate: new Animated.ValueXY(),
       height: 0,
     };
   }
@@ -69,7 +70,7 @@ class Notification extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.visible && !this.props.visible) {
-      this.fadeIn(nextProps.topOffset);
+      this.fadeIn();
     } else {
       if (!nextProps.visible && this.props.visible) {
         this.fadeOut();
@@ -86,11 +87,12 @@ class Notification extends Component {
     return false;
   }
 
-  fadeIn(topOffset = 20) {
+  fadeIn() {
     Animated.timing(this.state.translate, {
       duration: 300,
       easing: Easing.ease,
-      toValue: { x: 0, y: topOffset },
+      toValue: 1,
+      // toValue: { x: 0, y: topOffset },
     }).start();
   }
 
@@ -98,13 +100,15 @@ class Notification extends Component {
     Animated.timing(this.state.translate, {
       duration: 200,
       easing: Easing.ease,
-      toValue: { x: 0, y: -this.state.height },
+      toValue: 0,
+      // toValue: { x: 0, y: -this.state.height },
     }).start();
   }
 
   getViewSize(e) {
     if (this.state.height == 0) {
-      this.state.translate.setValue({ x: 0, y: -e.nativeEvent.layout.height });
+      // this.state.translate.setValue({ x: 0, y: -e.nativeEvent.layout.height });
+      this.state.translate.setValue(0);
     }
 
     /*eslint-disable */
@@ -114,6 +118,10 @@ class Notification extends Component {
 
   render() {
     const message = this.props.children;
+    const { height, translate } = this.state;
+    const { topOffset } = this.props;
+    const offset = topOffset || 20;
+
     const animatedViewStyles = [
       styles.container,
       {
@@ -122,7 +130,18 @@ class Notification extends Component {
         elevation: this.props.visible ? 2 : 0,
       },
       { top: this.state.height === 0 ? -100 : 0 },
-      { transform: this.state.translate.getTranslateTransform() },
+      {
+        transform: [
+          {
+            translateY: translate.interpolate({
+              inputRange: [0, 1],
+              outputRange: [-height, offset],
+            }),
+          },
+          { scale: translate.interpolate({ inputRange: [0, 1], outputRange: [0, 1] }) },
+        ],
+      },
+      // { transform: this.state.translate.getTranslateTransform() },
     ];
 
     return (
@@ -131,7 +150,13 @@ class Notification extends Component {
           {this.props.success && (
             <Icon
               name="done"
-              style={{ fontSize: 20, color: theme.white, position: 'absolute', left: 15, top: 17 }}
+              style={{
+                fontSize: 20,
+                color: theme.primary,
+                position: 'absolute',
+                left: 15,
+                top: 17,
+              }}
             />
           )}
           <Text style={styles.message}>{message}</Text>
