@@ -23,6 +23,8 @@ const TEAMS = {
   'koneinsinöörikilta': ['Poreileva', 'Reagoiva', 'Virtaava', 'Liuennut', 'Punainen', 'Tislattu'],
   'ky': ['Sijoittava', 'Yrittävä', 'Perinteikäs', 'Klassinen', 'Dollarinvihreä', 'Johtava'],
   'maanmittarikilta': ['Mittaava', 'Laskelmallinen', 'Rakastava', 'Kaavoittava', 'Mattamusta'],
+  'nude': ['Muodokas', 'Käyttäjälähtöinen', 'Minttuinen', 'Al-dente', 'Rietas', 'Terhakka', 'Innovatiivinen', 'Ketterä', 'Skaalautuva'],
+  'probba': ['Märkä', 'Kansainvälinen', 'Ratanen', 'Virheistään oppiva', 'Hotimpi'],
   'prodeko': ['Tuottava', 'Diskonttaava', 'Startuppaava', 'Logistinen', 'Sateenkaarinen'],
   'prosessiteekkarit': ['Prosessoiva', 'Kavitoiva', 'Syövyttävä', 'Pumppaava', 'Vihreä'],
   'puunjalostajakilta': ['Tamminen', 'Vaahterainen', 'Koivuinen', 'Sellisti', 'Keltainen', 'Killankeltainen', 'Mustalipeäinen', 'Metsäinen', 'Mekanisti', 'Bio', 'Valkaistu'],
