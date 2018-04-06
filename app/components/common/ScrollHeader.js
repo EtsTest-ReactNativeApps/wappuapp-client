@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 37,
     marginLeft: 16,
+    tintColor: theme.white,
   },
   titleWrap: {
     flex: 1,
@@ -102,8 +103,8 @@ class ScrollHeader extends Component {
             position: 'absolute',
             left: 0,
             right: 0,
-            top: 0,
-            bottom: 0,
+            top: -60,
+            bottom: -60,
           }}
           singleColor={singleColor}
         />
