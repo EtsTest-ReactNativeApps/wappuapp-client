@@ -15,6 +15,9 @@ import {
 import { connect } from 'react-redux';
 import { ImagePickerManager } from 'NativeModules';
 import autobind from 'autobind-decorator';
+import reactMixin from 'react-mixin';
+import TimerMixin from 'react-timer-mixin';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import theme from '../../style/theme';
 import {
@@ -50,8 +53,8 @@ import {
   setEditableImage,
   clearEditableImage,
 } from '../../actions/competition';
-import reactMixin from 'react-mixin';
-import TimerMixin from 'react-timer-mixin';
+
+import { height } from '../../services/device-info';
 
 const IOS = Platform.OS === 'ios';
 
@@ -73,6 +76,21 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     right: 0,
+  },
+  problemWrap: {
+    flex: 1,
+    top: height / 2 - 200,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  problemIcon: {
+    fontSize: 100,
+    color: '#ccc',
+  },
+  problemText: {
+    marginTop: 20,
+    color: '#ccc',
+    fontSize: 15,
   },
 });
 
@@ -281,7 +299,10 @@ class FeedList extends Component {
       case LoadingStates.FAILED:
         return (
           <ScrollView style={{ flex: 1 }} refreshControl={refreshControl}>
-            <Text style={{ marginTop: 20 }}>Could not get feed :(</Text>
+            <View style={styles.problemWrap}>
+              <Icon style={styles.problemIcon} name="nature-people" />
+              <Text style={styles.problemText}>Could not get feed, pull to refresh...</Text>
+            </View>
           </ScrollView>
         );
       default:
@@ -345,7 +366,7 @@ class FeedList extends Component {
           this.props.isLoadingActionTypes,
           this.props.isLoadingUserData
         )}
-        <Notification visible={this.props.isNotificationVisible}>
+        <Notification visible={this.props.isNotificationVisible} topOffset={IOS ? 10 : 0}>
           {this.props.notificationText}
         </Notification>
         <ImageEditor
