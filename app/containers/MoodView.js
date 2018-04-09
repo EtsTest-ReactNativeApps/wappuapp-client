@@ -67,8 +67,8 @@ class MoodView extends Component {
         <ActivityIndicator
           style={styles.loader}
           animating={isLoading}
-          size={'large'}
-          color={theme.accentLight}
+          size={'small'}
+          color={theme.white}
         />
         <MoodChart
           cityData={cityMoodData}
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     zIndex: 3,
     left: width / 2 - 25,
-    top: 50,
+    top: 60,
   },
   button: {
     flexDirection: 'column',

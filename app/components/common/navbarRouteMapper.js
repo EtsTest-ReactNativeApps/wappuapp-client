@@ -172,7 +172,7 @@ var styles = StyleSheet.create({
     top: 3,
     width: 60,
     height: 35,
-    tintColor: theme.accentLight,
+    tintColor: theme.white,
   },
   navBarTitle: {
     padding: 10,

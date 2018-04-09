@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
   },
   primary: {
     fontWeight: 'bold',
-    color: theme.primaryLight,
+    color: theme.primary,
   },
   iconWrap: {
     margin: 20,
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   icon: {
-    color: theme.accentLight,
+    color: theme.white,
     fontSize: 120,
     alignItems: 'center',
   },

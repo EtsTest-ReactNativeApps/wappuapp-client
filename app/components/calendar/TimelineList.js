@@ -57,14 +57,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   sectionHeader: {
-    backgroundColor: IOS ? 'rgba(255,255,255,.88)' : 'transparent',
+    backgroundColor: IOS ? 'rgba(255,255,255,1)' : 'transparent',
     opacity: IOS ? 1 : 1,
     padding: IOS ? 15 : 35,
     paddingLeft: 15,
     flexGrow: 1,
   },
   sectionHeaderAnnouncement: {
-    backgroundColor: IOS ? 'rgba(255,255,255,.88)' : 'transparent',
+    backgroundColor: IOS ? 'rgba(255,255,255,1)' : 'transparent',
     marginTop: 0,
     padding: IOS ? 15 : 15,
     flexGrow: 1,
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
   },
   sectionHeaderText: {
     textAlign: 'left',
-    fontWeight: 'bold',
+    fontWeight: '900',
     fontSize: 14,
     color: theme.dark,
   },
@@ -234,7 +234,7 @@ class TimelineList extends Component {
     } else {
       sectionCaption = moment.unix(sectionId).format('ddd D.M.');
     }
-    sectionCaption = sectionCaption.toUpperCase();
+    // sectionCaption = sectionCaption.toUpperCase();
 
     // # Style
     const headerStyle =

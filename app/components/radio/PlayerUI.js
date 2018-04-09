@@ -7,7 +7,7 @@ import {
   DeviceEventEmitter,
   ActivityIndicator,
   Platform,
-  Dimensions
+  Dimensions,
 } from 'react-native';
 import autobind from 'autobind-decorator';
 
@@ -32,56 +32,53 @@ const { width } = Dimensions.get('window');
 
 // Player UI Component
 class Player extends Component {
-
   static defaultProps = {
     radioStationName: '',
-  }
+  };
 
   constructor(props) {
     super(props);
     this.state = {
       status: STOPPED,
-      song: ''
+      song: '',
     };
   }
 
   componentDidMount() {
     const { setRadioSong, setRadioStatus } = this.props;
-    this.subscription = DeviceEventEmitter.addListener(
-      'AudioBridgeEvent', (evt) => {
-        // We just want meta update for song name
-        if (evt.status === METADATA_UPDATED && evt.key === 'StreamTitle') {
-          setRadioSong(evt.value);
-        } else if (evt.status !== METADATA_UPDATED) {
-          // TODO
-          // evt can also contain progress & duration
-          // check if useful, would be cool
-          setRadioStatus(evt.status);
-        }
+    this.subscription = DeviceEventEmitter.addListener('AudioBridgeEvent', evt => {
+      // We just want meta update for song name
+      if (evt.status === METADATA_UPDATED && evt.key === 'StreamTitle') {
+        setRadioSong(evt.value);
+      } else if (evt.status !== METADATA_UPDATED) {
+        // TODO
+        // evt can also contain progress & duration
+        // check if useful, would be cool
+        setRadioStatus(evt.status);
       }
-    );
+    });
 
     ReactNativeAudioStreaming.getStatus((error, { status }) => {
-      (error) ? console.log(error) : setRadioStatus(status)
+      error ? console.log(error) : setRadioStatus(status);
     });
   }
 
   @autobind
   renderPlayerText() {
-    const {url, song, radioStationName, isPlaying} = this.props;
+    const { url, song, radioStationName, isPlaying } = this.props;
     if (!radioStationName) {
       return null;
     }
     if (!url && !song) {
-      return <Text style={styles.stationTitle}>{radioStationName.toUpperCase()} IS AVAILABLE SOON</Text>
+      return <Text style={styles.stationTitle}>{radioStationName} is available soon</Text>;
     }
     if (!!url && !isPlaying) {
-      return <Text style={styles.stationTitle}>LISTEN TO {radioStationName.toUpperCase()}</Text>
+      return <Text style={styles.stationTitle}>Listen to {radioStationName}</Text>;
     }
     if (!!song) {
-      return <Text style={styles.songName}>{song}</Text>
+      return <Text style={styles.songName}>{song}</Text>;
     } else if (isPlaying) {
-      return <Text style={styles.songName}>{radioStationName.toUpperCase()}</Text>
+      return <Text style={styles.songName}>{radioStationName}</Text>;
     }
   }
 
@@ -91,7 +88,7 @@ class Player extends Component {
     const iconStyle = [styles.icon];
 
     if (!url) {
-      iconStyle.push(styles.icon__disabled)
+      iconStyle.push(styles.icon__disabled);
     }
 
     switch (status) {
@@ -107,12 +104,14 @@ class Player extends Component {
       case BUFFERING:
       case BUFFERING_START:
       case START_PREPARING:
-        icon = <ActivityIndicator
-          size={IOS ? 'small' : 22}
-          color={theme.secondary}
-          animating={true}
-          style={styles.loader}
-        />;
+        icon = (
+          <ActivityIndicator
+            size={IOS ? 'small' : 22}
+            color={theme.secondary}
+            animating={true}
+            style={styles.loader}
+          />
+        );
         break;
     }
 
@@ -123,13 +122,11 @@ class Player extends Component {
     return (
       <View style={styles.container}>
         <TouchableOpacity activeOpacity={0.8} style={styles.button} onPress={onRadioPress}>
-        {icon}
+          {icon}
         </TouchableOpacity>
-        <View style={styles.textContainer}>
-          {this.renderPlayerText()}
-        </View>
+        <View style={styles.textContainer}>{this.renderPlayerText()}</View>
       </View>
-      );
+    );
   }
 }
 
@@ -157,7 +154,7 @@ const styles = StyleSheet.create({
     color: theme.secondary,
   },
   icon__disabled: {
-    color: '#ccc'
+    color: '#ccc',
   },
   loader: {
     marginLeft: 5,
@@ -173,16 +170,16 @@ const styles = StyleSheet.create({
     color: theme.dark,
   },
   stationTitle: {
-    fontWeight: '100',
+    fontWeight: '400',
     fontSize: 10,
     color: theme.dark,
     opacity: 0.8,
   },
   songName: {
-    fontSize: 13,
-    fontWeight: 'bold',
-    color: theme.dark
-  }
+    fontSize: 12,
+    fontWeight: '900',
+    color: theme.dark,
+  },
 });
 
 Player.propTypes = {

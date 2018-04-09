@@ -91,7 +91,9 @@ class CheckInActionView extends Component {
           />
         </AnimateMe>
 
-        <Text style={{ fontSize: 40, textAlign: 'center', color: theme.white }}>OH NO!</Text>
+        <Text style={{ fontSize: 40, textAlign: 'center', color: theme.white, fontWeight: '900' }}>
+          OH NO!
+        </Text>
         <Text style={[styles.text, styles.emptyStateText]}>
           No ongoing events available in {this.props.city}.
         </Text>

@@ -19,7 +19,7 @@ class MoodKpis extends Component {
 
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>VIBES TODAY</Text>
+        <Text style={styles.title}>Vibes today</Text>
         <View style={styles.data}>
           {KPI_VALUES.map((value, index) => (
             <View style={styles.col} key={value}>
@@ -86,9 +86,10 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: 'center',
-    fontWeight: 'bold',
+    fontWeight: '900',
     marginBottom: IOS ? 20 : 15,
-    color: theme.subtlegrey,
+    fontSize: 16,
+    color: theme.dark,
   },
   doughnut: {
     position: 'absolute',

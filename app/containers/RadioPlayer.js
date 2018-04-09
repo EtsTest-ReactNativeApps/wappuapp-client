@@ -377,9 +377,9 @@ const styles = StyleSheet.create({
     padding: 7,
     paddingTop: 0,
     textAlign: 'center',
-    fontWeight: '600',
+    fontWeight: '900',
     fontSize: 21,
-    color: theme.black,
+    color: theme.dark,
   },
   button: {
     marginTop: 25,
