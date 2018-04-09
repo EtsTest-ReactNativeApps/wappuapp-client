@@ -56,21 +56,21 @@ class Notification extends Component {
     super(props);
 
     this.state = {
-      translate: new Animated.Value(0),
-      // translate: new Animated.ValueXY(),
+      // translate: new Animated.Value(0),
+      translate: new Animated.ValueXY(),
       height: 0,
     };
   }
 
   componentDidMount() {
     if (this.props.visible) {
-      this.fadeIn();
+      this.fadeIn(this.props.topOffset);
     }
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.visible && !this.props.visible) {
-      this.fadeIn();
+      this.fadeIn(nextProps.topOffset);
     } else {
       if (!nextProps.visible && this.props.visible) {
         this.fadeOut();
@@ -87,12 +87,12 @@ class Notification extends Component {
     return false;
   }
 
-  fadeIn() {
+  fadeIn(topOffset) {
     Animated.timing(this.state.translate, {
       duration: 300,
       easing: Easing.ease,
-      toValue: 1,
-      // toValue: { x: 0, y: topOffset },
+      // toValue: 1,
+      toValue: { x: 0, y: topOffset },
     }).start();
   }
 
@@ -100,15 +100,15 @@ class Notification extends Component {
     Animated.timing(this.state.translate, {
       duration: 200,
       easing: Easing.ease,
-      toValue: 0,
-      // toValue: { x: 0, y: -this.state.height },
+      // toValue: 0,
+      toValue: { x: 0, y: -this.state.height },
     }).start();
   }
 
   getViewSize(e) {
     if (this.state.height == 0) {
-      // this.state.translate.setValue({ x: 0, y: -e.nativeEvent.layout.height });
-      this.state.translate.setValue(0);
+      this.state.translate.setValue({ x: 0, y: -e.nativeEvent.layout.height });
+      // this.state.translate.setValue(0);
     }
 
     /*eslint-disable */
@@ -130,6 +130,8 @@ class Notification extends Component {
         elevation: this.props.visible ? 2 : 0,
       },
       { top: this.state.height === 0 ? -100 : 0 },
+      { transform: this.state.translate.getTranslateTransform() },
+      /*
       {
         transform: [
           {
@@ -141,7 +143,7 @@ class Notification extends Component {
           { scale: translate.interpolate({ inputRange: [0, 1], outputRange: [0, 1] }) },
         ],
       },
-      // { transform: this.state.translate.getTranslateTransform() },
+      */
     ];
 
     return (
