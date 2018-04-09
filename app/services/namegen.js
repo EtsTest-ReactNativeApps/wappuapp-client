@@ -17,6 +17,7 @@ const TEAMS = {
   'athene': ['Informatiivinen', 'Avoin', 'Iloinen', 'Verkostoituva', 'Oliivinvihreä'],
   'automaatio- ja systeemitekniikan kilta': ['Säätävä', 'Kimblenjanoinen', 'Smurffinen', 'Aivan samasti', 'Violetti'],
   'as': ['Säätävä', 'Kimblenjanoinen', 'Smurffinen', 'Aivan samasti', 'Violetti'],
+  'ayy': ['Vaikuttava', 'Aaltoileva', 'Purppura', 'Uudelleenbrändätty', 'Rohkea'],
   'fyysikkokilta': ['Fyysinen', 'Laskelmoiva', 'Matemaattinen', 'Tieteilijä', 'Luonnonvalkoinen', 'Hiukkas', 'Kvantti'],
   'inkubio': ['Laikukas', 'Ammuva', 'Luonnollinen', 'Bioottinen', 'Punaruseka'],
   'kemistikilta': ['Poreileva', 'Reagoiva', 'Virtaava', 'Liuennut', 'Punainen', 'Tislattu'],
