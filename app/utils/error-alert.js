@@ -1,15 +1,10 @@
-import {
-  Alert
-} from 'react-native';
-import {RESET_ERROR_MESSAGE} from '../actions/errors';
+import { Alert } from 'react-native';
 
-export default function errorAlert(dispatch, header, message) {
-  Alert.alert(
-    header,
-    message,
-    [{
+export default function errorAlert(onPress, header, message) {
+  Alert.alert(header, message, [
+    {
       text: 'OK',
-      onPress: () => dispatch({type: RESET_ERROR_MESSAGE})
-    }]
-  );
+      onPress,
+    },
+  ]);
 }

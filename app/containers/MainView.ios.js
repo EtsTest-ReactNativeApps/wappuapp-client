@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import sceneConfig from '../utils/sceneConfig';
 import NavRouteMapper from '../components/common/navbarRouteMapper';
 import errorAlert from '../utils/error-alert';
+import { resetError } from '../actions/errors';
 
 import { getCityPanelShowState } from '../concepts/city';
 import { openRegistrationView } from '../concepts/registration';
@@ -33,7 +34,7 @@ class MainView extends Component {
     const immutableError = errors.get('error');
     if (immutableError) {
       const error = immutableError.toJS();
-      errorAlert(dispatch, get(error, 'header'), get(error, 'message'));
+      errorAlert(resetError, get(error, 'header'), get(error, 'message'));
     }
 
     return (
@@ -87,6 +88,7 @@ const select = state => {
 
 const mapDispatchToProps = {
   openRegistrationView,
+  resetError,
 };
 
 export default connect(select, mapDispatchToProps)(MainView);

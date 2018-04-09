@@ -11,6 +11,7 @@ import RegistrationView from '../components/registration/RegistrationView';
 import TextActionView from '../components/actions/TextActionView';
 import CheckInActionView from '../components/actions/CheckInActionView';
 import errorAlert from '../utils/error-alert';
+import { resetError } from '../actions/errors';
 
 const theme = require('../style/theme');
 
@@ -36,7 +37,7 @@ class MainView extends Component {
     const immutableError = this.props.errors.get('error');
     if (immutableError) {
       const error = immutableError.toJS();
-      errorAlert(this.props.dispatch, _.get(error, 'header'), _.get(error, 'message'));
+      errorAlert(this.props.resetError, _.get(error, 'header'), _.get(error, 'message'));
     }
 
     return (
@@ -67,4 +68,8 @@ const select = store => {
   };
 };
 
-export default connect(select)(MainView);
+const mapDispatchToProps = {
+  resetError,
+};
+
+export default connect(select, mapDispatchToProps)(MainView);
