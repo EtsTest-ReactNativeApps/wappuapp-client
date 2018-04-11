@@ -90,8 +90,8 @@ android {
         applicationId "com.wappuapp"
         minSdkVersion 21
         targetSdkVersion 23
-        versionCode 9
-        versionName "3.0"
+        versionCode 12
+        versionName "3.3"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
@@ -150,18 +150,18 @@ dependencies {
     compile "com.facebook.react:react-native:+"  // From node_modules
 }
 
-repositories {
-    maven { url 'https://github.com/500px/500px-android-blur/raw/master/releases/' }
-}
+// repositories {
+//     maven { url 'https://github.com/500px/500px-android-blur/raw/master/releases/' }
+// }
 
-buildscript {
-    repositories {
-        maven { url 'https://github.com/500px/500px-android-blur/raw/master/releases/' }
-    }
-    dependencies {
-        classpath 'com.fivehundredpx:blurringview:1.0.0'
-    }
-}
+// buildscript {
+//     repositories {
+//         maven { url 'https://github.com/500px/500px-android-blur/raw/master/releases/' }
+//     }
+//     dependencies {
+//         classpath 'com.fivehundredpx:blurringview:1.0.0'
+//     }
+// }
 
 
 // Run this once to be able to run the application with BUCK
