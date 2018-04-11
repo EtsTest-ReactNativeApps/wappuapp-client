@@ -7,7 +7,7 @@ import {
   GET_TEAMS_SUCCESS,
   GET_TEAMS_FAILURE,
   SHOW_TEAM_SELECTOR,
-  CLOSE_TEAM_SELECTOR
+  CLOSE_TEAM_SELECTOR,
 } from '../actions/team';
 
 const initialState = fromJS({
@@ -16,7 +16,7 @@ const initialState = fromJS({
   isError: false,
   selectedTeam: null,
   isChooseTeamViewOpen: false,
-  isRefreshing: false
+  isRefreshing: false,
 });
 
 export default function team(state = initialState, action) {
@@ -25,20 +25,20 @@ export default function team(state = initialState, action) {
       return state.merge({
         isLoading: true,
         isError: false,
-        isRefreshing: true
+        isRefreshing: true,
       });
     case GET_TEAMS_SUCCESS:
       return state.merge({
         isLoading: false,
         isError: false,
         teams: action.payload,
-        isRefreshing: false
+        isRefreshing: false,
       });
     case GET_TEAMS_FAILURE:
       return state.merge({
         isLoading: false,
         isError: true,
-        isRefreshing: false
+        isRefreshing: false,
       });
     case SHOW_TEAM_SELECTOR:
       return state.set('isChooseTeamViewOpen', true);
@@ -47,7 +47,7 @@ export default function team(state = initialState, action) {
     default:
       return state;
   }
-};
+}
 
 //
 // Selectors
@@ -55,9 +55,6 @@ export default function team(state = initialState, action) {
 export const getTeams = state => state.team.get('teams', List());
 export const getCurrentCity = state => state.city.get('id', null);
 
-
-export const getCityTeams = createSelector(
-  getTeams, getCurrentCity,
-  (teams, cityId) => teams.filter(t => t.get('city') === cityId)
+export const getCityTeams = createSelector(getTeams, getCurrentCity, (teams, cityId) =>
+  teams.filter(t => t.get('city') === cityId)
 );
-
