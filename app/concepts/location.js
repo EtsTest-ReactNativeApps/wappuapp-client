@@ -42,9 +42,7 @@ const coordinatesFromResponse = position => ({
 const getCurrentPosition = () => dispatch => {
   var locationUpdatePromise = new Promise(function(resolve, reject) {
     navigator.geolocation.getCurrentPosition(
-      position =>
-        console.log('location updated', position) ||
-        resolve(dispatch(updateLocation(coordinatesFromResponse(position)))),
+      position => resolve(dispatch(updateLocation(coordinatesFromResponse(position)))),
       error => resolve(error.message),
       locationOpts
     );

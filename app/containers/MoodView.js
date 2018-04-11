@@ -67,7 +67,7 @@ class MoodView extends Component {
         <ActivityIndicator
           style={styles.loader}
           animating={isLoading}
-          size={'small'}
+          size={'large'}
           color={theme.white}
         />
         <MoodChart
