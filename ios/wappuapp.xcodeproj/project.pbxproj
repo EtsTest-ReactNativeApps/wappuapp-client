@@ -546,17 +546,6 @@
 		68AC27F02065383F00E4445C /* Recovered References */ = {
 			isa = PBXGroup;
 			children = (
-				0FEBD9958D894A0A95A2D87C /* libRNLocation.a */,
-				9E8C58669DD644C78A7A4208 /* libReactNativeAudioStreaming.a */,
-				4306BA3B75824B0491DCE2CF /* libAirMaps.a */,
-				E953F4AB528D40B982FAF630 /* libRNBlur.a */,
-				C5A3A1302E9848C7A98C9F5D /* libRNShare.a */,
-				2AC7ECB192D648F5B3356F26 /* libBVLinearGradient.a */,
-				4767D567F5654E628F644C7C /* libRNImagePicker.a */,
-				7C456D1924594DFE920584E5 /* libRNDeviceInfo.a */,
-				BA197C9992E04D5EA9E3A765 /* libRNVectorIcons.a */,
-				BF72C72383A24C1FA6B8E2F1 /* libCodePush.a */,
-				04F7DA3BA1B94512B8CD8ABE /* libRNSVG.a */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -792,6 +781,7 @@
 					};
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = WM3L2RVJ7C;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -1331,6 +1321,8 @@
 			baseConfigurationReference = 906F217F3CA591C44E6B26C9 /* Pods-wappuapp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = WM3L2RVJ7C;
@@ -1345,8 +1337,10 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.wappuapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.futurice.Whappu;
 				PRODUCT_NAME = wappuapp;
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -1357,6 +1351,8 @@
 			baseConfigurationReference = 0E7F0F0C42CCB02522C0F976 /* Pods-wappuapp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = WM3L2RVJ7C;
 				INFOPLIST_FILE = wappuapp/Info.plist;
@@ -1370,8 +1366,9 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.wappuapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.futurice.Whappu;
 				PRODUCT_NAME = wappuapp;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
