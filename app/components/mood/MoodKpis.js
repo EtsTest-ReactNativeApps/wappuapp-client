@@ -41,7 +41,7 @@ class MoodKpis extends Component {
                     },
                     labels: { fontSize: 0, opacity: 0 },
                   }}
-                  innerRadius={38}
+                  innerRadius={39}
                   padding={0}
                   width={84}
                   height={84}
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '900',
     marginBottom: IOS ? 20 : 15,
-    fontSize: 16,
+    fontSize: IOS ? 16 : 20,
     color: theme.dark,
   },
   doughnut: {
@@ -120,8 +120,7 @@ const styles = StyleSheet.create({
   },
   kpi: {
     color: theme.secondary,
-    fontWeight: '300',
-    fontFamily: !IOS ? 'sans-serif-light' : undefined,
+    fontWeight: 'bold',
     fontSize: 18,
     textAlign: 'center',
     right: -1, // percentage sign

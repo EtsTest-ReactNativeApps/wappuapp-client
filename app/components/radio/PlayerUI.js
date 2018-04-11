@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     fontSize: 26,
     marginLeft: 5,
-    marginRight: 15,
+    marginRight: 12,
     color: theme.secondary,
   },
   icon__disabled: {
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
   loader: {
     marginLeft: 5,
     width: 26,
-    marginRight: 15,
+    marginRight: 12,
   },
   textContainer: {
     flexDirection: 'column',
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
   },
   stationTitle: {
     fontWeight: '400',
-    fontSize: 10,
+    fontSize: 12,
     color: theme.dark,
     opacity: 0.8,
   },

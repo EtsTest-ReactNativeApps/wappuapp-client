@@ -9,24 +9,28 @@ import {
   Text,
   ActivityIndicator,
   KeyboardAvoidingView,
-  TouchableHighlight
+  TouchableHighlight,
 } from 'react-native';
 import MdIcon from 'react-native-vector-icons/MaterialIcons';
 
 import theme from '../../../style/theme';
 class MoodSubmit extends Component {
   render() {
-
     const { confirmScale, onChangeText, submit, description, isMoodSending } = this.props;
 
     return (
       <View style={styles.confirmFormWrap}>
-          <KeyboardAvoidingView
-            behavior={'height'}
-            keyboardVerticalOffset={0}
-            style={styles.confirmForm}
+        <KeyboardAvoidingView
+          behavior={'height'}
+          keyboardVerticalOffset={0}
+          style={styles.confirmForm}
+        >
+          <Animated.View
+            style={[
+              styles.confirmFormBg,
+              { opacity: confirmScale, transform: [{ scale: confirmScale }] },
+            ]}
           >
-            <Animated.View style={[styles.confirmFormBg, { opacity: confirmScale, transform:[ { scale: confirmScale }] }]}>
             <TextInput
               autoFocus={false}
               autoCapitalize={'sentences'}
@@ -43,28 +47,29 @@ class MoodSubmit extends Component {
             />
 
             <View style={[styles.buttonWrap, styles.submitButtonWrap]}>
-            {isMoodSending
-            ?
-              <ActivityIndicator style={styles.loader} size={'large'} color={theme.primary} />
-            :
-              <TouchableHighlight underlayColor={theme.primary} onPress={submit} style={[styles.button, styles.submitButton]}>
-                <Text style={[styles.buttonText, styles.submitButtonText]}>
-                  <MdIcon size={30} name={'done'} />
-                </Text>
-              </TouchableHighlight>
-            }
+              {isMoodSending ? (
+                <ActivityIndicator style={styles.loader} size={'large'} color={theme.primary} />
+              ) : (
+                <TouchableHighlight
+                  underlayColor={theme.primary}
+                  onPress={submit}
+                  style={[styles.button, styles.submitButton]}
+                >
+                  <Text style={[styles.buttonText, styles.submitButtonText]}>
+                    <MdIcon size={30} name={'done'} />
+                  </Text>
+                </TouchableHighlight>
+              )}
             </View>
-            </Animated.View>
-          </KeyboardAvoidingView>
-        </View>
+          </Animated.View>
+        </KeyboardAvoidingView>
+      </View>
     );
   }
-};
-
-
+}
 
 const styles = StyleSheet.create({
- confirmFormWrap: {
+  confirmFormWrap: {
     backgroundColor: theme.white,
     position: 'absolute',
     // width: 60,
@@ -73,7 +78,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 8,
-    elevation: 2
+    elevation: 2,
   },
   confirmForm: {
     backgroundColor: theme.white,
@@ -84,7 +89,7 @@ const styles = StyleSheet.create({
     // right: 0,
     // zIndex: 8,
     // elevation: 2,
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   confirmFormBg: {
     height: 100,
@@ -111,7 +116,7 @@ const styles = StyleSheet.create({
     shadowRadius: 1,
     shadowOffset: {
       height: 2,
-      width: 0
+      width: 0,
     },
     alignItems: 'center',
     justifyContent: 'center',
@@ -120,7 +125,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     fontSize: 25,
     fontWeight: 'bold',
-    color: theme.primary
+    color: theme.primary,
   },
   submitButtonWrap: {
     bottom: 15,
@@ -128,7 +133,7 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     elevation: 3,
-    backgroundColor: theme.primaryLight,
+    backgroundColor: theme.primary,
   },
   submitButtonText: {
     color: theme.white,
@@ -145,8 +150,7 @@ const styles = StyleSheet.create({
     // borderRadius: 5,
     paddingLeft: 5,
     left: 15,
-  }
+  },
 });
-
 
 export default MoodSubmit;
