@@ -13,8 +13,8 @@ import * as CompetitionActions from '../actions/competition';
 import { startLocationWatcher, stopLocationWatcher } from '../concepts/location';
 import { getUser } from '../concepts/registration';
 import { initializeUsersCity, fetchCities } from '../concepts/city';
+import { initializeTermsAccepted } from '../concepts/registration';
 import { initializeUsersRadio, fetchRadioStations } from '../concepts/radio';
-import permissions from '../services/android-permissions';
 
 const IOS = Platform.OS === 'ios';
 
@@ -40,6 +40,9 @@ store
   .dispatch(fetchCities())
   // And load selected city from local storage
   .then(() => store.dispatch(initializeUsersCity()));
+
+// Terms accepted
+store.dispatch(initializeTermsAccepted());
 
 // Load radio settings from local storage
 store

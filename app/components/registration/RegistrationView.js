@@ -27,6 +27,8 @@ import IntroView from './IntroView';
 import ModalBox from 'react-native-modalbox';
 import Team from './Team';
 import Toolbar from './RegistrationToolbar';
+import EULACheck from './EULACheck';
+import Terms from '../terms/Terms';
 import {
   putUser,
   updateName,
@@ -36,6 +38,8 @@ import {
   dismissIntroduction,
   openRegistrationView,
   closeRegistrationView,
+  changeTermsAccepted,
+  isUserAcceptedTerms,
 } from '../../concepts/registration';
 import { setCity, getCityIdByTeam, getCityId } from '../../concepts/city';
 import { setDefaultRadioByCity } from '../../concepts/radio';
@@ -63,6 +67,7 @@ class RegistrationView extends Component {
       showSkipButton: false,
       selectedCity: props.selectedCityId || 2,
       index: 0,
+      showTerms: false,
     };
   }
 
@@ -229,17 +234,19 @@ class RegistrationView extends Component {
           </View>
         </ScrollView>
 
-        {!simplified && (
-          <View style={styles.bottomButtons}>
-            <Button
-              onPress={this.onRegister}
-              style={styles.modalButton}
-              isDisabled={!this.props.isRegistrationInfoValid || !this.teamIsValid()}
-            >
-              Save
-            </Button>
-          </View>
-        )}
+        <View style={styles.bottomButtons}>
+          <Button
+            onPress={this.onRegister}
+            style={styles.modalButton}
+            isDisabled={
+              !this.props.termsAccepted ||
+              !this.props.isRegistrationInfoValid ||
+              !this.teamIsValid()
+            }
+          >
+            Save
+          </Button>
+        </View>
       </View>
     );
   }
@@ -307,13 +314,32 @@ class RegistrationView extends Component {
           />
         </View>
 
-        <View>
+        <View style={{ zIndex: 10, marginBottom: 15 }}>
           <TouchableOpacity onPress={this.onGenerateName}>
             <View style={styles.textButton}>
               <Icon name="loop" style={styles.textButtonIcon} />
               <Text style={styles.textButtonText}>Generate wappu name</Text>
             </View>
           </TouchableOpacity>
+        </View>
+
+        <View>
+          <EULACheck
+            approved={this.props.termsAccepted}
+            onChange={this.props.changeTermsAccepted}
+            onTermsShow={() => this.setState({ showTerms: !this.state.showTerms })}
+          />
+
+          {this.state.showTerms && (
+            <AnimateMe animationType={'fade-in'} style={styles.terms}>
+              <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                <TouchableOpacity onPress={() => this.setState({ showTerms: false })}>
+                  <Text style={{ color: theme.primary, fontWeight: 'bold' }}>Close</Text>
+                </TouchableOpacity>
+              </View>
+              <Terms />
+            </AnimateMe>
+          )}
         </View>
       </View>
     );
@@ -541,10 +567,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: IOS ? 'center' : 'flex-start',
-    padding: IOS ? 5 : 5,
+    padding: 5,
     paddingLeft: 20,
     paddingRight: 20,
-    marginBottom: 15,
+    marginBottom: 0,
   },
   textButtonIcon: {
     color: theme.secondary,
@@ -640,6 +666,9 @@ const styles = StyleSheet.create({
     bottom: 0,
     opacity: 1,
   },
+  terms: {
+    top: 0,
+  },
 });
 
 const mapDispatchToProps = {
@@ -654,11 +683,13 @@ const mapDispatchToProps = {
   openRegistrationView,
   closeRegistrationView,
   showChooseTeam,
+  changeTermsAccepted,
 };
 
 const select = store => {
   const initialSetup = store.city.get('id') === 1 || !store.city.get('id');
   return {
+    termsAccepted: isUserAcceptedTerms(store),
     isIntroductionDismissed: store.registration.get('isIntroductionDismissed'),
     isRegistrationViewOpen: store.registration.get('isRegistrationViewOpen'),
     name: store.registration.get('name'),

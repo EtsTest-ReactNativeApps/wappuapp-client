@@ -1,3 +1,4 @@
+import { AsyncStorage } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import api from '../services/api';
 import namegen from '../services/namegen';
@@ -8,6 +9,11 @@ import { createSelector } from 'reselect';
 import { createRequestActionTypes } from '../actions';
 import { NO_SELECTED_CITY_FOUND } from './city';
 import { getTeams } from '../reducers/team';
+
+import config from '../config';
+const termsAcceptedKey = `${config.APP_STORAGE_KEY}:terms`;
+const ACCEPTED_TERMS = 'accepted';
+const NOT_ACCEPTED_TERMS = 'not-accepted';
 
 // # Action types
 const { CREATE_USER_REQUEST, CREATE_USER_SUCCESS, CREATE_USER_FAILURE } = createRequestActionTypes(
@@ -31,6 +37,7 @@ export const RESET = 'registration/RESET';
 export const SELECT_TEAM = 'registration/SELECT_TEAM';
 export const CLOSE_TEAM_SELECTOR = 'registration/CLOSE_TEAM_SELECTOR';
 export const DISMISS_INTRODUCTION = 'registration/DISMISS_INTRODUCTION';
+export const CHANGE_TERMS_ACCEPTED = 'registration/CHANGE_TERMS_ACCEPTED';
 
 // # Selectors
 export const getUserId = state => state.registration.get('userId');
@@ -40,6 +47,7 @@ export const getUserImage = state => state.registration.get('profilePicture');
 export const getUserTeam = createSelector(getUserTeamId, getTeams, (teamId, teams) =>
   teams.find(item => item.get('id') === teamId)
 );
+export const isUserAcceptedTerms = state => state.registration.get('termsAccepted');
 
 // # Actions
 export const openRegistrationView = () => {
@@ -145,6 +153,25 @@ export const postProfilePicture = imageData => (dispatch, getState) => {
     .catch(error => dispatch({ type: POST_PROFILE_PICTURE_FAILURE, error: error }));
 };
 
+export const changeTermsAccepted = accepted => dispatch => {
+  // set to state
+  dispatch({ type: CHANGE_TERMS_ACCEPTED, payload: accepted });
+
+  // set to local storage
+  const acceptedStorageValue = accepted ? ACCEPTED_TERMS : NOT_ACCEPTED_TERMS;
+  AsyncStorage.setItem(termsAcceptedKey, acceptedStorageValue);
+};
+
+export const initializeTermsAccepted = () => dispatch =>
+  AsyncStorage.getItem(termsAcceptedKey)
+    .then(accepted => {
+      const termsAccepted = accepted === ACCEPTED_TERMS;
+      return dispatch(changeTermsAccepted(termsAccepted));
+    })
+    .catch(error => {
+      console.log('error when setting terms accepted');
+    });
+
 // # Reducer
 const initialState = fromJS({
   isRegistrationViewOpen: false,
@@ -155,6 +182,7 @@ const initialState = fromJS({
   isLoading: false,
   isError: false,
   isIntroductionDismissed: false,
+  termsAccepted: false,
 });
 
 export default function registration(state = initialState, action) {
@@ -208,6 +236,10 @@ export default function registration(state = initialState, action) {
         uuid: action.payload.uuid,
         isLoading: false,
       });
+
+    case CHANGE_TERMS_ACCEPTED: {
+      return state.set('termsAccepted', action.payload);
+    }
     default:
       return state;
   }

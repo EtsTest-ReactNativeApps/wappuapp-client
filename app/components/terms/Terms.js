@@ -23,7 +23,7 @@ class Terms extends Component {
             <Text style={styles.paragraph}>
               <Text style={styles.bold}>Terms and Conditions ("Terms")</Text>
             </Text>
-            <Text style={styles.paragraph}>Last updated: March 23, 2018</Text>
+            <Text style={styles.paragraph}>Last updated: April 12, 2018</Text>
             <Text style={styles.paragraph}>
               Please read these Terms and Conditions ("Terms", "Terms and Conditions") carefully
               before using the Whappu mobile application and wappu.futurice.com site (the "Service")
@@ -44,9 +44,9 @@ class Terms extends Component {
             </Text>
             <Text style={styles.paragraph}>
               Our Service allows you to post, link, store, share and otherwise make available
-              certain information, text, graphics, videos, or other material ("Content"). You are
-              responsible for the Content that you post to the Service, including its legality,
-              reliability, and appropriateness.
+              certain information, user names, text, graphics, videos, or other material
+              ("Content"). You are responsible for the Content that you post to the Service,
+              including its legality, reliability, and appropriateness.
             </Text>
             <Text style={styles.paragraph}>
               By posting Content to the Service, you grant us the right and license to use, modify,
@@ -63,6 +63,10 @@ class Terms extends Component {
               (ii) the posting of your Content on or through the Service does not violate the
               privacy rights, publicity rights, copyrights, contract rights or any other rights of
               any person.
+            </Text>
+            <Text style={styles.paragraph}>
+              In case of inappropriate Content you can report content from the App or contact us by
+              mailing to wappu@futurice.com.
             </Text>
 
             <Text style={styles.paragraph}>
