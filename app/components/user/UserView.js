@@ -9,10 +9,12 @@ import {
   Image,
   Platform,
   Text,
+  Alert,
 } from 'react-native';
 import { connect } from 'react-redux';
 
 import {
+  getSelectedUserId,
   getUserImages,
   getUserName,
   getUserTeam,
@@ -32,13 +34,34 @@ import theme from '../../style/theme';
 import AnimateMe from '../AnimateMe';
 import Header from '../common/Header';
 import Loader from '../common/Loader';
+import PlatformTouchable from '../common/PlatformTouchable';
 import LinearGradient from '../header/LinearGradient';
 import { height, width, IOS } from '../../services/device-info';
 import { getInitialLetters } from '../../services/user';
+import abuse from '../../services/abuse';
 
 const headerImage = require('../../../assets/frontpage_header-bg.jpg');
 
 class UserView extends Component {
+  showRemoveDialog(userId) {
+    Alert.alert('Report User', 'Do you want to report this user?', [
+      {
+        text: 'Cancel',
+        onPress: () => {
+          console.log('Cancel Pressed');
+        },
+        style: 'cancel',
+      },
+      {
+        text: 'Yes, report user',
+        onPress: () => {
+          abuse.reportFeedItem({ id: userId }, 'User');
+        },
+        style: 'destructive',
+      },
+    ]);
+  }
+
   render() {
     const {
       images,
@@ -88,6 +111,17 @@ class UserView extends Component {
                   </TouchableHighlight>
                 </View>
               )}
+
+              <View style={styles.report__button}>
+                <PlatformTouchable
+                  onPress={() => this.showRemoveDialog(this.props.userId)}
+                  delayPressIn={0}
+                  activeOpacity={0.8}
+                >
+                  <Icon style={styles.report__icon} name={'flag'} />
+                </PlatformTouchable>
+              </View>
+
               <AnimateMe style={{ flex: 0 }} delay={300} animationType="fade-from-bottom">
                 <View style={styles.avatar}>
                   {userImage ? (
@@ -288,6 +322,20 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 0,
   },
+
+  report__button: {
+    borderRadius: 25,
+    width: 50,
+    height: 50,
+    position: 'absolute',
+    right: -10,
+    top: 40,
+  },
+  report__icon: {
+    backgroundColor: 'transparent',
+    fontSize: 20,
+    color: theme.white,
+  },
 });
 
 const mapDispatchToProps = { openLightBox, fetchUserImages };
@@ -300,6 +348,7 @@ const mapStateToProps = state => ({
   userName: getUserName(state),
   userTeam: getUserTeam(state),
   userImage: getUserImage(state),
+  userId: getSelectedUserId(state),
   tab: getCurrentTab(state),
 });
 

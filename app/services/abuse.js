@@ -20,7 +20,7 @@ function reportFeedItem(item, type = 'feed item') {
   let emailURL = 'mailto:' + ABUSE_EMAIL_ADDRESS;
 
   // Subject (ID-hashtag to help searching from Flowdock inbox)
-  emailURL += '?subject=' + ABUSE_EMAIL_SUBJECT + '(ID' + item.id + ')';
+  emailURL += '?subject=' + ABUSE_EMAIL_SUBJECT + '(' + type + ' ID' + item.id + ')';
 
   // Body
   emailURL += '&body=I want to report ' + type + ' with ID ' + item.id;

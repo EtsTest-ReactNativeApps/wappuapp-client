@@ -19,6 +19,7 @@ export const getSelectedUserData = createSelector(
   (userId, profiles) => profiles.get(userId)
 );
 
+export const getSelectedUserId = state => state.user.getIn(['profile', 'id']);
 export const getUserName = state => state.user.getIn(['profile', 'name']);
 export const getUserImages = state => state.user.getIn(['profile', 'images'], List()) || List();
 export const getUserTeam = state => state.user.getIn(['profile', 'team']);
@@ -60,7 +61,7 @@ export const fetchUserImages = (userId, target = 'profile') => dispatch => {
     .then(images => {
       dispatch({
         type: SET_USER_PROFILE,
-        payload: { images, target },
+        payload: { images, target, userId },
       });
       dispatch({ type: GET_USER_PROFILE_SUCCESS });
     })
@@ -93,7 +94,9 @@ export default function city(state = initialState, action) {
       if (!action.payload.target) {
         return state;
       }
-      return state.set(action.payload.target, fromJS(action.payload.images));
+      const id = action.payload.userId;
+      const nextState = { ...action.payload.images, id };
+      return state.set(action.payload.target, fromJS(nextState));
     }
 
     case GET_USER_PROFILE_REQUEST: {
