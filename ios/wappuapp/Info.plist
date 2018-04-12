@@ -21,7 +21,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>7</string>
+	<string>9</string>
 	<key>CodePushDeploymentKey</key>
 	<string>deployment-key-here</string>
 	<key>LSRequiresIPhoneOS</key>
@@ -38,11 +38,11 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Whappu requires access to the camera</string>
+	<string>To be able to capture a picture for the App, Whappu requires access to the camera</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>For Checking In to Events feature Whappu requires access to the location</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Whappu requires access to the photo library</string>
+	<string>To be able to upload picture to App, Whappu requires access to the photo library</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Entypo.ttf</string>
